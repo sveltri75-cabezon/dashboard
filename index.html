@@ -237,6 +237,11 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 .bn .go{flex:none;border:0;border-radius:99px;background:var(--acc);color:#06121c;font:700 12.5px system-ui,sans-serif;padding:8px 14px;cursor:pointer}
 .bn .x{flex:none;width:28px;height:28px;border:0;background:transparent;color:var(--mut);font-size:18px;line-height:1;cursor:pointer;border-radius:50%;padding:0}
 @media (min-width:901px){.bn{left:auto;right:76px;width:360px}}
+#rates .row{gap:10px}#rates .row .t{flex:0 0 92px}#rates .row .t b{font-size:16px}
+#rates .row .sp{flex:1 1 0;min-width:40px;height:30px}
+#rates .row .sp svg{display:block;width:100%;height:30px}
+#rates .row .p{flex:0 0 auto;min-width:84px}#rates .row .pill{flex:0 0 auto;min-width:66px;text-align:center}
+@media (max-width:900px){#rates .row{gap:8px}#rates .row .p{min-width:80px}#rates .row .p b{font-size:18px}#rates .row .pill{min-width:64px;padding:3px 6px}}
 </style>
 </head>
 <body>
@@ -274,7 +279,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.1';
+var VER='2026-10-15.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -287,7 +292,7 @@ function bps(dpp){return Math.round(dpp*100);} /* diferencia en puntos porcentua
 function pillBps(dpp){return pill(bps(dpp),' bps',0);}
 function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d':'n')+'">'+sgn(v,d)+(suf==null?' %':suf)+'</span>';}
 
-var SERIES=[{id:11,name:'BAIBAR'},{id:13,name:'Adelantos en cuenta'},{id:14,name:'Préstamos personales'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
+var SERIES=[{id:11,name:'BAIBAR'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
 var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,t:{bcra:0,pf:0}};
@@ -763,7 +768,7 @@ function renderRates(){
     var p=S.bcra[s.id];
     if(!p)return '<div class="row"><div class="t"><b>'+esc(s.name)+'</b><span>Sin datos</span></div></div>';
     var last=p[p.length-1],prev=p[p.length-2];
-    return '<div class="row" data-bs="'+s.id+'"><div class="t"><b>'+esc(s.name)+'</b><span>'+fdate(last.d)+'</span></div>'+'<div class="p"><b>'+nf(2).format(last.v)+' %</b><span>TNA</span></div>'+(prev?pillBps(last.v-prev.v):'')+'</div>';
+    return '<div class="row" data-bs="'+s.id+'"><div class="t"><b>'+esc(s.name)+'</b><span>'+fdate(last.d)+'</span></div><div class="sp">'+spark(p,30)+'</div>'+'<div class="p"><b>'+nf(2).format(last.v)+' %</b><span>TNA</span></div>'+(prev?pillBps(last.v-prev.v):'')+'</div>';
   }).join('');
 }
 function chipHTML(b){return '<span class="chip'+(b.me?' me':'')+'">'+esc(b.name)+'</span>';}
