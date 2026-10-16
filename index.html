@@ -252,6 +252,15 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 @media (min-width:1880px){.cau2 .cap2{display:none}}
 @media (max-width:900px){.cau2 .hd{flex-wrap:wrap;gap:6px 8px}.cau2 .sp2 svg,.cau2 .sp2 .nod{height:44px}.cau2{gap:6px}.cau2 .big{font-size:30px!important}}
 .cau2 .cap2{color:var(--mut);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Home (solo celular) */
+.hm{cursor:pointer}.hm h2 .go{font-style:normal;font-size:16px;opacity:.55;letter-spacing:0}
+.hmst{background:transparent!important;border:0!important;padding:0 4px!important;min-height:0}
+#hm-st{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--mut)}#hm-st .st{font-size:12px;gap:6px}#hm-st .st:before{width:8px;height:8px}#hm-st .upd{margin-left:auto}
+.hm .hmb{font-size:25px;font-weight:700;line-height:1.1;margin-bottom:5px}.hm .hmb.s{font-size:19px;white-space:nowrap}.card.half.hm h2 i.go{display:inline}
+.hm .pill{align-self:flex-start}.hm .hsp svg{display:block;width:100%;height:26px;margin-top:5px}.hm .hmu{color:var(--mut);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm .hmr{display:flex;justify-content:space-between;align-items:center;margin-top:5px}.hm .hmr b{font-size:17px}
+#hm-may .hw{display:flex;justify-content:space-between;align-items:center;gap:12px}#hm-may .hw>div:first-child{display:flex;flex-direction:column;gap:6px}#hm-may .hsp{width:46%}#hm-may .hsp svg{height:44px;margin:0}
+#hm-may .hb{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}#hm-may .hb b{color:var(--ink);font-size:15px;margin:0 4px}
 </style>
 </head>
 <body>
@@ -259,6 +268,14 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
   <div class="tabs" role="tablist" id="tabs"></div>
 
   <div class="r1">
+    <section class="card full mobonly hmst" data-tab="home"><div id="hm-st"></div></section>
+    <section class="card full mobonly hm" data-tab="home" data-go="dolar"><h2>Dólar mayorista <i class="go">›</i></h2><div id="hm-may"></div></section>
+    <section class="card half hl mobonly hm" data-tab="home" data-go="tasas"><h2>Caución <i class="go">›</i></h2><div id="hm-cau"></div></section>
+    <section class="card half hr mobonly hm" data-tab="home" data-go="tasas"><h2>TAMAR <i class="go">›</i></h2><div id="hm-tam"></div></section>
+    <section class="card half hl mobonly hm" data-tab="home" data-go="plazo"><h2>PF Meridian <i class="go">›</i></h2><div id="hm-pf"></div></section>
+    <section class="card half hr mobonly hm" data-tab="home" data-go="fci"><h2>FCI MM <i class="go">›</i></h2><div id="hm-fci"></div></section>
+    <section class="card half hl mobonly hm" data-tab="home" data-go="acciones"><h2>Acciones <i class="go">›</i></h2><div id="hm-acc"></div></section>
+    <section class="card half hr mobonly hm" data-tab="home" data-go="lic"><h2>Licitación <i class="go">›</i></h2><div id="hm-lic"></div></section>
     <section data-src="may" class="card full" data-tab="dolar"><h2>Dólar mayorista <i id="h-may">Com. A 3500</i></h2><div class="stat" id="c-may"></div></section>
     <section data-src="fx" class="card half hl" data-tab="dolar"><h2>Dólar MEP <i>AL30</i></h2><div class="stat" id="c-mep"></div></section>
     <section data-src="fx" class="card half hr" data-tab="dolar"><h2>Dólar CCL <i>mediana</i></h2><div class="stat" id="c-ccl"></div></section>
@@ -289,7 +306,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.5';
+var VER='2026-10-15.6';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -888,9 +905,57 @@ function renderBonos(){
   $('#bh').innerHTML='<table><thead><tr><th>Especie</th><th>Precio</th><th>TIR</th><th>Var.</th></tr></thead><tbody>'+
     DUMMY.bh.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+nf(1).format(r[2])+' %</td><td>'+pill(r[3])+'</td></tr>';}).join('')+'</tbody></table>';
 }
+function renderHome(){
+  if(!$('#hm-may'))return;
+  var tilePill=function(v,sf){return v==null||!isFinite(v)?'':pill(v,sf==null?' %':sf,sf==null?2:0);};
+  /* estado */
+  var fo=isOpen('FOR')&&!holidayGuess(),co=isOpen('CAU')&&!holidayGuess();
+  $('#hm-st').innerHTML='<span class="st'+(fo?' on':'')+'">Forex '+(fo?'abierto':'cerrado')+'</span><span class="st'+(co?' on':'')+'">Caución '+(co?'abierta':'cerrada')+'</span><span class="upd">'+hhmm(Date.now())+'</span>';
+  /* mayorista + MEP/CCL */
+  var m=S.mae,head='',sp='',mep=S.fx.mep,ccl=S.fx.ccl;
+  if(m){
+    var h=S.hist.mae,first=m.prev||(h.length>1?h[0].v:m.last),I=S.intra;
+    head='<div class="hmb" style="font-size:30px">'+nf(2).format(m.last)+'</div>'+(first!==m.last||m.prev?pill((m.last/first-1)*100):'');
+    sp=(I&&I.tk===m.tk&&I.pts.length>1)?sparkSVG(I.pts,m.prev,'FOR'):(m.daily&&m.daily.length>1?sparkDaily(m.daily):'');
+  }else{
+    var p=S.bcra[MAYORISTA_ID];
+    if(p){var l=p[p.length-1],pv=p[p.length-2];head='<div class="hmb" style="font-size:30px">'+nf(2).format(l.v)+'</div>'+(pv?pill((l.v/pv.v-1)*100):'');sp=spark(p,30);}
+    else head='<div class="mut">Sin datos</div>';
+  }
+  var fx=function(lab,o,key){
+    if(!o)return '<span>'+lab+' <b>—</b></span>';
+    var vs=S.hist[key].map(function(x){return x.v;}),f=vs.length>1?vs[0]:o.v;
+    return '<span>'+lab+'<b>'+nf(1).format(o.v)+'</b>'+pill((o.v/f-1)*100)+'</span>';
+  };
+  $('#hm-may').innerHTML='<div class="hw"><div>'+head+'</div><div class="hsp">'+sp+'</div></div><div class="hb">'+fx('MEP',mep,'mep')+fx('CCL',ccl,'ccl')+'</div>';
+  /* caución */
+  var c=S.cau;
+  if(c&&c.rate){
+    var I2=S.intraC&&S.intraC.key===((c.tk||'CAARS')+'|'+c.plazo)?S.intraC:null,csp=I2&&I2.pts.length>1?sparkSVG(I2.pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'');
+    $('#hm-cau').innerHTML='<div class="hmb">'+nf(2).format(c.rate)+' %</div>'+(c.prev?pillBps(c.rate-c.prev):'')+'<div class="hsp">'+csp+'</div>';
+  }else $('#hm-cau').innerHTML='<div class="mut">Sin datos</div>';
+  /* TAMAR */
+  var t=S.bcra[44];
+  if(t&&t.length){var tl=t[t.length-1],tp=t[t.length-2];$('#hm-tam').innerHTML='<div class="hmb">'+nf(2).format(tl.v)+' %</div>'+(tp?pillBps(tl.v-tp.v):'')+'<div class="hsp">'+spark(t,30)+'</div>';}
+  else $('#hm-tam').innerHTML='<div class="mut">Sin datos</div>';
+  /* PF Meridian */
+  var pm=PF.me;
+  $('#hm-pf').innerHTML=pm?'<div class="hmb">'+nf(2).format(pm.rate)+' %</div><span class="pill a">Puesto '+pm.rank+'</span><div class="hmu">mejor tasa '+nf(2).format(PF.best)+' %</div>':'<div class="mut">'+(PF.groups?'Sin tasa':'Cargando…')+'</div>';
+  /* FCI */
+  var fb=null;if(S.fci)S.fci.forEach(function(r){if(!fb||r.tna>fb.tna)fb=r;});
+  $('#hm-fci').innerHTML=fb?'<div class="hmb">'+nf(2).format(fb.tna)+' %</div><div class="hmu">TNA · mejor fondo</div><div class="hmu">'+esc(fb.name)+'</div>':'<div class="mut">'+(S.fciErr?'Sin respuesta':'Cargando…')+'</div>';
+  /* acciones */
+  var u=S.stocks.up[0],d=S.stocks.down[0];
+  $('#hm-acc').innerHTML=u||d?(u?'<div class="hmr"><b>'+esc(u.symbol)+'</b>'+pill(u.pct_change)+'</div>':'')+(d?'<div class="hmr"><b>'+esc(d.symbol)+'</b>'+pill(d.pct_change)+'</div>':''):'<div class="mut">Sin datos</div>';
+  /* licitación */
+  if(LIC.groups){
+    var P=licPick(),L=P.last,N=P.nxt;
+    $('#hm-lic').innerHTML='<div class="hmb s">'+(L?licState(L,P.now)[0]:'—')+'</div><div class="hmu">'+(N?(licState(N,P.now)[0]==='Abierta'?'Hoy ':'Próxima ')+dmy(N.day):'Sin próxima')+'</div>';
+  }else $('#hm-lic').innerHTML='<div class="mut">'+(LIC.err?'Sin respuesta':'Cargando…')+'</div>';
+}
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
-  renderRates();renderPF();renderFCI();renderBanks();renderLic();
+  renderRates();renderPF();renderFCI();renderBanks();renderLic();renderHome();
   stockList($('#up'),S.stocks.up);stockList($('#down'),S.stocks.down);
 }
 
@@ -1049,8 +1114,8 @@ function popBuildLic(){
 }
 
 /* ---------- tabs (móvil) ---------- */
-var TABS=[['dolar','Dólar'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones']];
-var tab=(recall('tablero-tab-v1')||'dolar');
+var TABS=[['home','Home'],['dolar','Dólar'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones']];
+var tab='home'; /* al abrir siempre arranca en Home */
 if(!TABS.some(function(t){return t[0]===tab;}))tab='dolar';
 function tabIdx(){for(var i=0;i<TABS.length;i++)if(TABS[i][0]===tab)return i;return 0;}
 function applyTab(dir){
@@ -1072,6 +1137,10 @@ function goTab(i,dir){
 }
 $('#tabs').innerHTML=TABS.map(function(t){return '<button class="tab" role="tab" data-t="'+t[0]+'">'+t[1]+'</button>';}).join('');
 $('#tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;var i=0;TABS.forEach(function(t,k){if(t[0]===b.dataset.t)i=k;});goTab(i,i>tabIdx()?1:-1);});
+document.addEventListener('click',function(e){
+  var c=e.target.closest&&e.target.closest('.hm[data-go]');if(!c||!mq.matches)return;
+  var i=-1;TABS.forEach(function(t,k){if(t[0]===c.dataset.go)i=k;});if(i>=0)goTab(i,1);
+});
 /* En pantalla ancha se ven todas las tarjetas; solo en móvil el filtro por tab aplica. */
 var mq=window.matchMedia('(max-width:900px)');
 function syncMode(){
