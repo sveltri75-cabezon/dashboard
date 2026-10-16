@@ -231,6 +231,12 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
   td{font-size:14px;padding:8px 3px}td .pill{min-width:52px;font-size:11px}
   .row svg{display:none}.two{grid-template-columns:1fr;gap:6px}
 }
+.bn{position:fixed;left:calc(12px + env(safe-area-inset-left));right:calc(76px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.bn>div{pointer-events:auto;display:flex;align-items:center;gap:10px;background:#1b2631;border:1px solid #2f4155;border-radius:12px;padding:9px 8px 9px 13px;box-shadow:0 6px 20px rgba(0,0,0,.5);font-size:13px;line-height:1.25}
+.bn span{flex:1;min-width:0}.bn span small{display:block;color:var(--mut);font-size:11.5px;margin-top:1px}
+.bn .go{flex:none;border:0;border-radius:99px;background:var(--acc);color:#06121c;font:700 12.5px system-ui,sans-serif;padding:8px 14px;cursor:pointer}
+.bn .x{flex:none;width:28px;height:28px;border:0;background:transparent;color:var(--mut);font-size:18px;line-height:1;cursor:pointer;border-radius:50%;padding:0}
+@media (min-width:901px){.bn{left:auto;right:76px;width:360px}}
 </style>
 </head>
 <body>
@@ -262,11 +268,13 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
     <section class="card" data-tab="bonos"><h2>Bonos hard dólar <i>ejemplo · USD D</i></h2><div id="bh"></div></section>
   </div>
 </div>
+<div class="bn" id="bn"></div>
 <button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button>
 
 <script>
 (function(){
 'use strict';
+var VER='2026-10-15.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -906,7 +914,7 @@ function loadLIC(){
   var n=arNow(),d0=addDays(n.date,-LIC_DAYS),d1=addDays(n.date,LIC_DAYS);
   var qs=[['H',d0,n.date],['A',d0,n.date],['P',n.date,d1]];
   return Promise.all(qs.map(function(q){
-    return firstJSON([licURL(LIC_BASE,q[0],q[1],q[2]),licURL(LIC_W,q[0],q[1],q[2])]).catch(function(){return null;});
+    return firstJSON([licURL(LIC_W,q[0],q[1],q[2]),licURL(LIC_BASE,q[0],q[1],q[2])]).catch(function(){return null;});
   })).then(function(rs){
     var all=[],ok=0,seen={};
     rs.forEach(function(r){if(!r)return;ok++;r.forEach(function(x){if(x&&x.id!=null&&!seen[x.id]){seen[x.id]=1;all.push(x);}});});
@@ -1214,6 +1222,53 @@ if(!isApp&&mq.matches){
   document.addEventListener('touchend',goFull,{once:true,passive:true});
   document.addEventListener('click',goFull,{once:true});
 }
+
+/* Banners: versión nueva y, en el celular, instalar como app. Ambos se pueden cerrar. */
+(function(){
+  var bn=document.getElementById('bn');if(!bn)return;
+  function lget(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+  function lset(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  function mk(id,html,btnTxt,onGo,onX){
+    var d=document.createElement('div');d.id=id;
+    d.innerHTML='<span>'+html+'</span>'+(btnTxt?'<button type="button" class="go">'+btnTxt+'</button>':'')+'<button type="button" class="x" aria-label="Cerrar">\u00d7</button>';
+    if(btnTxt)d.querySelector('.go').addEventListener('click',onGo);
+    d.querySelector('.x').addEventListener('click',function(){d.remove();if(onX)onX();});
+    bn.appendChild(d);return d;
+  }
+  /* 1) Versión nueva */
+  var lastChk=0,shown=null;
+  function chkVer(){
+    if(!/^https?:/.test(location.protocol)||shown)return;
+    lastChk=Date.now();
+    fetch(location.href.split('#')[0].split('?')[0]+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){
+      var m=/var VER='([^']+)'/.exec(t||'');
+      if(!m||m[1]===VER||lget('tm_ver_x')===m[1]||shown)return;
+      var nv=m[1];
+      shown=mk('bn-ver','Hay una versi\u00f3n nueva del tablero','Actualizar',function(){location.reload();},function(){lset('tm_ver_x',nv);});
+    }).catch(function(){});
+  }
+  setTimeout(chkVer,20000);setInterval(chkVer,30*60*1000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&Date.now()-lastChk>10*60*1000)chkVer();});
+  /* 2) Instalar app */
+  if(isApp)return;
+  var ev=null,ios=/iphone|ipad|ipod/i.test(navigator.userAgent),inst=null;
+  var X=30*24*3600*1000;
+  function muted(){var t=+lget('tm_inst_x')||0;return Date.now()-t<X;}
+  function dismiss(){lset('tm_inst_x',String(Date.now()));}
+  function showInst(){
+    if(inst||muted()||!mq.matches||!ev)return;
+    inst=mk('bn-inst','Instal\u00e1 el tablero como app<small>Pantalla completa y acceso directo</small>','Instalar',function(){
+      var e=ev;if(!e)return;ev=null;
+      try{e.prompt();(e.userChoice||Promise.resolve()).then(function(c){if(c&&c.outcome==='dismissed')dismiss();}).catch(function(){});}catch(x){}
+      inst.remove();
+    },dismiss);
+  }
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;setTimeout(showInst,4000);});
+  window.addEventListener('appinstalled',function(){ev=null;if(inst){inst.remove();inst=null;}});
+  if(ios&&mq.matches&&!muted()){
+    setTimeout(function(){if(!inst)inst=mk('bn-inst','Para instalar: Compartir \u2192 Agregar a inicio<small>Desde Safari</small>',null,null,dismiss);},4000);
+  }
+})();
 renderBonos();renderAll();syncMode();
 refresh();
 runGroup('lic');
