@@ -306,7 +306,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.6';
+var VER='2026-10-15.7';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -451,12 +451,19 @@ function pickHistFor(rows){
   var L=by[ds[ds.length-1]],P=ds.length>1?by[ds[ds.length-2]].v:null;
   return {tk:res.tk,last:L.v,max:Math.max(L.mx||L.v,L.v),min:Math.min(L.mn||L.v,L.v),prev:P,hist:true,date:ds[ds.length-1],daily:ds.slice(-20).map(function(d){return by[d].v;})};
 }
+/* El MAE deja de informar el cierre anterior pasada la rueda: se guarda el último valor visto del día para seguir mostrando la variación. */
+function keepPrev(k,o){
+  var d=sessionDate(),st=recall('tablero-prev-v1')||{};
+  if(o&&o.prev>0){st[k]={d:d,p:o.prev};store('tablero-prev-v1',st);}
+  else if(o&&st[k]&&st[k].d===d)o.prev=st[k].p;
+  return o;
+}
 function loadMAE(){
   return firstJSON(MAE_FOR).then(pickMAE).catch(function(e){
     console.warn('MAE FOR vacío, uso histórico:',e.message);
     if(S.hf&&Date.now()-S.hfT<600000)return S.hf;
     return histGet('HISTFOR',MAE_HF,true).then(pickHistFor).then(function(r){S.hf=r;S.hfT=Date.now();return r;});
-  }).then(function(m){S.mae=m;pushHist('mae',m.last);return loadIntra().catch(function(){});},function(e){console.warn('MAE FOR:',e.message);throw e;});
+  }).then(function(m){keepPrev('for',m);S.mae=m;pushHist('mae',m.last);return loadIntra().catch(function(){});},function(e){console.warn('MAE FOR:',e.message);throw e;});
 }
 /* Serie intradiaria del mayorista: [{time (hora local escrita como UTC), value}] → un punto por minuto, en minutos desde la medianoche. */
 /* Forma que usa la propia web del MAE: fecha, fechaLiquidacion y fechaHasta con el mismo día (sin hora). La anterior queda de respaldo. */
@@ -555,7 +562,7 @@ function loadCAU(){
     console.warn('MAE CAU sin tasa, uso histórico');
     if(S.hc&&Date.now()-S.hcT<600000)return S.hc;
     return histGet('HISTCAU',MAE_HC,false).then(pickHistCau).then(function(r){S.hc=r;S.hcT=Date.now();return r;},function(e){if(c.err)throw c.err;console.warn('MAE hist CAU:',e.message);return c;});
-  }).then(function(c){S.cau=c;return loadIntraCau();},function(e){console.warn('MAE CAU:',e.message);throw e;});
+  }).then(function(c){keepPrev('cau',c);S.cau=c;return loadIntraCau();},function(e){console.warn('MAE CAU:',e.message);throw e;});
 }
 
 /* ---------- acciones (data912) ---------- */
@@ -763,17 +770,17 @@ function rangeBar(last,mn,mx){
   return '<div class="rng" title="Último '+nf(2).format(last)+'"><b>'+nf(2).format(mn)+'</b><div class="bar"><i style="left:'+pct.toFixed(1)+'%"></i></div><b>'+nf(2).format(mx)+'</b></div>'+
     '<div class="rln"><span>Mín.</span><span>Máx.</span></div>';
 }
-function sparkSVG(pts,prev,k){
+function sparkSVG(pts,prev,k,tight){
   var W=200,H=64,sess=SESS[k],on=isOpen(k);
   if(!pts||pts.length<2)return '<div class="nod">Sin operaciones del día</div>';
   var vs=pts.map(function(p){return p.v;}),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs);
-  if(prev>0){lo=Math.min(lo,prev);hi=Math.max(hi,prev);}
+  if(prev>0&&!tight){lo=Math.min(lo,prev);hi=Math.max(hi,prev);}
   var pad=(hi-lo)*0.12||0.5;lo-=pad;hi+=pad;
   var X=function(m){return Math.max(0,Math.min(W,(m-sess.o)/(sess.c-sess.o)*W));},Y=function(v){return H-(v-lo)/(hi-lo)*H;};
   var d=pts.map(function(p,i){return (i?'L':'M')+X(p.m).toFixed(1)+' '+Y(p.v).toFixed(1);}).join(''),e=pts[pts.length-1];
   var up=!(prev>0)||e.v>=prev,col=up?'#1fb26a':'#e5484d';
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+
-    (prev>0?'<line x1="0" x2="'+W+'" y1="'+Y(prev).toFixed(1)+'" y2="'+Y(prev).toFixed(1)+'" stroke="#3a4552" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>':'')+
+    (prev>0&&(!tight||(prev>=lo&&prev<=hi))?'<line x1="0" x2="'+W+'" y1="'+Y(prev).toFixed(1)+'" y2="'+Y(prev).toFixed(1)+'" stroke="#3a4552" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>':'')+
     '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'+
     '<circle class="'+(on?'dotp':'')+'" cx="'+Math.min(W-4,X(e.m)).toFixed(1)+'" cy="'+Y(e.v).toFixed(1)+'" r="3.5" fill="'+col+'"/></svg>';
 }
@@ -925,13 +932,13 @@ function renderHome(){
   var fx=function(lab,o,key){
     if(!o)return '<span>'+lab+' <b>—</b></span>';
     var vs=S.hist[key].map(function(x){return x.v;}),f=vs.length>1?vs[0]:o.v;
-    return '<span>'+lab+'<b>'+nf(1).format(o.v)+'</b>'+pill((o.v/f-1)*100)+'</span>';
+    return '<span>'+lab+'<b>'+nf(1).format(o.v)+'</b>'+(vs.length>1?pill((o.v/f-1)*100):'')+'</span>';
   };
   $('#hm-may').innerHTML='<div class="hw"><div>'+head+'</div><div class="hsp">'+sp+'</div></div><div class="hb">'+fx('MEP',mep,'mep')+fx('CCL',ccl,'ccl')+'</div>';
   /* caución */
   var c=S.cau;
   if(c&&c.rate){
-    var I2=S.intraC&&S.intraC.key===((c.tk||'CAARS')+'|'+c.plazo)?S.intraC:null,csp=I2&&I2.pts.length>1?sparkSVG(I2.pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'');
+    var I2=S.intraC&&S.intraC.key===((c.tk||'CAARS')+'|'+c.plazo)?S.intraC:null,csp=I2&&I2.pts.length>1?sparkSVG(I2.pts,c.prev,'CAU',true):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'');
     $('#hm-cau').innerHTML='<div class="hmb">'+nf(2).format(c.rate)+' %</div>'+(c.prev?pillBps(c.rate-c.prev):'')+'<div class="hsp">'+csp+'</div>';
   }else $('#hm-cau').innerHTML='<div class="mut">Sin datos</div>';
   /* TAMAR */
