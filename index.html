@@ -165,7 +165,7 @@ section[data-src=lic] .ctl em{display:none}
 .lnx2{border:1px dashed #2c3540;border-radius:9px;padding:10px 12px;background:#101419;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .lnx2 b{font-size:20px}.lnx2 small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
 details.lh{border-top:1px solid var(--line)}details.lh:first-of-type{border-top:0}
-details.lh summary{display:grid;grid-template-columns:48px 1fr auto auto 12px;gap:8px;align-items:center;padding:10px 0;font-size:14px;cursor:pointer;list-style:none}
+details.lh summary{display:grid;grid-template-columns:44px 1fr 84px 98px 12px;gap:8px;align-items:center;padding:10px 0;font-size:14px;cursor:pointer;list-style:none}
 details.lh summary::-webkit-details-marker{display:none}
 details.lh summary b{font-weight:700}details.lh summary .m{color:var(--mut);font-size:12.5px}details.lh summary .r{text-align:right;font-weight:600;font-size:13.5px}
 details.lh summary:after{content:'›';color:#5d6875;transition:transform .15s}details.lh[open] summary:after{transform:rotate(90deg)}
@@ -261,6 +261,29 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 .hm .hmr{display:flex;justify-content:space-between;align-items:center;margin-top:5px}.hm .hmr b{font-size:17px}
 #hm-may .hw{display:flex;justify-content:space-between;align-items:center;gap:12px}#hm-may .hw>div:first-child{display:flex;flex-direction:column;gap:6px}#hm-may .hsp{width:46%}#hm-may .hsp svg{height:44px;margin:0}
 #hm-may .hb{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}#hm-may .hb b{color:var(--ink);font-size:15px;margin:0 4px}
+/* Licitaciones (celular): estado, composición y columnas fijas */
+.lx-step{display:flex;margin:2px 0 12px}
+.lx-s{flex:1;text-align:center;position:relative;font-size:11.5px;color:var(--mut);min-height:44px}
+.lx-s b{display:block;color:var(--ink);font-size:13px;margin-top:5px}
+.lx-s:before{content:'';position:absolute;top:6px;left:-50%;width:100%;height:2px;background:#2a323c}.lx-s:first-child:before{display:none}
+.lx-s u{display:block;margin:0 auto;width:14px;height:14px;border-radius:50%;background:#2a323c;position:relative;z-index:1;text-decoration:none}
+.lx-s.ok u,.lx-s.ok:before{background:var(--up)}.lx-s.cur:before{background:var(--up)}
+.lx-s.cur u{background:#d9a441;box-shadow:0 0 0 4px rgba(217,164,65,.22)}.lx-s.cur b{color:#f0c24b}
+.lx-s.cur.ok u{background:var(--up);box-shadow:none}.lx-s.cur.ok b{color:var(--ink)}
+.lx-cv{color:var(--mut);font-size:12px;margin:-4px 0 8px;text-align:center}
+.lx-tot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0 10px}
+.lx-tot>div{background:#10151a;border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0}
+.lx-tot .k{color:var(--mut);font:600 10px system-ui;letter-spacing:.12em;text-transform:uppercase}
+.lx-tot .v{font-size:26px;font-weight:700;margin-top:2px;white-space:nowrap}.lx-tot .v small{font-size:13px;color:var(--mut);font-weight:600;margin-left:4px}
+.lx-bar{display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px;margin:0 0 6px}.lx-bar i{display:block;min-width:3px}
+.lx-ic{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.lx-ic .dot{width:10px;height:10px;border-radius:3px;flex:none}.lx-ic .n{flex:1;min-width:0}.lx-ic .n b{font-size:15.5px}.lx-ic .n span{display:block;color:var(--mut);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lx-ic .r{text-align:right;flex:none}.lx-ic .r b{font-size:15px;display:block}.lx-ic .r span{color:var(--mut);font-size:11.5px;white-space:nowrap}
+details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padding-bottom:0}details.lh[open]{padding-bottom:4px}
+.lx-nx{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.lx-nx .d{font-size:21px;font-weight:700}.lx-nx .mu{font-size:12px;margin-top:3px}
+.lx-chips{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;align-items:center}.lx-chips span{background:#1a2027;border-radius:99px;padding:4px 10px;font-size:12px;color:#c3ccd5}.lx-chips em{font-style:normal;color:var(--mut);font-size:12px}
+.lx-hd{display:grid;grid-template-columns:44px 1fr 84px 98px 12px;gap:8px;font:600 10px system-ui;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;padding-bottom:4px}.lx-hd span:nth-child(3),.lx-hd span:nth-child(4){text-align:right}
+@media (max-width:900px){.app{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}}
 </style>
 </head>
 <body>
@@ -306,7 +329,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.7';
+var VER='2026-10-16.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1080,6 +1103,33 @@ function licPick(){
   return {last:last,nxt:nxt,fut:fut,prev:prev,now:now};
 }
 function diffDays(a,b){return Math.round((Date.UTC(+b.slice(0,4),+b.slice(5,7)-1,+b.slice(8,10))-Date.UTC(+a.slice(0,4),+a.slice(5,7)-1,+a.slice(8,10)))/86400000);}
+var LXC=['#6fb1e0','#1fb26a','#d9a441','#a78bfa','#2dd4bf'];
+function lxCorte(c){var t=licCorteTxt(c);return t==='—'||t==='Desierta'?t:'corte '+t;}
+/* Filas de títulos (celular): punto de color = porción de la barra de pesos; los títulos en dólares quedan en gris. */
+function licItemsC(items,ars,dots){
+  var ci=0;
+  return items.map(function(i){
+    var ar=i.mon==='ARS'&&ars>0,pc=ar?Math.round(i.amt/ars*100):0,col=ar?LXC[ci++%LXC.length]:'#3a4552';
+    return '<div class="lx-ic">'+(dots?'<span class="dot" style="background:'+col+'"></span>':'')+'<div class="n"><b>'+esc(i.tk)+'</b><span>'+(i.tipo?i.tipo+(i.mon!=='ARS'?' · en dólares':'')+' · ':(i.mon!=='ARS'?'en dólares · ':''))+(i.venc?'vence '+i.venc:'')+'</span></div>'+
+      '<div class="r"><b>'+licAmt(i.mon,i.amt)+'</b><span>'+(ar?(pc<1?'<1':pc)+' % · ':'')+lxCorte(i.corte)+'</span></div></div>';
+  }).join('');
+}
+function licBarC(items,ars){
+  if(!(ars>0))return '';
+  var ci=0;
+  return '<div class="lx-bar">'+items.filter(function(i){return i.mon==='ARS'&&i.amt>0;}).map(function(i){return '<i style="width:'+(i.amt/ars*100).toFixed(2)+'%;background:'+LXC[ci++%LXC.length]+'"></i>';}).join('')+'</div>';
+}
+function licStepC(L,now){
+  var ab=now<L.fin,liq=!ab&&now<L.liqE,done=!ab&&!liq;
+  var st=function(cls,lab,dt){return '<div class="lx-s '+cls+'"><u></u><b>'+lab+'</b>'+(dt||'')+'</div>';};
+  return '<div class="lx-step">'+st(ab?'cur':'ok',ab?'Licita':'Licitó',dmy(L.day))+st(done?'ok':liq?'cur':'',done?'Liquidó':'Liquida',dmy(L.liq))+st(done?'cur ok':'','Cerrada','')+'</div>';
+}
+function licMobileC(L,now){
+  var pes=L.ars>0?nf(2).format(L.ars/1e12)+'<small>billones</small>':'<span class="mu">—</span>',us=L.usd>0?nf(0).format(L.usd/1e6)+'<small>M USD</small>':'<span class="mu">—</span>';
+  return licStepC(L,now)+(L.conv?'<div class="lx-cv">Conversión · canje de deuda</div>':'')+
+    '<div class="lx-tot"><div><div class="k">Pesos</div><div class="v">'+pes+'</div></div><div><div class="k">Dólares</div><div class="v">'+us+'</div></div></div>'+
+    licBarC(L.items,L.ars)+licItemsC(L.items,L.ars,true);
+}
 function renderLic(){
   var box=$('#c-lic'),hd=$('#h-lic'),st=$('#s-lic'),nb=$('#c-licn'),hb=$('#c-lich');
   if(!box)return;
@@ -1095,7 +1145,7 @@ function renderLic(){
     hd.textContent=(s[0]==='Cerrada'||P.now>=L.liqE?'liquidó ':'liquida ')+dmy(L.liq);
     var nx=N?'<span class="lst nx">'+(licState(N,P.now)[0]==='Abierta'?'Hoy':'Próxima')+'</span><b>'+N.day.slice(8,10)+'/'+N.day.slice(5,7)+'/'+N.day.slice(0,4)+'</b>':'<span class="mut">Sin próxima licitación informada</span>';
     box.innerHTML='<div class="lic-d"><div class="lbd"><div class="lL"><div class="lk">'+lab+'</div><div class="lbig">'+b.big+'</div><div class="lun">'+b.unit+'</div><div class="lsec">'+b.sec+'</div></div><div class="lR">'+licTable(L.items,4)+'</div></div><div class="lnx">'+nx+'</div></div>'+
-      '<div class="lic-m"><div class="lh0"><div><div class="lk">'+lab+' · liquida '+dmy(L.liq)+'</div><div class="lbig">'+b.big+' <span class="mut" style="font-size:14px;font-weight:600">'+b.unit+'</span></div></div><div style="text-align:right"><b style="font-size:16px">'+b.sec+'</b></div></div>'+licTable(L.items)+'</div>';
+      '<div class="lic-m">'+licMobileC(L,P.now)+'</div>';
   }else{
     st.textContent='';st.className='lst';hd.textContent='';
     box.innerHTML='<div class="empty">Sin licitaciones del Ministerio en los últimos 90 días</div>';
@@ -1103,13 +1153,13 @@ function renderLic(){
   /* próxima (mobile) */
   if(N){
     var dd=diffDays(today,N.day),when=dd<=0?'hoy':dd===1?'mañana':'en '+dd+' días';
-    nb.innerHTML='<div class="lnx2"><div><b>'+N.day.slice(8,10)+'/'+N.day.slice(5,7)+'/'+N.day.slice(0,4)+'</b><small>Liquidación '+dmy(N.liq)+' · '+(N.items.length?N.items.map(function(i){return esc(i.tk);}).join(' · '):'títulos a confirmar')+'</small></div><span class="lst nx">'+when+'</span></div>'+
-      (P.fut.length?'<div class="mut" style="font-size:12.5px;margin-top:8px">Cronograma: '+P.fut.map(function(g){return dmy(g.day);}).join(' · ')+'</div>':'');
+    nb.innerHTML='<div class="lx-nx"><div><div class="d">'+N.day.slice(8,10)+'/'+N.day.slice(5,7)+'/'+N.day.slice(0,4)+'</div><div class="mu">Liquida '+dmy(N.liq)+' · '+(N.items.length?N.items.map(function(i){return esc(i.tk);}).join(' · '):'títulos a confirmar')+'</div></div><span class="lst nx">'+when+'</span></div>'+
+      (P.fut.length?'<div class="lx-chips">'+P.fut.map(function(g){return '<span>'+dmy(g.day)+'</span>';}).join('')+'<em>cronograma</em></div>':'');
   }else nb.innerHTML='<div class="empty">Sin próxima licitación informada</div>';
   /* anteriores (mobile) */
-  hb.innerHTML=P.prev.length?P.prev.map(function(g){
-    var big=g.ars>0?'$ '+nf(2).format(g.ars/1e12)+' bi':'',us=g.usd>0?'USD '+nf(0).format(g.usd/1e6)+' M':'';
-    return '<details class="lh"><summary><b>'+dmy(g.day)+'</b><span class="m">'+(g.conv?'Conversión':g.items.length+' títulos')+'</span><span class="r">'+big+'</span><span class="r">'+us+'</span></summary>'+licTable(g.items)+'</details>';
+  hb.innerHTML=P.prev.length?'<div class="lx-hd"><span>Fecha</span><span></span><span>Pesos</span><span>Dólares</span><span></span></div>'+P.prev.map(function(g){
+    var big=g.ars>0?'$ '+nf(2).format(g.ars/1e12)+' bi':'—',us=g.usd>0?'USD '+nf(0).format(g.usd/1e6)+' M':'—';
+    return '<details class="lh"><summary><b>'+dmy(g.day)+'</b><span class="m">'+(g.conv?'Conversión':g.items.length+' títulos')+'</span><span class="r">'+big+'</span><span class="r">'+us+'</span></summary>'+licItemsC(g.items,g.ars,false)+'</details>';
   }).join(''):'<div class="empty">Sin licitaciones anteriores</div>';
 }
 function popBuildLic(){
