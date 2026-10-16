@@ -65,14 +65,22 @@ tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 .logos{display:flex;gap:8px;flex:1;flex-wrap:wrap;min-width:0}
 .chip{padding:6px 12px;border-radius:99px;background:#222a33;color:var(--ink);font-weight:600;font-size:14px;white-space:nowrap}
 .chip.me{background:var(--acc);color:#0b0d10}
-.tape{margin-top:auto;overflow:hidden;border-top:1px solid var(--line);padding-top:9px;min-height:30px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
-.trk{display:inline-flex;gap:34px;white-space:nowrap;animation:mq var(--dur,40s) linear infinite;padding-right:34px}
-.trk.still{animation:none}
-.trk span{font-size:13px;font-weight:600}
-.trk .u{color:var(--up)}.trk .d{color:var(--dn)}.trk .e{color:var(--acc)}
-.trk i{font-style:normal;color:var(--mut);font-weight:500}
-@keyframes mq{to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){.trk{animation:none}}
+.tape{margin-top:auto;border-top:1px solid var(--line);padding-top:9px;min-height:30px}
+.evh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}.evh b{font-size:13px}.evh span{font-size:11.5px;color:var(--mut)}
+.evb{position:relative;height:46px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.evr{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;height:44px;opacity:1;transform:none;transition:opacity .3s ease,transform .36s cubic-bezier(.2,.8,.2,1)}
+.evr.out{opacity:0;transform:translateY(-10px);transition-duration:.24s;transition-timing-function:ease-in}
+.evr.in{opacity:0;transform:translateY(12px);transition:none}
+.evr .ic{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;flex:none;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.evr.in .ic{transform:scale(.4)}
+.evr .tx{flex:1;min-width:0}.evr .tx b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.evr .tx span{display:block;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evr .tm{font-size:11.5px;color:var(--mut);white-space:nowrap;text-align:right}
+.evr.u .ic{color:var(--up);background:rgba(31,178,106,.16)}.evr.d .ic{color:var(--dn);background:rgba(229,72,77,.16)}.evr.e .ic{color:var(--acc);background:rgba(111,177,224,.16)}
+.evp{height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:2px}.evp i{display:block;height:100%;width:0;background:var(--acc);opacity:.7}
+.evp.go i{animation:evp var(--dw,5s) linear forwards}
+@keyframes evp{to{width:100%}}
+.evn{color:var(--mut);font-size:13px;padding:4px 0}
+@media (prefers-reduced-motion:reduce){.evr,.evr .ic{transition:none}.evp.go i{animation:none;width:0}}
 /* FCI */
 .fr{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .fr:first-of-type{border-top:0}
@@ -337,7 +345,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-16.5';
+var VER='2026-10-16.6';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -888,18 +896,41 @@ function renderRates(){
   }).join('');
 }
 function chipHTML(b){return '<span class="chip'+(b.me?' me':'')+'">'+esc(b.name)+'</span>';}
-var lastTape='';
+var lastTape='',evT=null,evI=0,EVDW=5000;
+function evDay(t){var d=new Date(t),n=new Date(),y=new Date(n.getTime()-864e5);
+  if(d.toDateString()===n.toDateString())return 'hoy '+hhmm(t);
+  if(d.toDateString()===y.toDateString())return 'ayer '+hhmm(t);
+  return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+' '+hhmm(t);}
+function evView(e){var x=String(e.x),k=e.k,ic='•';
+  if(x.charAt(0)==='▲'){ic='▲';x=x.slice(2);k='u';}
+  else if(x.charAt(0)==='▼'){ic='▼';x=x.slice(2);k='d';}
+  else if(/^Entr/.test(x)){ic='+';k='e';}
+  else if(/^Sali/.test(x)){ic='−';k='d';}
+  return {k:k,ic:ic,t:x,s:e.i,w:evDay(e.t)};}
+function evFill(row,e){var v=evView(e);row.className='evr '+v.k;
+  row.innerHTML='<span class="ic">'+v.ic+'</span><div class="tx"><b>'+esc(v.t)+'</b><span>'+esc(v.s)+'</span></div><span class="tm" title="Hora en que el tablero detectó el cambio">'+esc(v.w)+'</span>';}
+function evProg(on){var p=$('#evp');if(!p)return;p.className='evp';if(on){void p.offsetWidth;p.className='evp go';}}
+function evShow(i,animate){
+  var row=$('#evr'),n=$('#evn');if(!row||!EV.length)return;
+  evI=(i+EV.length)%EV.length;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var swap=function(){evFill(row,EV[evI]);if(n)n.textContent=(evI+1)+' / '+EV.length;
+    if(!animate||reduce){evProg(EV.length>1);return;}
+    row.className+=' in';void row.offsetWidth;row.className=row.className.replace(' in','');evProg(EV.length>1);};
+  if(animate&&!reduce){row.className+=' out';setTimeout(swap,240);}else swap();
+}
+function evLoop(){clearTimeout(evT);if(EV.length<2)return;evT=setTimeout(function(){if(!document.hidden)evShow(evI+1,true);evLoop();},EVDW);}
 function renderTape(){
   var el=$('#tape');
-  if(!PF.groups){el.innerHTML='';lastTape='';return;}
-  var html;
-  if(!EV.length)html='<div class="trk still"><span class="mut">Sin cambios en el ranking</span></div>';
-  else{
-    var items=EV.map(function(e){return '<span class="'+e.k+'">'+esc(e.x)+' <i>'+esc(e.i)+' · '+hhmm(e.t)+'</i></span>';}).join('');
-    html='<div class="trk" style="--dur:'+Math.max(25,EV.length*8)+'s">'+items+items+'</div>';
-  }
-  if(html!==lastTape){el.innerHTML=html;lastTape=html;} /* no reinicia la animación si no hay novedades */
+  if(!PF.groups){el.innerHTML='';lastTape='';clearTimeout(evT);return;}
+  var key=EV.map(function(e){return e.t+e.x;}).join('|');
+  if(key===lastTape)return; /* sin novedades: no se reinicia la animación */
+  lastTape=key;clearTimeout(evT);evI=0;
+  if(!EV.length){el.innerHTML='<div class="evn">Sin cambios en el ranking</div>';return;}
+  el.innerHTML='<div class="evh"><b>Últimos cambios</b><span id="evn"></span></div><div class="evb" id="evb"><div class="evr" id="evr"></div></div><div class="evp" id="evp"><i></i></div>';
+  evShow(0,false);evLoop();
 }
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#evb');if(b&&EV.length>1){evShow(evI+1,true);evLoop();}});
 function renderPF(){
   var box=$('#pf');
   if(!PF.groups){box.innerHTML='<div class="empty">'+(PF.err?'Sin respuesta del servicio de tasas':'Cargando…')+'</div>';renderTape();return;}
