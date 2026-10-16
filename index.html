@@ -125,7 +125,7 @@ tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 /* barra mín · último · máx */
 .rng{display:flex;align-items:center;gap:10px;margin-top:8px}
 .rng b{font-size:15px;white-space:nowrap}
-.rng .bar{flex:1;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--up),#c9a227 50%,var(--dn));position:relative;opacity:.85}
+.rng .bar{flex:1;height:8px;border-radius:99px;position:relative}.rng .bar svg{display:block;width:100%;height:100%;border-radius:99px}
 .rng .bar i{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--bg);box-shadow:0 0 0 1px #fff;transform:translate(-50%,-50%)}
 .rln{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:2px}
 /* botón de actualizar */
@@ -252,6 +252,16 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 @media (min-width:1880px){.cau2 .cap2{display:none}}
 @media (max-width:900px){.cau2 .hd{flex-wrap:wrap;gap:6px 8px}.cau2 .sp2 svg,.cau2 .sp2 .nod{height:44px}.cau2{gap:6px}.cau2 .big{font-size:30px!important}}
 .cau2 .cap2{color:var(--mut);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* encabezado de tarjeta (celular): título protagonista, subtítulo debajo, contador y botón siempre visibles */
+@media (max-width:900px){
+  .card h2{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;row-gap:1px;font:700 16px system-ui,sans-serif;letter-spacing:0;text-transform:none;color:var(--ink);white-space:normal;margin-bottom:8px}
+  .card h2 i:not(.go),.card.half h2 i:not(.go){display:block;grid-column:1/-1;grid-row:2;margin:0;font:500 11.5px system-ui,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card h2 .ctl{grid-column:2;grid-row:1}
+  .card h2 .go{grid-column:2;grid-row:1;margin:0;color:var(--mut)}
+  .card.lic h2{grid-template-columns:minmax(0,1fr) auto auto;column-gap:8px}
+  .card.lic h2 .lst{grid-column:2;grid-row:1}.card.lic h2 .ctl{grid-column:3}
+  #h-lic{display:none!important}
+}
 /* Home (solo celular) */
 .hm{cursor:pointer}.hm h2 .go{font-style:normal;font-size:16px;opacity:.55;letter-spacing:0}
 .hmst{background:transparent!important;border:0!important;padding:0 4px!important;min-height:0}
@@ -300,8 +310,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="may" class="card full" data-tab="dolar"><h2>Dólar mayorista <i id="h-may">Com. A 3500</i></h2><div class="stat" id="c-may"></div></section>
     <section data-src="fx" class="card half hl" data-tab="dolar"><h2>Dólar MEP <i>AL30</i></h2><div class="stat" id="c-mep"></div></section>
     <section data-src="fx" class="card half hr" data-tab="dolar"><h2>Dólar CCL <i>mediana</i></h2><div class="stat" id="c-ccl"></div></section>
-    <section data-src="cau" class="card half hl" data-tab="tasas"><h2>Tasa de caución <i id="h-cau">TNA</i></h2><div class="stat" id="c-cau"></div></section>
-    <section data-src="pf" class="card half hr" data-tab="tasas"><h2>PF Web · Meridian <i>sin relación</i></h2><div class="stat" id="c-pfw"></div></section>
+    <section data-src="cau" class="card half hl" data-tab="tasas"><h2>Caución <i id="h-cau">TNA</i></h2><div class="stat" id="c-cau"></div></section>
+    <section data-src="pf" class="card half hr" data-tab="tasas"><h2>Plazo fijo <i>Web · Meridian · sin relación</i></h2><div class="stat" id="c-pfw"></div></section>
     <section data-src="lic" data-bs="-1" class="card lic" data-tab="lic"><h2>Licitación tesoro <span class="lst" id="s-lic"></span><i id="h-lic"></i></h2><div class="stat" id="c-lic"></div></section>
     <section class="card mobonly" data-tab="lic"><h2>Próxima licitación</h2><div id="c-licn"></div></section>
     <section class="card mobonly" data-tab="lic"><h2>Licitaciones anteriores <i>últimos 90 días</i></h2><div id="c-lich"></div></section>
@@ -327,7 +337,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-16.4';
+var VER='2026-10-16.5';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -788,9 +798,12 @@ function statHTML(val,pillHTML,m1,m2,extra){
   return '<div class="hd"><div class="big">'+val+'</div>'+pillHTML+'</div><div class="mm"><div><b>'+m1[0]+'</b>'+m1[1]+'</div><div><b>'+m2[0]+'</b>'+m2[1]+'</div>'+(extra||'')+'</div>';
 }
 function na(){return '<div class="empty">Sin datos</div>';}
+var RGN=0;
 function rangeBar(last,mn,mx){
-  var pct=mx>mn?Math.max(0,Math.min(100,(last-mn)/(mx-mn)*100)):50;
-  return '<div class="rng" title="Último '+nf(2).format(last)+'"><b>'+nf(2).format(mn)+'</b><div class="bar"><i style="left:'+pct.toFixed(1)+'%"></i></div><b>'+nf(2).format(mx)+'</b></div>'+
+  var pct=mx>mn?Math.max(0,Math.min(100,(last-mn)/(mx-mn)*100)):50,id='rg'+(++RGN);
+  /* degradé en SVG: el CSS de un elemento ancho lo oscurece el modo oscuro forzado del móvil */
+  var g='<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="'+id+'"><stop offset="0" stop-color="#1fb26a"/><stop offset=".5" stop-color="#c9a227"/><stop offset="1" stop-color="#e5484d"/></linearGradient></defs><rect width="100" height="8" fill="url(#'+id+')"/></svg>';
+  return '<div class="rng" title="Último '+nf(2).format(last)+'"><b>'+nf(2).format(mn)+'</b><div class="bar">'+g+'<i style="left:'+pct.toFixed(1)+'%"></i></div><b>'+nf(2).format(mx)+'</b></div>'+
     '<div class="rln"><span>Mín.</span><span>Máx.</span></div>';
 }
 function sparkSVG(pts,prev,k,tight){
