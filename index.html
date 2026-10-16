@@ -289,7 +289,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.4';
+var VER='2026-10-15.5';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -366,7 +366,7 @@ var MAE_PROXY_FOR='https://winter-wildflower-5f5f.sveltri75.workers.dev/FOR',MAE
 var MAE_FOR=[MAE_PROXY_FOR,'https://api.marketdata.mae.com.ar/api/mercado/datos/FOR'].filter(Boolean);
 var MAE_CAU=[MAE_PROXY_CAU,'https://api.marketdata.mae.com.ar/api/mercado/datos/CAU'].filter(Boolean);
 var MAE_PROXY_GRAF='https://winter-wildflower-5f5f.sveltri75.workers.dev/GRAFICO';
-var MAE_GRAF=[MAE_PROXY_GRAF,'https://api.marketdata.mae.com.ar/api/mercado/datosgrafico'].filter(Boolean);
+var MAE_GRAF=[MAE_PROXY_GRAF]; /* MAE no permite CORS: directo desde el navegador siempre falla, así que solo por el Worker */
 /* Histórico diario: se usa cuando 'datos/FOR' o 'datos/CAU' vienen vacíos (pasado el mediodía y hasta la apertura siguiente). */
 var MAE_W='https://winter-wildflower-5f5f.sveltri75.workers.dev/';
 var MAE_HF='https://api.marketdata.mae.com.ar/api/mercado/titulo/historicoforex',MAE_HC='https://api.marketdata.mae.com.ar/api/mercado/titulo/historicocauciones';
