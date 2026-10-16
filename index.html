@@ -342,7 +342,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-16.8';
+var VER='2026-10-16.9';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1089,18 +1089,29 @@ function licItems(rows){
   return a;
 }
 function licBuild(all){
-  var g={},keys=[];
+  var g={},keys=[],okLiq={};
+  /* una liquidación anterior a la apertura es un error de carga: se toma la de las entradas coherentes que abren el mismo día */
+  all.forEach(function(x){
+    if(validIso(x.fechaLiquidacion)&&validIso(x.fechaInicio)&&Date.parse(x.fechaLiquidacion)>=Date.parse(x.fechaInicio)-86400000)okLiq[licDay(x.fechaInicio)]=x.fechaLiquidacion;
+  });
   all.forEach(function(x){
     if(!/^MINISTERIO DE ECONOM[IÍ]A$/.test(String(x.emisor||'').trim().toUpperCase()))return;
     if(!validIso(x.fechaLiquidacion)||!validIso(x.fechaInicio)||!validIso(x.fechaFin))return;
+    if(Date.parse(x.fechaLiquidacion)<Date.parse(x.fechaInicio)-86400000){
+      var fx=okLiq[licDay(x.fechaInicio)];if(!fx)return;
+      x=JSON.parse(JSON.stringify(x));x.fechaLiquidacion=fx;
+    }
     var k=licDay(x.fechaLiquidacion);if(!g[k]){g[k]={liq:k,real:[],ph:[]};keys.push(k);}
     (/CRONOGRAMA DE LICITACIONES/i.test(x.titulo||'')?g[k].ph:g[k].real).push(x);
   });
   return keys.sort().map(function(k){
     var o=g[k],src=o.real.length?o.real:o.ph,ini=Infinity,fin=0,liqE=0,day='';
-    src.forEach(function(x){var a=Date.parse(x.fechaInicio),b=Date.parse(x.fechaFin);if(a<ini)ini=a;if(b>fin)fin=b;liqE=Math.max(liqE,Date.parse(x.fechaLiquidacion)+LIQ_H*3600000);});
+    /* una fecha sin hora real (00:00 de Argentina) no marca el cierre: se ignora si hay entradas con hora; y ninguna licitación sigue abierta después de su liquidación */
+    var dateOnly=function(x){return (Date.parse(x.fechaFin)-180*60000)%86400000===0;},realFin=src.some(function(x){return !dateOnly(x);});
+    src.forEach(function(x){var a=Date.parse(x.fechaInicio),b=Date.parse(x.fechaFin);if(a<ini)ini=a;if(b>fin&&!(realFin&&dateOnly(x)))fin=b;liqE=Math.max(liqE,Date.parse(x.fechaLiquidacion)+LIQ_H*3600000);});
     var d0=licDay(new Date(Math.min.apply(null,src.map(function(x){return Date.parse(x.fechaFin);}))).toISOString());
     if(!o.real.length)fin=ini+86400000-1;
+    else if(fin>liqE)fin=liqE;
     var items=licItems(o.real);
     return {liq:k,day:d0,ini:ini,fin:fin,liqE:liqE,items:items,conv:o.real.length>0&&o.real.every(function(x){return /CONVERSI/i.test(x.titulo||'');}),
       ars:items.filter(function(i){return i.mon==='ARS';}).reduce(function(a,i){return a+i.amt;},0),
