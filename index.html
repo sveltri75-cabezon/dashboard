@@ -342,7 +342,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-16.7';
+var VER='2026-10-16.8';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1033,6 +1033,7 @@ function renderAll(){
 /* ---------- licitaciones del Tesoro (MAE): una sola lectura al cargar ---------- */
 var LIC_BASE='https://api.marketdata.mae.com.ar/api/mercado/licitacionesporestado/Todos';
 var LIC_W='https://winter-wildflower-5f5f.sveltri75.workers.dev/LICIT';
+var LIQ_H=9; /* hora argentina del día de liquidación a partir de la cual la liquidación se considera efectuada (la fecha del MAE viene como 00:00 de Argentina) */
 var LIC_DAYS=89; /* el MAE no deja consultar más de 90 días */
 var LIC={groups:null,err:false};
 var MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -1097,7 +1098,7 @@ function licBuild(all){
   });
   return keys.sort().map(function(k){
     var o=g[k],src=o.real.length?o.real:o.ph,ini=Infinity,fin=0,liqE=0,day='';
-    src.forEach(function(x){var a=Date.parse(x.fechaInicio),b=Date.parse(x.fechaFin);if(a<ini)ini=a;if(b>fin)fin=b;liqE=Math.max(liqE,Date.parse(x.fechaLiquidacion)+86400000);});
+    src.forEach(function(x){var a=Date.parse(x.fechaInicio),b=Date.parse(x.fechaFin);if(a<ini)ini=a;if(b>fin)fin=b;liqE=Math.max(liqE,Date.parse(x.fechaLiquidacion)+LIQ_H*3600000);});
     var d0=licDay(new Date(Math.min.apply(null,src.map(function(x){return Date.parse(x.fechaFin);}))).toISOString());
     if(!o.real.length)fin=ini+86400000-1;
     var items=licItems(o.real);
