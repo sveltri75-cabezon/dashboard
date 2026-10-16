@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Prueba de barras</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0d10;--card:#14181d;--line:#222831;--ink:#eef2f6;--mut:#8b97a4;--up:#1fb26a;--dn:#e5484d}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 system-ui,sans-serif;padding:16px}
+h1{font-size:17px;margin:0 0 4px}p{color:var(--mut);margin:0 0 14px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.t{font-weight:700;margin-bottom:8px}.t small{font-weight:400;color:var(--mut);margin-left:6px}
+.rng{display:flex;align-items:center;gap:10px}.rng b{font-size:15px;white-space:nowrap}
+.bar{flex:1;height:8px;border-radius:99px;position:relative}
+.bar i{position:absolute;top:50%;left:30%;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--bg);box-shadow:0 0 0 1px #fff;transform:translate(-50%,-50%)}
+.bar svg,.bar canvas,.bar img{display:block;width:100%;height:8px;border-radius:99px}
+.css{background:linear-gradient(90deg,var(--up),#c9a227 50%,var(--dn))}
+.sw{display:flex;gap:6px;margin-top:8px}.sw span{width:44px;height:14px;border-radius:4px}
+</style></head><body>
+<h1>Prueba de barras</h1>
+<p>Cada barra debería verse con el mismo degradé que la referencia (verde → ámbar → rojo, colores vivos). Decime cuáles se ven apagadas u oscuras.</p>
+<div class="card"><div class="t">Referencia<small>cuadros chicos de color sólido</small></div>
+<div class="sw"><span style="background:#1fb26a"></span><span style="background:#c9a227"></span><span style="background:#e5484d"></span></div></div>
+<div class="card"><div class="t">1 · CSS<small>como está hoy</small></div><div class="rng"><b>1.512</b><div class="bar css"><i></i></div><b>1.515</b></div></div>
+<div class="card"><div class="t">2 · SVG con degradé</div><div class="rng"><b>1.512</b><div class="bar"><svg viewBox="0 0 100 8" preserveAspectRatio="none"><defs><linearGradient id="g2"><stop offset="0" stop-color="#1fb26a"/><stop offset=".5" stop-color="#c9a227"/><stop offset="1" stop-color="#e5484d"/></linearGradient></defs><rect width="100" height="8" fill="url(#g2)"/></svg><i></i></div><b>1.515</b></div></div>
+<div class="card"><div class="t">3 · SVG en segmentos<small>24 bloques de color sólido</small></div><div class="rng"><b>1.512</b><div class="bar"><svg id="seg" viewBox="0 0 96 8" preserveAspectRatio="none"></svg><i></i></div><b>1.515</b></div></div>
+<div class="card"><div class="t">4 · Canvas</div><div class="rng"><b>1.512</b><div class="bar"><canvas id="cv" width="300" height="8"></canvas><i></i></div><b>1.515</b></div></div>
+<div class="card"><div class="t">5 · Imagen<small>SVG como imagen</small></div><div class="rng"><b>1.512</b><div class="bar"><img id="im" alt=""><i></i></div><b>1.515</b></div></div>
+<script>
+(function(){
+  function mix(a,b,t){return Math.round(a+(b-a)*t);}
+  function col(t){var A=[31,178,106],B=[201,162,39],C=[229,72,77],f,s;if(t<.5){f=A;s=B;t=t/.5;}else{f=B;s=C;t=(t-.5)/.5;}return 'rgb('+mix(f[0],s[0],t)+','+mix(f[1],s[1],t)+','+mix(f[2],s[2],t)+')';}
+  var r='',i;for(i=0;i<24;i++)r+='<rect x="'+(i*4)+'" width="4.05" height="8" fill="'+col(i/23)+'"/>';
+  document.getElementById('seg').innerHTML=r;
+  var c=document.getElementById('cv'),x=c.getContext('2d'),g=x.createLinearGradient(0,0,300,0);g.addColorStop(0,'#1fb26a');g.addColorStop(.5,'#c9a227');g.addColorStop(1,'#e5484d');x.fillStyle=g;x.fillRect(0,0,300,8);
+  var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 8" preserveAspectRatio="none"><defs><linearGradient id="g"><stop offset="0" stop-color="#1fb26a"/><stop offset=".5" stop-color="#c9a227"/><stop offset="1" stop-color="#e5484d"/></linearGradient></defs><rect width="100" height="8" fill="url(#g)"/></svg>';
+  document.getElementById('im').src='data:image/svg+xml;utf8,'+encodeURIComponent(s);
+})();
+</script></body></html>
