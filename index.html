@@ -289,7 +289,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.3';
+var VER='2026-10-15.4';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -442,12 +442,18 @@ function loadMAE(){
   }).then(function(m){S.mae=m;pushHist('mae',m.last);return loadIntra().catch(function(){});},function(e){console.warn('MAE FOR:',e.message);throw e;});
 }
 /* Serie intradiaria del mayorista: [{time (hora local escrita como UTC), value}] → un punto por minuto, en minutos desde la medianoche. */
-function grafURL(base,tk,date){
-  return base+'?oTitulo='+encodeURIComponent(JSON.stringify({plazo:'000',segmento:'M',moneda:'T',tipoFecha:'D',fecha:date+'T00:00:00',fechaHasta:addDays(date,1),codTitulo:tk}));
+/* Forma que usa la propia web del MAE: fecha, fechaLiquidacion y fechaHasta con el mismo día (sin hora). La anterior queda de respaldo. */
+function grafURL(base,tk,date,old){
+  var o=old?{plazo:'000',segmento:'M',moneda:'T',tipoFecha:'D',fecha:date+'T00:00:00',fechaHasta:addDays(date,1),codTitulo:tk}
+            :{plazo:'000',moneda:'T',tipoFecha:'D',fecha:date,fechaLiquidacion:date,fechaHasta:date,segmento:'M',codTitulo:tk};
+  return base+'?oTitulo='+encodeURIComponent(JSON.stringify(o));
 }
-function grafURLc(base,c,date){
+function grafURLs(fn,a,b,date){var r=[];[false,true].forEach(function(old){MAE_GRAF.forEach(function(base){r.push(fn(base,a,b,date,old));});});return r;}
+function grafURLc(base,c,date,old){
   var pl=String(Math.max(0,Math.round(c.plazo||1)));while(pl.length<3)pl='0'+pl;
-  return base+'?oTitulo='+encodeURIComponent(JSON.stringify({plazo:pl,segmento:c.seg||'K',moneda:c.mon||'$',tipoFecha:'D',fecha:date+'T00:00:00',fechaHasta:addDays(date,1),codTitulo:c.tk||'CAARS'}));
+  var o=old?{plazo:pl,segmento:c.seg||'K',moneda:c.mon||'$',tipoFecha:'D',fecha:date+'T00:00:00',fechaHasta:addDays(date,1),codTitulo:c.tk||'CAARS'}
+            :{plazo:pl,moneda:c.mon||'$',tipoFecha:'D',fecha:date,fechaLiquidacion:date,fechaHasta:date,segmento:c.seg||'K',codTitulo:c.tk||'CAARS'};
+  return base+'?oTitulo='+encodeURIComponent(JSON.stringify(o));
 }
 function pickIntra(j){
   var by={},ks=[];
@@ -467,7 +473,7 @@ function loadIntra(){
   function next(){
     if(k>=cands.length){S.intra={tk:m.tk,date:d0,pts:[]};S.intraT=Date.now();return;}
     var date=cands[k++];
-    return firstJSON(MAE_GRAF.map(function(b){return grafURL(b,m.tk,date);}),function(j){return j&&Array.isArray(j.precios);}).then(function(j){
+    return firstJSON(grafURLs(function(b,tk,x,d,old){return grafURL(b,tk,d,old);},m.tk,null,date),function(j){return j&&Array.isArray(j.precios);}).then(function(j){
       var pts=pickIntra(j);
       if(!pts.length)return next();
       S.intra={tk:m.tk,date:date,pts:pts};S.intraT=Date.now();
@@ -490,7 +496,7 @@ function loadIntraCau(){
   function next(){
     if(k>=cands.length){S.intraC={key:key,date:d0,pts:[]};S.intraCT=Date.now();return;}
     var date=cands[k++];
-    return firstJSON(MAE_GRAF.map(function(b){return grafURLc(b,c,date);}),function(j){return j&&Array.isArray(j.precios);}).then(function(j){
+    return firstJSON(grafURLs(function(b,cc,x,d,old){return grafURLc(b,cc,d,old);},c,null,date),function(j){return j&&Array.isArray(j.precios);}).then(function(j){
       var pts=pickIntra(j);
       if(!pts.length)return next();
       S.intraC={key:key,date:date,pts:pts};S.intraCT=Date.now();
