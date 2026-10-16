@@ -242,6 +242,16 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 #rates .row .sp svg{display:block;width:100%;height:30px}
 #rates .row .p{flex:0 0 auto;min-width:84px}#rates .row .pill{flex:0 0 auto;min-width:66px;text-align:center}
 @media (max-width:900px){#rates .row{gap:8px}#rates .row .p{min-width:80px}#rates .row .p b{font-size:18px}#rates .row .pill{min-width:64px;padding:3px 6px}}
+/* caución: mismo estilo que el mayorista, compacto para la tarjeta chica */
+.cau2{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0}
+.cau2 .hd{margin:0}
+.cau2 .sp2 svg{display:block;width:100%;height:34px}.cau2 .sp2 .nod{height:34px;display:grid;place-items:center;color:var(--mut);font-size:12px}
+.cau2 .rng{margin-top:3px;gap:7px}.cau2 .rng b{font-size:12.5px}.cau2 .rng .bar{height:6px}.cau2 .rng .bar i{width:13px;height:13px;border-width:2px}
+.cau2 .rln{display:none}
+.cau2 .hd{flex-wrap:nowrap;gap:8px;align-items:center}.cau2 .big{font-size:32px!important}.cau2 .pill{font-size:12px!important;padding:3px 8px;white-space:nowrap}
+@media (min-width:1880px){.cau2 .cap2{display:none}}
+@media (max-width:900px){.cau2 .hd{flex-wrap:wrap;gap:6px 8px}.cau2 .sp2 svg,.cau2 .sp2 .nod{height:44px}.cau2{gap:6px}.cau2 .big{font-size:30px!important}}
+.cau2 .cap2{color:var(--mut);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -279,7 +289,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 <script>
 (function(){
 'use strict';
-var VER='2026-10-15.2';
+var VER='2026-10-15.3';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -295,7 +305,7 @@ function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d'
 var SERIES=[{id:11,name:'BAIBAR'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
-var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,t:{bcra:0,pf:0}};
+var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,t:{bcra:0,pf:0}};
 
 /* ---------- red ---------- */
 function getJSON(url){
@@ -435,6 +445,10 @@ function loadMAE(){
 function grafURL(base,tk,date){
   return base+'?oTitulo='+encodeURIComponent(JSON.stringify({plazo:'000',segmento:'M',moneda:'T',tipoFecha:'D',fecha:date+'T00:00:00',fechaHasta:addDays(date,1),codTitulo:tk}));
 }
+function grafURLc(base,c,date){
+  var pl=String(Math.max(0,Math.round(c.plazo||1)));while(pl.length<3)pl='0'+pl;
+  return base+'?oTitulo='+encodeURIComponent(JSON.stringify({plazo:pl,segmento:c.seg||'K',moneda:c.mon||'$',tipoFecha:'D',fecha:date+'T00:00:00',fechaHasta:addDays(date,1),codTitulo:c.tk||'CAARS'}));
+}
 function pickIntra(j){
   var by={},ks=[];
   (j.precios||[]).forEach(function(x){var v=num(x.value),t=Number(x.time);if(!(v>0)||!isFinite(t))return;var m=Math.floor((t%86400)/60);if(!(m in by))ks.push(m);by[m]=v;});
@@ -461,6 +475,29 @@ function loadIntra(){
   }
   return next().catch(function(e){console.warn('MAE gráfico:',e.message);throw e;});
 }
+/* Serie intradía de la caución (mismo formato que forex): ticker, plazo, segmento y moneda salen de la propia fila del plazo más corto. */
+function loadIntraCau(){
+  var c=S.cau;if(!c)return Promise.resolve();
+  var key=(c.tk||'CAARS')+'|'+c.plazo,d0=sessionDate(),now=Date.now(),I=S.intraC;
+  if(I&&I.key===key){
+    var age=now-S.intraCT;
+    if(I.date===d0&&!isOpen('CAU')&&I.pts.length&&age<300000)return Promise.resolve();
+    if(I.date!==d0&&age<120000)return Promise.resolve();
+    if(!I.pts.length&&age<60000)return Promise.resolve();
+  }
+  var cands=[d0],d=d0;for(var i=0;i<3;i++){d=addDays(d,-1);while(!isBiz(d))d=addDays(d,-1);cands.push(d);}
+  var k=0;
+  function next(){
+    if(k>=cands.length){S.intraC={key:key,date:d0,pts:[]};S.intraCT=Date.now();return;}
+    var date=cands[k++];
+    return firstJSON(MAE_GRAF.map(function(b){return grafURLc(b,c,date);}),function(j){return j&&Array.isArray(j.precios);}).then(function(j){
+      var pts=pickIntra(j);
+      if(!pts.length)return next();
+      S.intraC={key:key,date:date,pts:pts};S.intraCT=Date.now();
+    });
+  }
+  return next().catch(function(e){console.warn('MAE gráfico caución:',e.message);S.intraC={key:key,date:d0,pts:[]};S.intraCT=Date.now();});
+}
 /* Caución en pesos (ticker CAARS): siempre el plazo más corto que informa el MAE (001 si mañana es hábil, 002 si no, etc.).
    Muestra la última tasa y la variación contra el cierre anterior. */
 function pickCAU(rows){
@@ -468,7 +505,10 @@ function pickCAU(rows){
   if(!rs.length)throw new Error('sin caución en pesos');
   rs.sort(function(a,b){return Number(fld(a,'plazo'))-Number(fld(b,'plazo'));});
   var r=rs[0],rate=num(fld(r,'ultimatasa')),prev=num(fld(r,'cierreanterior'));
-  return {plazo:Number(fld(r,'plazo')),rate:rate>0?rate:null,prev:prev>0?prev:null,fecha:fld(r,'fechaliquidacion')};
+  var mn=num(fld(r,'minimo')),mx=num(fld(r,'maximo'));
+  return {plazo:Number(fld(r,'plazo')),rate:rate>0?rate:null,prev:prev>0?prev:null,fecha:fld(r,'fechaliquidacion'),
+    tk:String(fld(r,'ticker')).trim().toUpperCase(),seg:String(fld(r,'codigosegmento')||'K'),mon:String(fld(r,'moneda')||'$'),
+    min:mn>0?mn:null,max:mx>0?mx:null};
 }
 /* Caución desde el histórico: último día con tasa en CAARS, plazo más corto; la variación es contra el día anterior. */
 function pickHistCau(rows){
@@ -484,7 +524,7 @@ function pickHistCau(rows){
   ds=ds.filter(function(d){return by[d];}).sort();
   if(!ds.length){if(rows[0])console.warn('MAE hist CAU: campos',Object.keys(rows[0]));throw new Error('histórico sin tasas de caución');}
   var L=by[ds[ds.length-1]],P=ds.length>1?by[ds[ds.length-2]]:null;
-  return {plazo:L.plazo,rate:L.rate,prev:P?P.rate:null,fecha:ds[ds.length-1],hist:true};
+  return {plazo:L.plazo,rate:L.rate,prev:P?P.rate:null,fecha:ds[ds.length-1],hist:true,tk:'CAARS',seg:'K',mon:'$',daily:ds.slice(-30).map(function(d){return by[d].rate;})};
 }
 function loadCAU(){
   return firstJSON(MAE_CAU).then(pickCAU).catch(function(e){return {plazo:1,rate:null,prev:null,fecha:null,err:e};}).then(function(c){
@@ -492,7 +532,7 @@ function loadCAU(){
     console.warn('MAE CAU sin tasa, uso histórico');
     if(S.hc&&Date.now()-S.hcT<600000)return S.hc;
     return histGet('HISTCAU',MAE_HC,false).then(pickHistCau).then(function(r){S.hc=r;S.hcT=Date.now();return r;},function(e){if(c.err)throw c.err;console.warn('MAE hist CAU:',e.message);return c;});
-  }).then(function(c){S.cau=c;},function(e){console.warn('MAE CAU:',e.message);throw e;});
+  }).then(function(c){S.cau=c;return loadIntraCau();},function(e){console.warn('MAE CAU:',e.message);throw e;});
 }
 
 /* ---------- acciones (data912) ---------- */
@@ -746,9 +786,19 @@ function fxCard(id,o,key){
 function renderCau(){
   var c=S.cau,box=$('#c-cau'),h=$('#h-cau');
   if(!c){h.textContent='TNA';box.innerHTML=na();return;}
-  h.textContent='Plazo '+c.plazo+(c.plazo===1?' día':' días')+' · TNA · '+((isOpen('CAU')&&!holidayGuess())?'Abierto':'Cerrado');
+  h.textContent='Plazo '+c.plazo+(c.plazo===1?' día':' días')+' · TNA'+(c.fecha?' · liq. '+fdate(String(c.fecha).slice(0,10)).slice(0,5):'')+' · '+((isOpen('CAU')&&!holidayGuess())?'Abierto':'Cerrado');
   if(!c.rate){box.innerHTML='<div class="hd"><div class="mk" style="margin-left:0">'+stateHTML('CAU')+'</div></div><div class="empty">Sin operaciones en el plazo más corto</div>';return;}
-  box.innerHTML=statHTML(nf(2).format(c.rate)+' %',c.prev?pillBps(c.rate-c.prev):'',[c.prev?nf(2).format(c.prev)+' %':'—','Cierre ant.'],[c.fecha?fdate(String(c.fecha).slice(0,10)).slice(0,5):'—','Liquida']);
+  var I=S.intraC&&S.intraC.key===((c.tk||'CAARS')+'|'+c.plazo)?S.intraC:null,pts=I&&I.pts.length>1?I.pts:null,today=arNow().date,mn=c.min,mx=c.max;
+  if(pts){var vs=pts.map(function(x){return x.v;});mn=mn||Math.min.apply(null,vs);mx=mx||Math.max.apply(null,vs);}
+  else if(c.daily&&c.daily.length>1){mn=mn||Math.min.apply(null,c.daily);mx=mx||Math.max.apply(null,c.daily);}
+  mn=mn?Math.min(mn,c.rate):null;mx=mx?Math.max(mx,c.rate):null;
+  var other=pts&&I.date!==today?fdate(I.date).slice(0,5):'';
+  var chart=pts?sparkSVG(pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'<div class="nod">Sin gráfico del día</div>');
+  var cap=pts?(other?'sesión '+other:null):(c.daily&&c.daily.length>1?'cierre '+fdate(String(c.fecha||'').slice(0,10)).slice(0,5)+' · '+c.daily.length+' días':null);
+  box.innerHTML='<div class="cau2"><div class="hd"><div class="big">'+nf(2).format(c.rate)+' %</div>'+(c.prev?pillBps(c.rate-c.prev):'')+'</div>'+
+    '<div class="sp2">'+chart+'</div>'+
+    (mn&&mx?rangeBar(c.rate,mn,mx):'')+
+    '<div class="cap2">'+(c.fecha?'Liquida '+fdate(String(c.fecha).slice(0,10)).slice(0,5):'')+(cap?' · '+cap:'')+'</div></div>';
 }
 function renderPFW(){
   var m=PF.me;
