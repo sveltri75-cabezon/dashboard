@@ -327,7 +327,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-16.2';
+var VER='2026-10-16.3';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1101,22 +1101,23 @@ function licPick(){
   return {last:last,nxt:nxt,fut:fut,prev:prev,now:now};
 }
 function diffDays(a,b){return Math.round((Date.UTC(+b.slice(0,4),+b.slice(5,7)-1,+b.slice(8,10))-Date.UTC(+a.slice(0,4),+a.slice(5,7)-1,+a.slice(8,10)))/86400000);}
-var LXC=['#6fb1e0','#1fb26a','#d9a441','#a78bfa','#2dd4bf'];
+function lxCol(i,n){var a=[156,203,240],b=[47,111,179],t=n>1?i/(n-1):0;return 'rgb('+a.map(function(v,k){return Math.round(v+(b[k]-v)*t);}).join(',')+')';}
+function lxN(items){return items.filter(function(i){return i.mon==='ARS'&&i.amt>0;}).length;}
 function lxCorte(c){var t=licCorteTxt(c);return t==='—'||t==='Desierta'?t:'corte '+t;}
 /* Filas de títulos (celular): punto de color = porción de la barra de pesos; los títulos en dólares quedan en gris. */
 function licItemsC(items,ars,dots){
-  var ci=0;
+  var ci=0,nn=lxN(items);
   return items.map(function(i){
-    var ar=i.mon==='ARS'&&ars>0,pc=ar?Math.round(i.amt/ars*100):0,col=ar?LXC[ci++%LXC.length]:'#3a4552';
+    var ar=i.mon==='ARS'&&ars>0,pc=ar?Math.round(i.amt/ars*100):0,col=ar?lxCol(ci++,nn):'#3a4552';
     return '<div class="lx-ic">'+(dots?'<svg class="dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="3" fill="'+col+'"/></svg>':'')+'<div class="n"><b>'+esc(i.tk)+'</b><span>'+(i.tipo?i.tipo+(i.mon!=='ARS'?' · en dólares':'')+' · ':(i.mon!=='ARS'?'en dólares · ':''))+(i.venc?'vence '+i.venc:'')+'</span></div>'+
       '<div class="r"><b>'+licAmt(i.mon,i.amt)+'</b><span>'+(ar?(pc<1?'<1':pc)+' % · ':'')+lxCorte(i.corte)+'</span></div></div>';
   }).join('');
 }
 function licBarC(items,ars){
   if(!(ars>0))return '';
-  var ci=0,x=0,r='';
+  var ci=0,x=0,r='',nn=lxN(items);
   items.filter(function(i){return i.mon==='ARS'&&i.amt>0;}).forEach(function(i){
-    var w=i.amt/ars*100;r+='<rect x="'+x.toFixed(2)+'" y="0" width="'+Math.max(w-.8,.6).toFixed(2)+'" height="10" fill="'+LXC[ci++%LXC.length]+'"/>';x+=w;
+    var w=i.amt/ars*100;r+='<rect x="'+x.toFixed(2)+'" y="0" width="'+Math.max(w-.8,.6).toFixed(2)+'" height="10" fill="'+lxCol(ci++,nn)+'"/>';x+=w;
   });
   return '<div class="lx-bar"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">'+r+'</svg></div>';
 }
