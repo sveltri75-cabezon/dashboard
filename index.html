@@ -123,6 +123,7 @@ tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 .mayo .mr{width:44%;max-width:210px;min-width:104px;text-align:right}
 .mayo svg{display:block;width:100%;height:54px}
 .mayo .cap{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px;color:var(--mut);font-size:12.5px;white-space:nowrap}
+.mayo.wait .big,.mayo.wait .mr svg{opacity:.45}.wtl{display:inline-block;padding:3px 9px;border-radius:7px;background:rgba(138,148,166,.16);color:var(--mut);font-weight:700;font-size:15px}.wdim{opacity:.45}.cau2.wait .big,.cau2.wait .sp2,.cau2.wait .rng{opacity:.45}.cau2 .wtl{font-size:13px;padding:2px 8px}
 .mayo .nod{height:54px;display:grid;place-items:center;color:var(--mut);font-size:12.5px}
 .dotp{animation:pd 1.8s ease-out infinite}
 @keyframes pd{0%{r:3.5}60%{r:8;opacity:.25}100%{r:3.5;opacity:1}}
@@ -342,7 +343,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-16.9';
+var VER='2026-10-19.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -437,6 +438,8 @@ function isOpen(k){var n=arNow(),s=SESS[k];return n.wd>0&&n.wd<6&&n.min>=s.o&&n.
 function sessionDate(){var n=arNow(),d=n.date;if(n.min<SESS.FOR.o)d=addDays(d,-1);while(!isBiz(d))d=addDays(d,-1);return d;}
 /* Feriado probable: el horario indica mercado abierto, pero el MAE no tiene datos de hoy (la última sesión con operaciones es otra). */
 function holidayGuess(){var I=S.intra,n=arNow();return !!(I&&I.pts.length&&I.date!==n.date&&n.min>=SESS.FOR.o+15&&n.wd>0&&n.wd<6);}
+/* Mercado abierto pero todavía sin operaciones del día: los datos son de la sesión anterior. */
+function waitSess(k,d){return !!(d&&isOpen(k)&&!holidayGuess()&&d!==arNow().date);}
 function stateHTML(k,extra){var on=isOpen(k)&&!holidayGuess();return '<span class="st'+(on?' on':'')+'">'+(on?'Abierto':'Cerrado')+'</span><small>'+(extra||SESS[k].txt)+'</small>';}
 function firstJSON(urls,ok){
   ok=ok||Array.isArray;
@@ -838,8 +841,9 @@ function renderMay(){
     var h=S.hist.mae,first=m.prev||(h.length>1?h[0].v:m.last),I=S.intra,today=arNow().date;
     $('#h-may').textContent='MAE · '+m.tk;box.removeAttribute('data-bs');
     var other=I&&I.date&&I.date!==today&&I.pts.length?fdate(I.date).slice(0,5):'';
-    box.innerHTML='<div class="mayo"><div class="ml"><div class="big">'+nf(2).format(m.last)+'</div><div>'+(first!==m.last||m.prev?pill((m.last/first-1)*100):'')+'</div></div>'+
-      '<div class="mr">'+((I&&I.tk===m.tk&&I.pts.length>1)||!m.daily?sparkSVG(I&&I.tk===m.tk?I.pts:null,m.prev,'FOR'):sparkDaily(m.daily))+'<div class="cap">'+stateHTML('FOR',(I&&I.tk===m.tk&&I.pts.length>1)||!m.daily?(other?'sesión '+other:null):'cierre '+fdate(m.date).slice(0,5)+' · '+m.daily.length+' días').replace('<small>','<span>').replace('</small>','</span>')+'</div></div></div>'+rangeBar(m.last,m.min,m.max);
+    var dd=(I&&I.tk===m.tk&&I.pts.length)?I.date:m.date,wt=waitSess('FOR',dd);
+    box.innerHTML='<div class="mayo'+(wt?' wait':'')+'"><div class="ml"><div class="big">'+nf(2).format(m.last)+'</div><div>'+(wt?'<span class="wtl">Cierre '+fdate(dd).slice(0,5)+'</span>':(first!==m.last||m.prev?pill((m.last/first-1)*100):''))+'</div></div>'+
+      '<div class="mr">'+((I&&I.tk===m.tk&&I.pts.length>1)||!m.daily?sparkSVG(I&&I.tk===m.tk?I.pts:null,m.prev,'FOR'):sparkDaily(m.daily))+'<div class="cap">'+stateHTML('FOR',wt?'sin operar aún':(I&&I.tk===m.tk&&I.pts.length>1)||!m.daily?(other?'sesión '+other:null):'cierre '+fdate(m.date).slice(0,5)+' · '+m.daily.length+' días').replace('<small>','<span>').replace('</small>','</span>')+'</div></div></div>'+(wt?'<div class="wdim">'+rangeBar(m.last,m.min,m.max)+'</div>':rangeBar(m.last,m.min,m.max));
     return;
   }
   $('#h-may').textContent='Com. A 3500';box.setAttribute('data-bs',MAYORISTA_ID);
@@ -866,10 +870,11 @@ function renderCau(){
   var other=pts&&I.date!==today?fdate(I.date).slice(0,5):'';
   var chart=pts?sparkSVG(pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'<div class="nod">Sin gráfico del día</div>');
   var cap=pts?(other?'sesión '+other:null):(c.daily&&c.daily.length>1?'cierre '+fdate(String(c.fecha||'').slice(0,10)).slice(0,5)+' · '+c.daily.length+' días':null);
-  box.innerHTML='<div class="cau2"><div class="hd"><div class="big">'+nf(2).format(c.rate)+' %</div>'+(c.prev?pillBps(c.rate-c.prev):'')+'</div>'+
+  var dd=pts?I.date:(c.hist?String(c.fecha||'').slice(0,10):''),wt=waitSess('CAU',dd);
+  box.innerHTML='<div class="cau2'+(wt?' wait':'')+'"><div class="hd"><div class="big">'+nf(2).format(c.rate)+' %</div>'+(wt?'<span class="wtl">Cierre '+fdate(dd).slice(0,5)+'</span>':(c.prev?pillBps(c.rate-c.prev):''))+'</div>'+
     '<div class="sp2">'+chart+'</div>'+
     (mn&&mx?rangeBar(c.rate,mn,mx):'')+
-    '<div class="cap2">'+(c.fecha?'Liquida '+fdate(String(c.fecha).slice(0,10)).slice(0,5):'')+(cap?' · '+cap:'')+'</div></div>';
+    '<div class="cap2">'+(wt?'Sin operar aún':(c.fecha?'Liquida '+fdate(String(c.fecha).slice(0,10)).slice(0,5):'')+(cap?' · '+cap:''))+'</div></div>';
 }
 function renderPFW(){
   var m=PF.me;
