@@ -123,7 +123,11 @@ tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 .mayo .mr{width:44%;max-width:210px;min-width:104px;text-align:right}
 .mayo svg{display:block;width:100%;height:54px}
 .mayo .cap{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px;color:var(--mut);font-size:12.5px;white-space:nowrap}
-.mayo.wait .big,.mayo.wait .mr svg{opacity:.45}.wtl{display:inline-block;padding:3px 9px;border-radius:7px;background:rgba(138,148,166,.16);color:var(--mut);font-weight:700;font-size:15px}.wdim{opacity:.45}.cau2.wait .big,.cau2.wait .sp2,.cau2.wait .rng{opacity:.45}.cau2 .wtl{font-size:13px;padding:2px 8px}
+.mayo.wait .big,.mayo.wait .mr svg{opacity:.45}.wtl{display:inline-block;padding:3px 9px;border-radius:7px;background:rgba(138,148,166,.16);color:var(--mut);font-weight:700;font-size:15px}.wdim{opacity:.45}
+#c-may,#c-cau{container-type:inline-size}
+#c-may .mayo .big,#c-cau .mayo .big{font-size:clamp(24px,13cqw,40px)}
+.mayo .mr{min-width:84px}.mayo .cap{min-width:0}.mayo .cap .st{flex:none}.mayo .cap span{overflow:hidden;text-overflow:ellipsis;min-width:0}.mayo .wtl{white-space:nowrap;font-size:clamp(11px,5cqw,15px)}
+@media (max-width:900px){#c-may .mayo .big,#c-cau .mayo .big{font-size:clamp(24px,13cqw,30px)}}
 .mayo .nod{height:54px;display:grid;place-items:center;color:var(--mut);font-size:12.5px}
 .dotp{animation:pd 1.8s ease-out infinite}
 @keyframes pd{0%{r:3.5}60%{r:8;opacity:.25}100%{r:3.5;opacity:1}}
@@ -224,7 +228,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
   .app{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start;padding-bottom:24px}
   .app>.tabs{grid-column:1/3;margin-bottom:0}
   .card{grid-column:1/3;margin:0 12px}
-  .card.half{grid-column:auto}
+  .card.half{grid-column:auto}section[data-src="cau"].half,section[data-src="pf"].half{grid-column:1/-1}
   .card.hl{margin:0 5px 0 12px}
   .card.hr{margin:0 12px 0 5px}
   .card.off{display:none}
@@ -249,15 +253,6 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 #rates .row .p{flex:0 0 auto;min-width:84px}#rates .row .pill{flex:0 0 auto;min-width:66px;text-align:center}
 @media (max-width:900px){#rates .row{gap:8px}#rates .row .p{min-width:80px}#rates .row .p b{font-size:18px}#rates .row .pill{min-width:64px;padding:3px 6px}}
 /* caución: mismo estilo que el mayorista, compacto para la tarjeta chica */
-.cau2{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0}
-.cau2 .hd{margin:0}
-.cau2 .sp2 svg{display:block;width:100%;height:34px}.cau2 .sp2 .nod{height:34px;display:grid;place-items:center;color:var(--mut);font-size:12px}
-.cau2 .rng{margin-top:3px;gap:7px}.cau2 .rng b{font-size:12.5px}.cau2 .rng .bar{height:6px}.cau2 .rng .bar i{width:13px;height:13px;border-width:2px}
-.cau2 .rln{display:none}
-.cau2 .hd{flex-wrap:nowrap;gap:8px;align-items:center}.cau2 .big{font-size:32px!important}.cau2 .pill{font-size:12px!important;padding:3px 8px;white-space:nowrap}
-@media (min-width:1880px){.cau2 .cap2{display:none}}
-@media (max-width:900px){.cau2 .hd{flex-wrap:wrap;gap:6px 8px}.cau2 .sp2 svg,.cau2 .sp2 .nod{height:44px}.cau2{gap:6px}.cau2 .big{font-size:30px!important}}
-.cau2 .cap2{color:var(--mut);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* encabezado de tarjeta (celular): título protagonista, subtítulo debajo, contador y botón siempre visibles */
 @media (max-width:900px){
   .card h2{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;row-gap:1px;font:700 16px system-ui,sans-serif;letter-spacing:0;text-transform:none;color:var(--ink);white-space:normal;margin-bottom:8px}
@@ -343,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-19.1';
+var VER='2026-10-19.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -861,7 +856,7 @@ function fxCard(id,o,key){
 function renderCau(){
   var c=S.cau,box=$('#c-cau'),h=$('#h-cau');
   if(!c){h.textContent='TNA';box.innerHTML=na();return;}
-  h.textContent='Plazo '+c.plazo+(c.plazo===1?' día':' días')+' · TNA'+(c.fecha?' · liq. '+fdate(String(c.fecha).slice(0,10)).slice(0,5):'')+' · '+((isOpen('CAU')&&!holidayGuess())?'Abierto':'Cerrado');
+  h.textContent='Plazo '+c.plazo+(c.plazo===1?' día':' días')+' · TNA';
   if(!c.rate){box.innerHTML='<div class="hd"><div class="mk" style="margin-left:0">'+stateHTML('CAU')+'</div></div><div class="empty">Sin operaciones en el plazo más corto</div>';return;}
   var I=S.intraC&&S.intraC.key===((c.tk||'CAARS')+'|'+c.plazo)?S.intraC:null,pts=I&&I.pts.length>1?I.pts:null,today=arNow().date,mn=c.min,mx=c.max;
   if(pts){var vs=pts.map(function(x){return x.v;});mn=mn||Math.min.apply(null,vs);mx=mx||Math.max.apply(null,vs);}
@@ -869,12 +864,11 @@ function renderCau(){
   mn=mn?Math.min(mn,c.rate):null;mx=mx?Math.max(mx,c.rate):null;
   var other=pts&&I.date!==today?fdate(I.date).slice(0,5):'';
   var chart=pts?sparkSVG(pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'<div class="nod">Sin gráfico del día</div>');
-  var cap=pts?(other?'sesión '+other:null):(c.daily&&c.daily.length>1?'cierre '+fdate(String(c.fecha||'').slice(0,10)).slice(0,5)+' · '+c.daily.length+' días':null);
   var dd=pts?I.date:(c.hist?String(c.fecha||'').slice(0,10):''),wt=waitSess('CAU',dd);
-  box.innerHTML='<div class="cau2'+(wt?' wait':'')+'"><div class="hd"><div class="big">'+nf(2).format(c.rate)+' %</div>'+(wt?'<span class="wtl">Cierre '+fdate(dd).slice(0,5)+'</span>':(c.prev?pillBps(c.rate-c.prev):''))+'</div>'+
-    '<div class="sp2">'+chart+'</div>'+
-    (mn&&mx?rangeBar(c.rate,mn,mx):'')+
-    '<div class="cap2">'+(wt?'Sin operar aún':(c.fecha?'Liquida '+fdate(String(c.fecha).slice(0,10)).slice(0,5):'')+(cap?' · '+cap:''))+'</div></div>';
+  var ex=wt?'sin operar aún':other?'sesión '+other:c.hist?(c.fecha?'cierre '+fdate(String(c.fecha).slice(0,10)).slice(0,5):null):(c.fecha?'liq. '+fdate(String(c.fecha).slice(0,10)).slice(0,5):null);
+  var rb=mn&&mx?rangeBar(c.rate,mn,mx):'';
+  box.innerHTML='<div class="mayo'+(wt?' wait':'')+'"><div class="ml"><div class="big">'+nf(2).format(c.rate)+' %</div><div>'+(wt?'<span class="wtl">Cierre '+fdate(dd).slice(0,5)+'</span>':(c.prev?pillBps(c.rate-c.prev):''))+'</div></div>'+
+    '<div class="mr">'+chart+'<div class="cap">'+stateHTML('CAU',ex).replace('<small>','<span>').replace('</small>','</span>')+'</div></div></div>'+(wt?'<div class="wdim">'+rb+'</div>':rb);
 }
 function renderPFW(){
   var m=PF.me;
