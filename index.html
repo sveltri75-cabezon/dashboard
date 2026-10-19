@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-19.2';
+var VER='2026-10-19.3';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -384,7 +384,7 @@ function loadBCRA(){
       if(r.status!=='fulfilled')return;
       var det=r.value&&r.value.results&&r.value.results[0]&&r.value.results[0].detalle;
       if(!Array.isArray(det)||!det.length)return;
-      var pts=det.map(function(x){return {d:x.fecha,v:Number(x.valor)};}).filter(function(p){return isFinite(p.v);}).sort(function(a,b){return a.d<b.d?-1:1;});
+      var pts=det.filter(function(x){return x&&x.valor!=null&&String(x.valor).trim()!=='';}).map(function(x){return {d:x.fecha,v:Number(x.valor)};}).filter(function(p){return isFinite(p.v)&&p.v>0;}).sort(function(a,b){return a.d<b.d?-1:1;});
       if(pts.length){S.bcra[ids[i]]=pts;ok++;}
     });
     if(ok)S.t.bcra=Date.now();
