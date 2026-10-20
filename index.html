@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-19.3';
+var VER='2026-10-20.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -427,12 +427,31 @@ function arNow(){
   return {date:o.year+'-'+o.month+'-'+o.day,min:(+o.hour)*60+(+o.minute),wd:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(o.weekday)};
 }
 function addDays(d,n){var p=d.split('-'),t=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]+n));return t.toISOString().slice(0,10);}
-function isBiz(d){var w=new Date(d+'T00:00:00Z').getUTCDay();return w>0&&w<6;}
+function isBiz(d){var w=new Date(d+'T00:00:00Z').getUTCDay();return w>0&&w<6&&holState(d)!==1;}
 function isOpen(k){var n=arNow(),s=SESS[k];return n.wd>0&&n.wd<6&&n.min>=s.o&&n.min<s.c;}
 /* Fecha de la sesión a consultar: la de hoy recién desde la apertura (10:00); antes de eso y en fin de semana, la última hábil. */
 function sessionDate(){var n=arNow(),d=n.date;if(n.min<SESS.FOR.o)d=addDays(d,-1);while(!isBiz(d))d=addDays(d,-1);return d;}
 /* Feriado probable: el horario indica mercado abierto, pero el MAE no tiene datos de hoy (la última sesión con operaciones es otra). */
-function holidayGuess(){var I=S.intra,n=arNow();return !!(I&&I.pts.length&&I.date!==n.date&&n.min>=SESS.FOR.o+15&&n.wd>0&&n.wd<6);}
+/* Feriados (ArgentinaDatos, públicos): se consultan una vez por día y se guardan en el navegador; 1 = feriado, 0 = no, -1 = sin dato. */
+function holState(d){var h=S.hol&&S.hol[String(d).slice(0,4)];return h?(h.indexOf(d)>=0?1:0):-1;}
+function loadHol(){
+  var t=arNow().date,y=t.slice(0,4),c=recall('tablero-fer-v1')||{},yrs=[y];
+  if(+t.slice(5,7)===1)yrs.push(String(+y-1));
+  S.hol=S.hol||{};
+  return Promise.all(yrs.map(function(yy){
+    var ce=c[yy];
+    if(ce&&Array.isArray(ce.d))S.hol[yy]=ce.d;
+    if(ce&&Date.now()-ce.t<12*3600*1000)return null;
+    return getJSON('https://api.argentinadatos.com/v1/feriados/'+yy).then(function(r){
+      var d=(Array.isArray(r)?r:[]).map(function(x){return String(x&&x.fecha||'').slice(0,10);}).filter(function(z){return /^\d{4}-\d{2}-\d{2}$/.test(z);});
+      if(!d.length)throw new Error('respuesta sin feriados');
+      S.hol[yy]=d;var cc=recall('tablero-fer-v1')||{};cc[yy]={t:Date.now(),d:d};store('tablero-fer-v1',cc);
+    }).catch(function(e){console.warn('Feriados:',e.message);});
+  })).then(function(){try{renderAll();}catch(e){}});
+}
+/* Si hay lista de feriados manda ella; si no, se supone feriado cuando pasan 15 min de la apertura sin datos de hoy. */
+function holidayGuess(){var n=arNow(),hs=holState(n.date);if(hs>=0)return hs===1&&n.wd>0&&n.wd<6;var I=S.intra;return !!(I&&I.pts.length&&I.date!==n.date&&n.min>=SESS.FOR.o+15&&n.wd>0&&n.wd<6);}
+loadHol();
 /* Mercado abierto pero todavía sin operaciones del día: los datos son de la sesión anterior. */
 function waitSess(k,d){return !!(d&&isOpen(k)&&!holidayGuess()&&d!==arNow().date);}
 function stateHTML(k,extra){var on=isOpen(k)&&!holidayGuess();return '<span class="st'+(on?' on':'')+'">'+(on?'Abierto':'Cerrado')+'</span><small>'+(extra||SESS[k].txt)+'</small>';}
