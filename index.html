@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-20.3';
+var VER='2026-10-20.4';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -681,25 +681,37 @@ function pickDense(j,n){
   })};
 }
 /* Cinta: compara el ranking actual con el anterior guardado en este navegador. */
-var SNAP_KEY='tablero-pf-snap-v1',EV_KEY='tablero-pf-events-v1',EV_MAX=30,EV_TTL=7*864e5;
-var EV=(recall(EV_KEY)||[]).filter(function(e){return e&&e.t>Date.now()-EV_TTL;});
+var SNAP_KEY='tablero-pf-snap-v1',EV_KEY='tablero-pf-events-v1',DAY_KEY='tablero-pf-day-v1',LAST_KEY='tablero-pf-last-v1',EV_MAX=30;
+/* Cambios de hoy, un solo evento por entidad (resultado neto contra el último estado de un día anterior). */
+var LAST=recall(LAST_KEY)||(recall(EV_KEY)||[])[0]||null;
+var EV=(recall(EV_KEY)||[]).filter(function(e){return e&&e.t&&licDay(new Date(e.t).toISOString())===arNow().date;});
 function trackPF(groups){
   var cur={};
   groups.forEach(function(g){g.banks.forEach(function(b){cur[b.code]={name:b.name,rate:g.rate};});});
-  var old=recall(SNAP_KEY);
-  if(old&&old.top){
-    var add=[],t=Date.now(),f=function(r){return nf(2).format(r);};
-    Object.keys(cur).forEach(function(c){
-      var o=old.top[c];
-      if(!o)add.push({t:t,k:'e',x:'Entró '+cur[c].name+' al ranking',i:f(cur[c].rate)+' %'});
-      else if(Math.abs(o.rate-cur[c].rate)>1e-9)add.push({t:t,k:cur[c].rate>o.rate?'u':'d',x:(cur[c].rate>o.rate?'▲ ':'▼ ')+cur[c].name+(cur[c].rate>o.rate?' subió':' bajó'),i:f(o.rate)+' → '+f(cur[c].rate)+' % · '+sgn(bps(cur[c].rate-o.rate),0)+' bps'});
-    });
-    Object.keys(old.top).forEach(function(c){
-      if(!cur[c])add.push({t:t,k:'d',x:'Salió '+old.top[c].name+' del ranking',i:f(old.top[c].rate)+' %'});
-    });
-    if(add.length){EV=add.concat(EV).slice(0,EV_MAX);store(EV_KEY,EV);}
+  var t=Date.now(),today=arNow().date,old=recall(SNAP_KEY),day=recall(DAY_KEY),f=function(r){return nf(2).format(r);};
+  if(!day||day.date!==today||!day.top){
+    day={date:today,top:(old&&old.top)?old.top:cur,chg:{}}; /* base del día: la última foto previa */
   }
-  store(SNAP_KEY,{t:Date.now(),top:cur});
+  if(old&&old.top){
+    Object.keys(cur).concat(Object.keys(old.top)).forEach(function(c){
+      var o=old.top[c],n=cur[c];
+      if(!o!==!n||(o&&n&&Math.abs(o.rate-n.rate)>1e-9))day.chg[c]=t;
+    });
+  }
+  var net=[],base=day.top;
+  Object.keys(cur).forEach(function(c){
+    var o=base[c],n=cur[c],w=day.chg[c]||t;
+    if(!o)net.push({t:w,k:'e',x:'Entró '+n.name+' al ranking',i:f(n.rate)+' %'});
+    else if(Math.abs(o.rate-n.rate)>1e-9)net.push({t:w,k:n.rate>o.rate?'u':'d',x:(n.rate>o.rate?'▲ ':'▼ ')+n.name+(n.rate>o.rate?' subió':' bajó'),i:f(o.rate)+' → '+f(n.rate)+' % · '+sgn(bps(n.rate-o.rate),0)+' bps'});
+  });
+  Object.keys(base).forEach(function(c){
+    if(!cur[c])net.push({t:day.chg[c]||t,k:'d',x:'Salió '+base[c].name+' del ranking',i:f(base[c].rate)+' %'});
+  });
+  net.sort(function(a,b){return b.t-a.t;});
+  EV=net.slice(0,EV_MAX);store(EV_KEY,EV);
+  if(EV.length){LAST=EV[0];store(LAST_KEY,LAST);}
+  store(DAY_KEY,day);
+  store(SNAP_KEY,{t:t,top:cur});
 }
 function loadPF(){
   return getJSON(PF_URL).then(function(j){
@@ -937,11 +949,11 @@ function evLoop(){clearTimeout(evT);if(EV.length<2)return;evT=setTimeout(functio
 function renderTape(){
   var el=$('#tape');
   if(!PF.groups){el.innerHTML='';lastTape='';clearTimeout(evT);return;}
-  var key=EV.map(function(e){return e.t+e.x;}).join('|');
+  var key=EV.length?EV.map(function(e){return e.t+e.x;}).join('|'):'vacío|'+(LAST?LAST.t:'');
   if(key===lastTape)return; /* sin novedades: no se reinicia la animación */
   lastTape=key;clearTimeout(evT);evI=0;
-  if(!EV.length){el.innerHTML='<div class="evn">Sin cambios en el ranking</div>';return;}
-  el.innerHTML='<div class="evh"><b>Últimos cambios</b><span id="evn"></span></div><div class="evb" id="evb"><div class="evr" id="evr"></div></div>';
+  if(!EV.length){var lv=LAST?evView(LAST):null,td=lv&&licDay(new Date(LAST.t).toISOString())===arNow().date;el.innerHTML='<div class="evn">'+(td?'Sin cambios netos hoy · hubo movimientos que se revirtieron':'Sin cambios hoy'+(lv?' · último: '+esc(lv.w)+' · '+esc(lv.t):''))+'</div>';return;}
+  el.innerHTML='<div class="evh"><b>Cambios de hoy</b><span id="evn"></span></div><div class="evb" id="evb"><div class="evr" id="evr"></div></div>';
   evShow(0,false);evLoop();
 }
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#evb');if(b&&EV.length>1){evShow(evI+1,true);evLoop();}});
