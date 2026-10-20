@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-20.1';
+var VER='2026-10-20.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -880,9 +880,9 @@ function renderCau(){
   var I=S.intraC&&S.intraC.key===((c.tk||'CAARS')+'|'+c.plazo)?S.intraC:null,pts=I&&I.pts.length>1?I.pts:null,today=arNow().date,mn=c.min,mx=c.max;
   if(pts){var vs=pts.map(function(x){return x.v;});mn=mn||Math.min.apply(null,vs);mx=mx||Math.max.apply(null,vs);}
   else if(c.daily&&c.daily.length>1){mn=mn||Math.min.apply(null,c.daily);mx=mx||Math.max.apply(null,c.daily);}
-  mn=mn?Math.min(mn,c.rate):null;mx=mx?Math.max(mx,c.rate):null;
+  mn=Math.min(mn||c.rate,c.rate);mx=Math.max(mx||c.rate,c.rate);
   var other=pts&&I.date!==today?fdate(I.date).slice(0,5):'';
-  var chart=pts?sparkSVG(pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'<div class="nod">Sin gráfico del día</div>');
+  var chart=pts?sparkSVG(pts,c.prev,'CAU'):(c.daily&&c.daily.length>1?sparkDaily(c.daily):'<div class="nod">Sin gráfico aún</div>');
   var dd=pts?I.date:(c.hist?String(c.fecha||'').slice(0,10):''),wt=waitSess('CAU',dd);
   var ex=wt?'sin operar aún':other?'sesión '+other:c.hist?(c.fecha?'cierre '+fdate(String(c.fecha).slice(0,10)).slice(0,5):null):(c.fecha?'liq. '+fdate(String(c.fecha).slice(0,10)).slice(0,5):null);
   var rb=mn&&mx?rangeBar(c.rate,mn,mx):'';
