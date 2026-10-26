@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-20.5';
+var VER='2026-10-26.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -471,9 +471,11 @@ function pickMAE(rows){
   var row=null,tk='';
   ['UST$T','USMEP'].some(function(t){row=rs.filter(function(o){return String(fld(o,'ticker')).trim().toUpperCase()===t;})[0];if(row)tk=t;return !!row;});
   if(!row)throw new Error('sin UST$T ni USMEP');
-  var last=num(fld(row,'ultimo')),mx=num(fld(row,'maximo')),mn=num(fld(row,'minimo')),prev=num(fld(row,'cierreanterior'));
+  var last=num(fld(row,'ultimo')),mx=num(fld(row,'maximo')),mn=num(fld(row,'minimo')),prev=num(fld(row,'cierreanterior')),vr=num(fld(row,'variacion'));
   if(!(last>0))throw new Error('sin último');
   if(!(mx>0))mx=last;if(!(mn>0))mn=last;
+  /* Si el MAE no informa cierreAnterior pero sí la variación (%), el cierre anterior sale de ella: último / (1 + variación). */
+  if(!(prev>0)&&isFinite(vr)&&vr>-100)prev=last/(1+vr/100);
   return {tk:tk,last:last,max:Math.max(mx,last),min:Math.min(mn,last),prev:prev>0?prev:null};
 }
 function anyObj(j){return !!j&&typeof j==='object';}
@@ -504,7 +506,7 @@ function pickHistFor(rows){
   res.rows.forEach(function(o){var d=dateOfRow(o),v=pick1(o,['ultimo','preciocierre','cierre','precio','promedio','ultimoprecio','valor']);if(!d||!v)return;if(!(d in by))ds.push(d);by[d]={v:v,mx:pick1(o,['maximo']),mn:pick1(o,['minimo'])};});
   ds.sort();if(!ds.length){console.warn('MAE hist FOR: campos',Object.keys(res.rows[0]));throw new Error('histórico sin precios');}
   var L=by[ds[ds.length-1]],P=ds.length>1?by[ds[ds.length-2]].v:null;
-  return {tk:res.tk,last:L.v,max:Math.max(L.mx||L.v,L.v),min:Math.min(L.mn||L.v,L.v),prev:P,hist:true,date:ds[ds.length-1],daily:ds.slice(-20).map(function(d){return by[d].v;})};
+  return {tk:res.tk,last:L.v,max:Math.max(L.mx||L.v,L.v),min:Math.min(L.mn||L.v,L.v),prev:P,hist:true,date:ds[ds.length-1],closes:ds.reduce(function(a,d){a[d]=by[d].v;return a;},{}),daily:ds.slice(-20).map(function(d){return by[d].v;})};
 }
 /* El MAE deja de informar el cierre anterior pasada la rueda: se guarda el último valor visto del día para seguir mostrando la variación. */
 function keepPrev(k,o){
@@ -513,11 +515,23 @@ function keepPrev(k,o){
   else if(o&&st[k]&&st[k].d===d)o.prev=st[k].p;
   return o;
 }
+function getHistFor(){
+  if(S.hf&&Date.now()-S.hfT<600000)return Promise.resolve(S.hf);
+  return histGet('HISTFOR',MAE_HF,true).then(pickHistFor).then(function(r){S.hf=r;S.hfT=Date.now();return r;});
+}
+/* Último recurso, si el MAE no informa cierreAnterior ni variación: el último cierre (campo "ultimo") de un día anterior al de hoy en el histórico. */
+function fillPrevClose(m){
+  if(m.prev>0||m.hist)return Promise.resolve(m);
+  return getHistFor().then(function(h){
+    var t=arNow().date,ds=Object.keys(h.closes||{}).filter(function(d){return d<t;}).sort();
+    if(ds.length)m.prev=h.closes[ds[ds.length-1]];
+    return m;
+  },function(e){console.warn('MAE cierre anterior:',e.message);return m;});
+}
 function loadMAE(){
-  return firstJSON(MAE_FOR).then(pickMAE).catch(function(e){
+  return firstJSON(MAE_FOR).then(pickMAE).then(fillPrevClose).catch(function(e){
     console.warn('MAE FOR vacío, uso histórico:',e.message);
-    if(S.hf&&Date.now()-S.hfT<600000)return S.hf;
-    return histGet('HISTFOR',MAE_HF,true).then(pickHistFor).then(function(r){S.hf=r;S.hfT=Date.now();return r;});
+    return getHistFor();
   }).then(function(m){keepPrev('for',m);S.mae=m;pushHist('mae',m.last);return loadIntra().catch(function(){});},function(e){console.warn('MAE FOR:',e.message);throw e;});
 }
 /* Serie intradiaria del mayorista: [{time (hora local escrita como UTC), value}] → un punto por minuto, en minutos desde la medianoche. */
