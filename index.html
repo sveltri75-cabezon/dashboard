@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-26.2';
+var VER='2026-10-26.3';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1122,7 +1122,7 @@ function licItems(rows){
   rows.forEach(function(x){
     var t=String(x.titulo||'').toUpperCase(),conv=/CONVERSI/.test(t),ms=t.match(/\(([A-Z0-9]+)\)/g)||[];
     ms=ms.map(function(q){return q.slice(1,-1);});
-    var tk=conv&&ms.length>1?ms[0]+'→'+ms[1]:ms.length?ms[ms.length-1]:String(x.titulo||'').slice(0,12);
+    var tk=conv&&ms.length>1?ms[0]+'→'+ms[1]:ms.length?ms[ms.length-1]:(/^(LETRA|BONO)/.test(t)&&validIso(x.fechaVencimiento)?(/^LETRA/.test(t)?'Letra ':'Bono ')+String(x.fechaVencimiento).slice(8,10)+'/'+String(x.fechaVencimiento).slice(5,7)+'/'+String(x.fechaVencimiento).slice(2,4):String(x.titulo||'').slice(0,12));
     var amt=Number(x.monto_Adjudicado)||0,mon=x.moneda==='ARS PESOS'?'ARS':'USD',key=tk;
     if(!by[key]){by[key]={tk:tk,tipo:licTipo(t),venc:validIso(x.fechaVencimiento)?MES[+String(x.fechaVencimiento).slice(5,7)-1]+'-'+String(x.fechaVencimiento).slice(2,4):'',mon:mon,amt:0,corte:{k:'na'}};ord.push(key);}
     var it=by[key];it.amt+=amt;
