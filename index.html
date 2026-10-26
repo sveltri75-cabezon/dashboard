@@ -314,7 +314,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="cau" class="card half hl" data-tab="tasas"><h2>Caución <i id="h-cau">TNA</i></h2><div class="stat" id="c-cau"></div></section>
     <section data-src="pf" class="card half hr" data-tab="tasas"><h2>Plazo fijo <i>Web · Meridian · sin relación</i></h2><div class="stat" id="c-pfw"></div></section>
     <section data-src="lic" data-bs="-1" class="card lic" data-tab="lic"><h2>Licitación tesoro <span class="lst" id="s-lic"></span><i id="h-lic"></i></h2><div class="stat" id="c-lic"></div></section>
-    <section class="card mobonly" data-tab="lic"><h2>Próxima licitación</h2><div id="c-licn"></div></section>
+    <section class="card mobonly" data-tab="lic"><h2>Última licitación</h2><div id="c-licn"></div></section>
     <section class="card mobonly" data-tab="lic"><h2>Licitaciones anteriores <i>últimos 90 días</i></h2><div id="c-lich"></div></section>
   </div>
 
@@ -338,7 +338,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-26.3';
+var VER='2026-10-26.4';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1063,8 +1063,8 @@ function renderHome(){
   $('#hm-acc').innerHTML=u||d?(u?'<div class="hmr"><b>'+esc(u.symbol)+'</b>'+pill(u.pct_change)+'</div>':'')+(d?'<div class="hmr"><b>'+esc(d.symbol)+'</b>'+pill(d.pct_change)+'</div>':''):'<div class="mut">Sin datos</div>';
   /* licitación */
   if(LIC.groups){
-    var P=licPick(),L=P.last,N=P.nxt;
-    $('#hm-lic').innerHTML='<div class="hmb s">'+(L?licState(L,P.now)[0]:'—')+'</div><div class="hmu">'+(N?(licState(N,P.now)[0]==='Abierta'?'Hoy ':'Próxima ')+dmy(N.day):'Sin próxima')+'</div>';
+    var P=licPick(),C=P.cur,cs=C?licState(C,P.now)[0]:'';
+    $('#hm-lic').innerHTML='<div class="hmb s">'+(C?cs:'—')+'</div><div class="hmu">'+(C?(cs==='En liquidación'?'Liquida ':cs==='Abierta'?'Hoy ':'')+dmy(cs==='En liquidación'?C.liq:C.day):'Sin próxima')+'</div>';
   }else $('#hm-lic').innerHTML='<div class="mut">'+(LIC.err?'Sin respuesta':'Cargando…')+'</div>';
 }
 function renderAll(){
@@ -1191,12 +1191,13 @@ function licBig(g){
   return {big:'USD '+nf(0).format(g.usd/1e6),unit:'millones',sec:''};
 }
 function licPick(){
-  var G=LIC.groups||[],now=Date.now(),last=null,nxt=null,i;
-  for(i=G.length-1;i>=0;i--){if(G[i].items.length&&G[i].ini<=now){last=G[i];break;}}
-  for(i=0;i<G.length;i++){if(G[i].ini>now||(!G[i].items.length&&now<G[i].fin)){nxt=G[i];break;}}
-  var fut=G.filter(function(g){return g.ini>now&&g!==nxt;}).slice(0,3);
-  var prev=G.filter(function(g){return g.items.length&&g.ini<=now&&g!==last;}).reverse();
-  return {last:last,nxt:nxt,fut:fut,prev:prev,now:now};
+  /* principal = la licitación que sigue (convocada, abierta o cerrada pendiente de liquidar) hasta que liquida; luego la última ya liquidada; después el historial */
+  var G=LIC.groups||[],now=Date.now(),cur=null,last=null,i;
+  for(i=0;i<G.length;i++){if(now<G[i].liqE){cur=G[i];break;}}
+  for(i=G.length-1;i>=0;i--){if(G[i].items.length&&now>=G[i].liqE){last=G[i];break;}}
+  var fut=G.filter(function(g){return g.ini>now&&g!==cur;}).slice(0,3);
+  var prev=G.filter(function(g){return g.items.length&&now>=g.liqE&&g!==last;}).reverse();
+  return {cur:cur,last:last,fut:fut,prev:prev,now:now};
 }
 function diffDays(a,b){return Math.round((Date.UTC(+b.slice(0,4),+b.slice(5,7)-1,+b.slice(8,10))-Date.UTC(+a.slice(0,4),+a.slice(5,7)-1,+a.slice(8,10)))/86400000);}
 function lxCol(i,n){var a=[156,203,240],b=[47,111,179],t=n>1?i/(n-1):0;return 'rgb('+a.map(function(v,k){return Math.round(v+(b[k]-v)*t);}).join(',')+')';}
@@ -1234,6 +1235,16 @@ function licMobileC(L,now){
     '<div class="lx-tot"><div><div class="k">Pesos</div><div class="v">'+pes+'</div></div><div><div class="k">Dólares</div><div class="v">'+us+'</div></div></div>'+
     licBarC(L.items,L.ars)+licItemsC(L.items,L.ars,true);
 }
+function licRowsP(items,n){
+  var rest=n&&items.length>n?items.length-(n-1):0,list=rest?items.slice(0,n-1):items;
+  return list.map(function(i){return '<tr><td>'+(i.tipo?'<span class="tp">'+i.tipo+'</span>':'')+esc(i.tk)+'</td><td>'+i.venc+'</td></tr>';}).join('')+(rest?'<tr><td class="mu" colspan="2">+'+rest+' títulos más · pasá el mouse por la tarjeta</td></tr>':'');
+}
+function licItemsP(items){
+  return items.map(function(i){
+    return '<div class="lx-ic"><div class="n"><b>'+esc(i.tk)+'</b><span>'+(i.tipo?i.tipo+(i.mon!=='ARS'?' · en dólares':''):(i.mon!=='ARS'?'en dólares':''))+'</span></div><div class="r"><b>'+(i.venc||'')+'</b><span>vence</span></div></div>';
+  }).join('');
+}
+function licHasRes(L){return L.ars>0||L.usd>0;}
 function renderLic(){
   var box=$('#c-lic'),hd=$('#h-lic'),st=$('#s-lic'),nb=$('#c-licn'),hb=$('#c-lich');
   if(!box)return;
@@ -1241,25 +1252,28 @@ function renderLic(){
     var m='<div class="empty">'+(LIC.err?'Sin respuesta del MAE':'Cargando…')+'</div>';
     box.innerHTML=m;nb.innerHTML=m;hb.innerHTML=m;hd.textContent='';st.textContent='';st.className='lst';return;
   }
-  var P=licPick(),L=P.last,N=P.nxt,today=arNow().date;
-  /* tarjeta principal */
-  if(L){
-    var s=licState(L,P.now),b=licBig(L),lab=(L.conv?'Conversión':'Última')+' · '+dmy(L.day);
+  var P=licPick(),C=P.cur,L=P.last,today=arNow().date;
+  /* tarjeta principal: la licitación que sigue o está en curso, hasta que liquida */
+  if(C){
+    var s=licState(C,P.now),has=licHasRes(C),dd=diffDays(today,C.day),lab=(C.conv?'Conversión':s[0]==='Próxima'?'Próxima':'Licitación'),
+      when=s[0]==='Próxima'?(dd<=0?'hoy':dd===1?'mañana':'en '+dd+' días'):'',
+      b=has?licBig(C):{big:dmy(C.day),unit:when||'liquida '+dmy(C.liq),sec:''};
     st.textContent=s[0].toUpperCase();st.className='lst '+s[1];
-    hd.textContent=(s[0]==='Cerrada'||P.now>=L.liqE?'liquidó ':'liquida ')+dmy(L.liq);
-    var nx=N?'<span class="lst nx">'+(licState(N,P.now)[0]==='Abierta'?'Hoy':'Próxima')+'</span><b>'+N.day.slice(8,10)+'/'+N.day.slice(5,7)+'/'+N.day.slice(0,4)+'</b>':'<span class="mut">Sin próxima licitación informada</span>';
-    box.innerHTML='<div class="lic-d"><div class="lbd"><div class="lL"><div class="lk">'+lab+'</div><div class="lbig">'+b.big+'</div><div class="lun">'+b.unit+'</div><div class="lsec">'+b.sec+'</div></div><div class="lR">'+licTable(L.items,4)+'</div></div><div class="lnx">'+nx+'</div></div>'+
-      '<div class="lic-m">'+licMobileC(L,P.now)+'</div>';
+    hd.textContent='liquida '+dmy(C.liq);
+    var lx=L?'<span class="lst">Última</span><b>'+dmy(L.day)+'</b> '+(L.ars>0?'$ '+nf(2).format(L.ars/1e12)+' bi':L.usd>0?'USD '+nf(0).format(L.usd/1e6)+' M':'sin adjudicar'):'<span class="mut">Sin licitaciones liquidadas</span>';
+    box.innerHTML='<div class="lic-d"><div class="lbd"><div class="lL"><div class="lk">'+lab+' · '+dmy(C.day)+'</div><div class="lbig">'+b.big+'</div><div class="lun">'+b.unit+'</div><div class="lsec">'+b.sec+'</div></div><div class="lR">'+
+      (C.items.length?(has?licTable(C.items,4):'<table><thead><tr><th>Título</th><th>Vence</th></tr></thead><tbody>'+licRowsP(C.items,4)+'</tbody></table>'):'<div class="mu" style="padding-top:6px">Títulos a confirmar</div>')+'</div></div><div class="lnx">'+lx+'</div></div>'+
+      '<div class="lic-m"><div class="lx-nx"><div><div class="d">'+C.day.slice(8,10)+'/'+C.day.slice(5,7)+'/'+C.day.slice(0,4)+(C.conv?' · conversión':'')+'</div><div class="mu">Liquida '+dmy(C.liq)+'</div></div>'+(when?'<span class="lst nx">'+when+'</span>':'')+'</div>'+
+      (has?licMobileC(C,P.now):(C.items.length?licStepC(C,P.now)+licItemsP(C.items):'<div class="mu" style="margin-top:8px">Títulos a confirmar</div>'))+
+      (P.fut.length?'<div class="lx-chips">'+P.fut.map(function(g){return '<span>'+dmy(g.day)+'</span>';}).join('')+'<em>cronograma</em></div>':'')+'</div>';
   }else{
     st.textContent='';st.className='lst';hd.textContent='';
-    box.innerHTML='<div class="empty">Sin licitaciones del Ministerio en los últimos 90 días</div>';
+    box.innerHTML='<div class="empty">Sin próxima licitación informada</div>';
   }
-  /* próxima (mobile) */
-  if(N){
-    var dd=diffDays(today,N.day),when=dd<=0?'hoy':dd===1?'mañana':'en '+dd+' días';
-    nb.innerHTML='<div class="lx-nx"><div><div class="d">'+N.day.slice(8,10)+'/'+N.day.slice(5,7)+'/'+N.day.slice(0,4)+'</div><div class="mu">Liquida '+dmy(N.liq)+' · '+(N.items.length?N.items.map(function(i){return esc(i.tk);}).join(' · '):'títulos a confirmar')+'</div></div><span class="lst nx">'+when+'</span></div>'+
-      (P.fut.length?'<div class="lx-chips">'+P.fut.map(function(g){return '<span>'+dmy(g.day)+'</span>';}).join('')+'<em>cronograma</em></div>':'');
-  }else nb.innerHTML='<div class="empty">Sin próxima licitación informada</div>';
+  /* última licitación liquidada (móvil) */
+  if(L){
+    nb.innerHTML='<div class="lx-nx"><div><div class="d">'+(L.conv?'Conversión · ':'')+L.day.slice(8,10)+'/'+L.day.slice(5,7)+'/'+L.day.slice(0,4)+'</div><div class="mu">Liquidó '+dmy(L.liq)+'</div></div><span class="lst">Liquidada</span></div>'+licMobileC(L,P.now);
+  }else nb.innerHTML='<div class="empty">Sin licitaciones liquidadas</div>';
   /* anteriores (mobile) */
   hb.innerHTML=P.prev.length?'<div class="lx-hd"><span>Fecha</span><span></span><span>Pesos</span><span>Dólares</span><span></span></div>'+P.prev.map(function(g){
     var big=g.ars>0?'$ '+nf(2).format(g.ars/1e12)+' bi':'—',us=g.usd>0?'USD '+nf(0).format(g.usd/1e6)+' M':'—';
@@ -1268,7 +1282,7 @@ function renderLic(){
 }
 function popBuildLic(){
   if(window.innerWidth<=900)return false;
-  var P=licPick(),L=P.last;if(!L)return false;
+  var P=licPick(),L=P.last||P.cur;if(!L)return false;
   var b=licBig(L);
   popEl.innerHTML='<div class="ph"><b>'+(L.conv?'Conversión':'Última licitación')+' · '+dmy(L.day)+'</b><span class="pv">'+b.big+' <span class="mut" style="font-size:12px">'+b.unit+'</span></span></div><div class="pd">'+(b.sec?b.sec+' · ':'')+'liquida '+dmy(L.liq)+'</div>'+licTable(L.items);
   return true;
