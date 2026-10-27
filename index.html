@@ -182,6 +182,16 @@ details.lh summary:after{content:'›';color:#5d6875;transition:transform .15s}d
 details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6px 3px}
 .pop table td{font-size:13px;padding:5px 4px}.pop table th{font-size:10px}
 @media (min-width:901px){.mobonly{display:none!important}}
+@media (min-width:901px){#banks td{padding:7px 6px}}
+.tl{display:inline-flex;gap:4px;margin-left:10px;vertical-align:middle;background:#0b0d10;border:1px solid var(--line);border-radius:99px;padding:4px 7px}
+.tl i{width:10px;height:10px;border-radius:50%;background:#2a323c;display:block;margin:0}
+.tl i.r.on{background:var(--dn);box-shadow:0 0 7px var(--dn)}.tl i.a.on{background:#e0a526;box-shadow:0 0 7px #e0a526}.tl i.g.on{background:var(--up);box-shadow:0 0 7px var(--up)}
+.semb{display:none}
+.sb{position:relative;height:12px;border-radius:6px;overflow:hidden;display:flex}.sb span{height:100%;display:block}
+.sb .z1{background:#7a2a2d}.sb .z2{background:#8a6a1c}.sb .z3{background:#1c6b45}.sb.na span{background:#2a323c}
+.sbw{position:relative;margin:4px 0 12px}.sbm{position:absolute;top:-3px;width:4px;height:18px;border-radius:2px;background:#fff;box-shadow:0 0 0 2px var(--card)}
+.sbl{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:4px}
+
 @media (min-width:901px) and (max-width:1879px){.r1{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}.card.lic{grid-column:span 2;min-height:190px}}
 @media (min-width:1880px){
   .r1{grid-template-columns:minmax(0,366px) repeat(4,minmax(0,1fr)) 480px}
@@ -255,6 +265,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 /* caución: mismo estilo que el mayorista, compacto para la tarjeta chica */
 /* encabezado de tarjeta (celular): título protagonista, subtítulo debajo, contador y botón siempre visibles */
 @media (max-width:900px){
+  .semb{display:block}.tl{display:none}
   .card h2{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;row-gap:1px;font:700 16px system-ui,sans-serif;letter-spacing:0;text-transform:none;color:var(--ink);white-space:normal;margin-bottom:8px}
   .card h2 i:not(.go),.card.half h2 i:not(.go){display:block;grid-column:1/-1;grid-row:2;margin:0;font:500 11.5px system-ui,sans-serif;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .card h2 .ctl{grid-column:2;grid-row:1}
@@ -322,7 +333,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="bcra" class="card" data-tab="tasas"><h2>Tasas BCRA</h2><div id="rates"></div></section>
     <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pf"></div><div class="tape" id="tape"></div></section>
     <section data-src="fci" class="card" data-tab="fci"><h2>FCI Money Market <i id="h-fci">TNA</i></h2><div id="fci"></div></section>
-    <section data-src="banks" class="card" data-tab="dolar"><h2>Dólar por entidad</h2><div id="banks"></div></section>
+    <section data-src="banks" class="card" data-tab="dolar"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
   </div>
 
   <div class="r3">
@@ -338,7 +349,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-26.4';
+var VER='2026-10-27.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -831,7 +842,35 @@ function loadBanks(){
       if(r.status==='fulfilled')BANKS[k]={q:r.value,err:null};
       else{BANKS[k]={q:BANKS[k]&&BANKS[k].q||null,err:(r.reason&&r.reason.message)||'error'};if(BANKS[k].err!=='pendiente')console.warn('Dólar por entidad:',k,BANKS[k].err);}
     });
+    var fresh={};
+    res.forEach(function(r,i){var q=r.status==='fulfilled'&&r.value;if(q&&isFinite(q.compra)&&isFinite(q.venta))fresh[BANK_DEFS[i].key]={n:BANK_DEFS[i].name,c:Math.round(q.compra),v:Math.round(q.venta)};});
+    if(Object.keys(fresh).length)trackBanks(fresh);
   });
+}
+/* Cambios de hoy en dólar por entidad: un solo evento por banco (neto contra el primer valor del día, o el último de un día anterior), con los valores tal como se ven (enteros). */
+var BK_SNAP='tablero-bk-snap-v1',BK_DAY='tablero-bk-day-v1',BK_EV='tablero-bk-events-v1',BK_LAST='tablero-bk-last-v1';
+var EVB=(recall(BK_EV)||[]).filter(function(e){return e&&e.t&&licDay(new Date(e.t).toISOString())===arNow().date;});
+var LASTB=recall(BK_LAST)||(recall(BK_EV)||[])[0]||null,BKREADY=false;
+function trackBanks(cur){
+  var t=Date.now(),today=arNow().date,old=recall(BK_SNAP),day=recall(BK_DAY),f=function(x){return nf(0).format(x);},mg={};
+  if(old&&old.q)Object.keys(old.q).forEach(function(k){mg[k]=old.q[k];});
+  if(!day||day.date!==today||!day.base)day={date:today,base:(old&&old.q)?old.q:cur,chg:{}};
+  Object.keys(cur).forEach(function(k){
+    var o=mg[k],n=cur[k];
+    if(o&&o.v!==n.v)day.chg[k]=t;
+    mg[k]=n;
+  });
+  var net=[];
+  Object.keys(mg).forEach(function(k){
+    var o=day.base[k],n=mg[k];if(!o||!n)return;
+    var dv=n.v-o.v;if(!dv)return;
+    var up=dv>0,w=day.chg[k]||t;
+    net.push({t:w,k:up?'u':'d',x:(up?'▲ ':'▼ ')+n.n+(up?' subió':' bajó'),i:'Venta '+f(o.v)+' → '+f(n.v)+' ('+sgn(dv,0)+')'});
+  });
+  net.sort(function(a,b){return b.t-a.t;});
+  EVB=net.slice(0,EV_MAX);store(BK_EV,EVB);
+  if(EVB.length){LASTB=EVB[0];store(BK_LAST,LASTB);}
+  store(BK_DAY,day);store(BK_SNAP,{t:t,q:mg});BKREADY=true;
 }
 
 /* ---------- datos de ejemplo (sin fuente todavía) ---------- */
@@ -971,6 +1010,28 @@ function renderTape(){
   evShow(0,false);evLoop();
 }
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#evb');if(b&&EV.length>1){evShow(evI+1,true);evLoop();}});
+var lastTapeB='',evTB=null,evIB=0;
+function evShowB(i,animate){
+  var row=$('#evrb'),n=$('#evnb');if(!row||!EVB.length)return;
+  evIB=(i+EVB.length)%EVB.length;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var swap=function(){evFill(row,EVB[evIB]);if(n)n.textContent=(evIB+1)+' / '+EVB.length;
+    if(!animate||reduce)return;
+    row.className+=' in';void row.offsetWidth;row.className=row.className.replace(' in','');};
+  if(animate&&!reduce){row.className+=' out';setTimeout(swap,240);}else swap();
+}
+function evLoopB(){clearTimeout(evTB);if(EVB.length<2)return;evTB=setTimeout(function(){if(!document.hidden)evShowB(evIB+1,true);evLoopB();},EVDW);}
+function renderTapeB(){
+  var el=$('#tapeb');if(!el)return;
+  if(!BKREADY){el.innerHTML='';lastTapeB='';clearTimeout(evTB);return;}
+  var key=EVB.length?EVB.map(function(e){return e.t+e.x;}).join('|'):'vacío|'+(LASTB?LASTB.t:'');
+  if(key===lastTapeB)return;
+  lastTapeB=key;clearTimeout(evTB);evIB=0;
+  if(!EVB.length){var lv=LASTB?evView(LASTB):null,td=lv&&licDay(new Date(LASTB.t).toISOString())===arNow().date;el.innerHTML='<div class="evn">'+(td?'Sin cambios netos hoy · hubo movimientos que se revirtieron':'Sin cambios hoy'+(lv?' · último: '+esc(lv.w)+' · '+esc(lv.t):''))+'</div>';return;}
+  el.innerHTML='<div class="evh"><b>Cambios de hoy</b><span id="evnb"></span></div><div class="evb" id="evbb"><div class="evr" id="evrb"></div></div>';
+  evShowB(0,false);evLoopB();
+}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#evbb');if(b&&EVB.length>1){evShowB(evIB+1,true);evLoopB();}});
 function renderPF(){
   var box=$('#pf');
   if(!PF.groups){box.innerHTML='<div class="empty">'+(PF.err?'Sin respuesta del servicio de tasas':'Cargando…')+'</div>';renderTape();return;}
@@ -1006,7 +1067,18 @@ function renderBanks(){
     if(!e.q)return tr+nm+'<td colspan="3" class="mut" style="text-align:left" title="'+esc(e.err||'')+'">'+(e.err==='pendiente'?'Falta cargar el Worker':'Sin respuesta')+'</td></tr>';
     return tr+nm+'<td>'+nf(0).format(e.q.compra)+'</td><td style="'+heat(e.q.venta,lo,hi)+'">'+nf(0).format(e.q.venta)+'</td><td>'+nf(0).format(e.q.venta-e.q.compra)+'</td></tr>';
   }).join('');
+  /* semáforo de posición de Meridian según la venta: verde = zona central, amarillo = franjas intermedias, rojo = extremos (por percentil del puesto entre los bancos que responden) */
+  var mer=live.filter(function(r){return r.b.mine;})[0],sm={z:'n',p:null,tip:'Sin base suficiente para comparar (menos de 5 bancos responden)'};
+  if(mer&&live.length>=5){
+    var vs=live.map(function(r){return r.q.venta;}),rk=1+vs.filter(function(v){return v<mer.q.venta;}).length,pp=(rk-1)/(live.length-1),ot=live.filter(function(r){return !r.b.mine;}).map(function(r){return r.q.venta;}).sort(function(a,b){return a-b;}),md=ot.length%2?ot[(ot.length-1)/2]:(ot[ot.length/2-1]+ot[ot.length/2])/2;
+    sm.z=(hi-lo<5)?'g':(pp<.1||pp>.9)?'r':(pp<.25||pp>.75)?'a':'g';sm.p=pp*100;
+    sm.tip='Meridian '+rk+'° de '+live.length+' por venta · '+nf(0).format(mer.q.venta)+' · mediana de los demás '+nf(0).format(md)+' ('+sgn(mer.q.venta-md,0)+')'+(hi-lo<5?' · mercado muy junto, se considera en línea':'');
+  }
+  var sd=$('#semd'),sb=$('#semb');
+  if(sd){sd.innerHTML='<i class="r'+(sm.z==='r'?' on':'')+'"></i><i class="a'+(sm.z==='a'?' on':'')+'"></i><i class="g'+(sm.z==='g'?' on':'')+'"></i>';sd.title=sm.tip;}
+  if(sb){sb.title=sm.tip;sb.innerHTML='<div class="sbw"><div class="sb'+(sm.z==='n'?' na':'')+'"><span class="z1" style="width:10%"></span><span class="z2" style="width:15%"></span><span class="z3" style="width:50%"></span><span class="z2" style="width:15%"></span><span class="z1" style="width:10%"></span></div>'+(sm.p!=null?'<i class="sbm" style="left:calc('+sm.p.toFixed(1)+'% - 2px)"></i>':'')+'<div class="sbl"><span>más barato</span><span>'+(sm.z==='n'?'sin base suficiente':'mediana')+'</span><span>más caro</span></div></div>';}
   $('#banks').innerHTML='<table><thead><tr><th>Entidad</th><th>Compra</th><th>Venta ▲</th><th>Spread</th></tr></thead><tbody>'+body+'</tbody></table>';
+  renderTapeB();
 }
 function stockList(el,rows){
   el.innerHTML=rows.length?rows.map(function(r){
