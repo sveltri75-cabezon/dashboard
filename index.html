@@ -191,6 +191,13 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 .sb .z1{background:#7a2a2d}.sb .z2{background:#8a6a1c}.sb .z3{background:#1c6b45}.sb.na span{background:#2a323c}
 .sbw{position:relative;margin:4px 0 12px}.sbm{position:absolute;top:-3px;width:4px;height:18px;border-radius:2px;background:#fff;box-shadow:0 0 0 2px var(--card)}
 .sbl{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:4px}
+.sbw.pr{margin-top:34px}.sbb{position:relative;height:0}
+.sbub{position:absolute;bottom:8px;background:#fff;color:#111;font-weight:700;font-size:12px;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.sbub:after{content:"";position:absolute;left:var(--ar,50%);bottom:-4px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top-color:#fff}
+.sbt{position:relative;height:20px;margin-top:3px;font-size:11.5px;color:var(--ink);font-weight:600}
+.sbt span{position:absolute;top:0;white-space:nowrap;transform:translateX(-50%)}
+.sbt span:before{content:"";display:block;width:1px;height:5px;background:#4a5561;margin:0 auto 2px}
+.sbt .e0{transform:none}.sbt .e0:before{margin-left:0}.sbt .e1{transform:translateX(-100%)}.sbt .e1:before{margin-right:0}
 
 @media (min-width:901px) and (max-width:1879px){.r1{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}.card.lic{grid-column:span 2;min-height:190px}}
 @media (min-width:1880px){
@@ -349,7 +356,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-27.2';
+var VER='2026-10-29.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1072,11 +1079,12 @@ function renderBanks(){
   if(mer&&live.length>=5){
     var vs=live.map(function(r){return r.q.venta;}),rk=1+vs.filter(function(v){return v<mer.q.venta;}).length,pp=(rk-1)/(live.length-1),ot=live.filter(function(r){return !r.b.mine;}).map(function(r){return r.q.venta;}).sort(function(a,b){return a-b;}),md=ot.length%2?ot[(ot.length-1)/2]:(ot[ot.length/2-1]+ot[ot.length/2])/2;
     sm.z=(hi-lo<5)?'g':(pp<.1||pp>.9)?'r':(pp<.25||pp>.75)?'a':'g';sm.p=pp*100;
+    var sv=vs.slice().sort(function(a,b){return a-b;}),qf=function(q){var i=q*(sv.length-1),a=Math.floor(i),b=Math.ceil(i);return Math.round(sv[a]+(sv[b]-sv[a])*(i-a));};sm.pr=[sv[0],qf(.25),qf(.75),sv[sv.length-1]];sm.mv=mer.q.venta;
     sm.tip='Meridian '+rk+'° de '+live.length+' por venta · '+nf(0).format(mer.q.venta)+' · mediana de los demás '+nf(0).format(md)+' ('+sgn(mer.q.venta-md,0)+')'+(hi-lo<5?' · mercado muy junto, se considera en línea':'');
   }
   var sd=$('#semd'),sb=$('#semb');
   if(sd){sd.innerHTML='<i class="r'+(sm.z==='r'?' on':'')+'"></i><i class="a'+(sm.z==='a'?' on':'')+'"></i><i class="g'+(sm.z==='g'?' on':'')+'"></i>';sd.title=sm.tip;}
-  if(sb){sb.title=sm.tip;sb.innerHTML='<div class="sbw"><div class="sb'+(sm.z==='n'?' na':'')+'"><span class="z1" style="width:10%"></span><span class="z2" style="width:15%"></span><span class="z3" style="width:50%"></span><span class="z2" style="width:15%"></span><span class="z1" style="width:10%"></span></div>'+(sm.p!=null?'<i class="sbm" style="left:calc('+sm.p.toFixed(1)+'% - 2px)"></i>':'')+'<div class="sbl"><span>más barato</span><span>'+(sm.z==='n'?'sin base suficiente':'mediana')+'</span><span>más caro</span></div></div>';}
+  if(sb){sb.title=sm.tip;var pr=sm.pr&&sm.z!=='n',pc=sm.p!=null?sm.p.toFixed(1):0;sb.innerHTML='<div class="sbw'+(pr?' pr':'')+'">'+(pr?'<div class="sbb"><span class="sbub" style="left:'+pc+'%;transform:translateX(-'+pc+'%);--ar:'+pc+'%">Meridian '+nf(0).format(sm.mv)+'</span></div>':'')+'<div class="sb'+(sm.z==='n'?' na':'')+'"><span class="z1" style="width:10%"></span><span class="z2" style="width:15%"></span><span class="z3" style="width:50%"></span><span class="z2" style="width:15%"></span><span class="z1" style="width:10%"></span></div>'+(sm.p!=null?'<i class="sbm" style="left:calc('+pc+'% - 2px)"></i>':'')+(pr?'<div class="sbt"><span class="e0" style="left:0">'+nf(0).format(sm.pr[0])+'</span><span style="left:25%">'+nf(0).format(sm.pr[1])+'</span><span style="left:75%">'+nf(0).format(sm.pr[2])+'</span><span class="e1" style="left:100%">'+nf(0).format(sm.pr[3])+'</span></div>':'')+'<div class="sbl"><span>más barato</span><span>'+(sm.z==='n'?'sin base suficiente':'mediana')+'</span><span>más caro</span></div></div>';}
   $('#banks').innerHTML='<table><thead><tr><th>Entidad</th><th>Compra</th><th>Venta ▲</th><th>Spread</th></tr></thead><tbody>'+body+'</tbody></table>';
   renderTapeB();
 }
