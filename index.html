@@ -357,7 +357,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-30.1';
+var VER='2026-10-30.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1079,9 +1079,12 @@ function renderBanks(){
   var mer=live.filter(function(r){return r.b.mine;})[0],sm={z:'n',p:null,tip:'Sin base suficiente para comparar (menos de 5 bancos responden)'};
   if(mer&&live.length>=5){
     var vs=live.map(function(r){return r.q.venta;}),rk=1+vs.filter(function(v){return v<mer.q.venta;}).length,pp=(rk-1)/(live.length-1),ot=live.filter(function(r){return !r.b.mine;}).map(function(r){return r.q.venta;}).sort(function(a,b){return a-b;}),md=ot.length%2?ot[(ot.length-1)/2]:(ot[ot.length/2-1]+ot[ot.length/2])/2;
-    sm.z=(hi-lo<5)?'g':(pp<.1||pp>.9)?'r':(pp<.25||pp>.75)?'a':'g';sm.p=pp*100;
-    var sv=vs.slice().sort(function(a,b){return a-b;}),qf=function(q){var i=q*(sv.length-1),a=Math.floor(i),b=Math.ceil(i);return Math.round(sv[a]+(sv[b]-sv[a])*(i-a));};sm.pr=[sv[0],qf(.25),qf(.75),sv[sv.length-1]];sm.mv=mer.q.venta;sm.qs=[qf(.1),qf(.25),qf(.5),qf(.75),qf(.9)];sm.lo=sv[0];sm.hi=sv[sv.length-1];
-    sm.tip='Meridian '+rk+'° de '+live.length+' por venta · '+nf(0).format(mer.q.venta)+' · mediana de los demás '+nf(0).format(md)+' ('+sgn(mer.q.venta-md,0)+')'+(hi-lo<5?' · mercado muy junto, se considera en línea':'');
+    sm.p=pp*100;
+    var sv=vs.slice().sort(function(a,b){return a-b;}),qu=function(q){var i=q*(sv.length-1),a=Math.floor(i),b=Math.ceil(i);return sv[a]+(sv[b]-sv[a])*(i-a);},med=qu(.5),bx=Math.max((qu(.75)-qu(.25))/2,2),dd=Math.abs(mer.q.venta-med);
+    /* bandas dinámicas: verde = mediana ± media distancia intercuartil (mín. 2 pesos), amarillo hasta el doble, rojo más allá */
+    sm.z=(hi-lo<5)?'g':dd<=bx?'g':dd<=2*bx?'a':'r';
+    sm.pr=[sv[0],Math.round(med-bx),Math.round(med+bx),sv[sv.length-1]];sm.mv=mer.q.venta;sm.qs=[med-2*bx,med-bx,med,med+bx,med+2*bx];sm.lo=sv[0];sm.hi=sv[sv.length-1];
+    sm.tip='Meridian '+rk+'° de '+live.length+' por venta · '+nf(0).format(mer.q.venta)+' · mediana de los demás '+nf(0).format(md)+' ('+sgn(mer.q.venta-md,0)+')'+(hi-lo<5?' · mercado muy junto, se considera en línea':' · zona verde: mediana ±'+nf(0).format(Math.round(bx)));
   }
   var sd=$('#semd'),sb=$('#semb');
   if(sd){sd.innerHTML='<i class="r'+(sm.z==='r'?' on':'')+'"></i><i class="a'+(sm.z==='a'?' on':'')+'"></i><i class="g'+(sm.z==='g'?' on':'')+'"></i>';sd.title=sm.tip;}
