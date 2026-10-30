@@ -26,7 +26,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.3 system-ui
 .card h2{margin:0 0 6px;font:600 11px system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap}
 .card h2 i{margin-left:auto;font-style:normal;letter-spacing:0;text-transform:none;color:#5d6875;font-weight:500;overflow:hidden;text-overflow:ellipsis}
 .stat{flex:1;display:flex;flex-direction:column;justify-content:space-between}
-.hd{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.hd{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.hd.pfh{align-items:center;gap:6px 10px}.hd.pfh .pill{min-width:0;font-size:13px}
 .big{font-size:34px;font-weight:700;line-height:1.1;white-space:nowrap}
 .pill{display:inline-block;min-width:64px;text-align:center;padding:3px 8px;border-radius:6px;font-weight:700;font-size:13px;color:#fff;white-space:nowrap}
 .pill.u{background:var(--up)}.pill.d{background:var(--dn)}.pill.n{background:#39424d}.pill.a{background:var(--acc);color:#06121c}
@@ -249,6 +249,7 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
   .card.half{grid-column:auto}section[data-src="cau"].half,section[data-src="pf"].half{grid-column:1/-1}
   .card.hl{margin:0 5px 0 12px}
   .card.hr{margin:0 12px 0 5px}
+  section[data-src="cau"].half,section[data-src="pf"].half{margin:0 12px}
   .card.off{display:none}
   .big{font-size:26px}.card.full .big{font-size:30px}
   .card.half h2 i{display:none}
@@ -357,7 +358,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-30.2';
+var VER='2026-10-30.3';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -966,7 +967,8 @@ function renderPFW(){
   var m=PF.me;
   if(!PF.groups){$('#c-pfw').innerHTML='<div class="empty">'+(PF.err?'Sin respuesta':'Cargando…')+'</div>';return;}
   if(!m){$('#c-pfw').innerHTML='<div class="empty">Meridian no informa tasa para no clientes</div>';return;}
-  $('#c-pfw').innerHTML=statHTML(nf(2).format(m.rate)+' %','<span class="pill a">Puesto '+m.rank+'</span>',[m.count+(m.count===1?' entidad':' entidades'),'en este puesto'],[nf(2).format(PF.best)+' %','mejor tasa']);
+  var top=PF.groups&&PF.groups[0],kb=top&&top.banks?top.banks.length:0;
+  $('#c-pfw').innerHTML='<div class="hd pfh"><div class="big">'+nf(2).format(m.rate)+' %</div><span class="pill a">Puesto '+m.rank+' ('+m.count+')</span><span class="pill n">Mejor tasa '+nf(2).format(PF.best)+' %'+(kb?' ('+kb+')':'')+'</span></div>';
 }
 function spark(pts,n){
   var p=pts.slice(-n);if(p.length<2)return '<svg viewBox="0 0 100 32"></svg>';
