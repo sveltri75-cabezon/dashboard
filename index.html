@@ -387,7 +387,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-30.7';
+var VER='2026-10-31.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1646,7 +1646,7 @@ document.addEventListener('visibilitychange',function(){if(document.hidden)hidde
 window.addEventListener('pageshow',function(e){if(e.persisted)wake();});
 
 /* ---------- Avisos push (Web Push) ---------- */
-var AVISOS_URL=''; /* URL del Worker de avisos; vacío = la campana queda oculta */
+var AVISOS_URL='https://wild-limit-495b.sveltri75.workers.dev'; /* URL del Worker de avisos; vacío = la campana queda oculta */
 function irHash(h){var i=-1;TABS.forEach(function(t,k){if(t[0]===h)i=k;});if(i>=0&&mq.matches)goTab(i,i>tabIdx()?1:-1);}
 if(location.hash.length>1)irHash(location.hash.slice(1));
 window.addEventListener('hashchange',function(){if(location.hash.length>1)irHash(location.hash.slice(1));});
