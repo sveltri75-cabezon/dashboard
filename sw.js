@@ -6,7 +6,7 @@ self.addEventListener('push',function(e){
   var d={};
   try{d=e.data?e.data.json():{};}catch(x){d={body:e.data?e.data.text():''};}
   ultimoPush=Date.now();
-  var o={body:d.body||'',tag:d.tag||undefined,icon:'icon-192.png',badge:'icon-192.png',lang:'es-AR',data:{url:d.url||'./',pausa:d.pausa||'',fija:!!d.fija}};
+  var o={body:d.body||'',tag:d.tag||undefined,badge:'badge-96.png',lang:'es-AR',data:{url:d.url||'./',pausa:d.pausa||'',fija:!!d.fija}};
   /* el resumen fijo se reemplaza en silencio: sin sonido, sin vibración y sin volver a avisar */
   if(d.fija){o.silent=true;o.renotify=false;}
   e.waitUntil(self.registration.showNotification(d.title||'Tablero de Mercados',o));
