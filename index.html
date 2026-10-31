@@ -143,6 +143,21 @@ tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 /* botón de actualizar */
 .rf{position:fixed;right:calc(16px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:#1b222a;color:var(--ink);display:grid;place-items:center;cursor:pointer;z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:0}
 .rf:active{transform:scale(.94)}
+.rf.bl{bottom:calc(74px + env(safe-area-inset-bottom))}.rf.bl.on{color:var(--acc)}
+.avs{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}.avs.on{display:flex}
+.avp{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:16px 16px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media (min-width:901px){.avs{align-items:center}.avp{border-radius:16px}}
+.avp h3{font-size:20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.avp h3 button{background:none;border:0;color:var(--mut);font-size:24px;cursor:pointer;line-height:1}
+.avp .avd{color:var(--mut);font-size:13px;margin-bottom:8px}
+.avp .tg{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.avp .tg small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}.avp .tg input{display:none}
+.avp .sw{width:42px;height:24px;border-radius:99px;background:#39424d;position:relative;flex:none;transition:background .15s}
+.avp .sw:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+.avp .tg input:checked+.sw{background:var(--up)}.avp .tg input:checked+.sw:after{left:21px}
+.avp .abtn{display:block;width:100%;text-align:center;background:var(--acc);color:#06121c;font:700 15px system-ui,sans-serif;border:0;border-radius:99px;padding:12px;margin-top:10px;cursor:pointer}
+.avp .abtn.sec{background:#222a33;color:var(--ink);font-weight:600}
+.avp .avm{color:var(--mut);font-size:12.5px;margin-top:8px;min-height:16px}.avp .avm.er{color:#ff7478}
+
 .rf.spin svg{animation:rot .9s linear infinite}
 /* cuenta regresiva y botón de actualizar por tarjeta */
 .ctl{display:inline-flex;align-items:center;gap:6px;flex:none;letter-spacing:0;text-transform:none}
@@ -355,12 +370,23 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
   </div>
 </div>
 <div class="bn" id="bn"></div>
+<button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
+<div id="avs" class="avs" role="dialog" aria-modal="true" aria-label="Avisos"><div class="avp">
+<h3>Avisos <button id="avx" type="button" aria-label="Cerrar">×</button></h3>
+<div class="avd">Notificaciones push en este dispositivo, con la app cerrada.</div>
+<label class="tg"><div>Licitación nueva con especies<small>Solo licitaciones primarias del Tesoro</small></div><input type="checkbox" data-k="lic"><i class="sw"></i></label>
+<label class="tg"><div>Resultado de la licitación<small>Con montos adjudicados</small></div><input type="checkbox" data-k="res"><i class="sw"></i></label>
+<label class="tg"><div>Cambio de puesto de Meridian<small>Plazo fijo web</small></div><input type="checkbox" data-k="pf"><i class="sw"></i></label>
+<button id="avb" class="abtn" type="button">Activar avisos en este celular</button>
+<button id="avt" class="abtn sec" type="button" style="display:none">Enviar aviso de prueba</button>
+<div id="avm" class="avm"></div>
+</div></div>
 <button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button>
 
 <script>
 (function(){
 'use strict';
-var VER='2026-10-30.4';
+var VER='2026-10-30.5';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1618,6 +1644,63 @@ function wake(){
 document.addEventListener('visibilitychange',function(){if(document.hidden)hiddenAt=Date.now();else wake();});
 window.addEventListener('pageshow',function(e){if(e.persisted)wake();});
 
+/* ---------- Avisos push (Web Push) ---------- */
+var AVISOS_URL=''; /* URL del Worker de avisos; vacío = la campana queda oculta */
+function irHash(h){var i=-1;TABS.forEach(function(t,k){if(t[0]===h)i=k;});if(i>=0&&mq.matches)goTab(i,i>tabIdx()?1:-1);}
+if(location.hash.length>1)irHash(location.hash.slice(1));
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',function(e){var h=e.data&&e.data.go?String(e.data.go).split('#')[1]:'';if(h)irHash(h);});
+(function(){
+  var bl=$('#bl'),sh=$('#avs');
+  if(!bl)return;
+  if(!AVISOS_URL||!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)||!/^https:/.test(location.protocol)){bl.style.display='none';return;}
+  var PK='tablero-avisos-v1',pr=recall(PK)||{lic:true,res:true,pf:true},busy=false,activo=false;
+  function api(p,body){return fetch(AVISOS_URL.replace(/\/+$/,'')+p,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j;});});}
+  function u8(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o;}
+  function cur(){return navigator.serviceWorker.getRegistration().then(function(r){return r?r.pushManager.getSubscription():null;});}
+  function msg(t,err){var m=$('#avm');m.textContent=t||'';m.className='avm'+(err?' er':'');}
+  function paint(sub){
+    activo=!!sub;bl.classList.toggle('on',activo);
+    sh.querySelectorAll('input[data-k]').forEach(function(i){i.checked=!!pr[i.dataset.k];});
+    $('#avb').textContent=activo?'Desactivar avisos en este celular':'Activar avisos en este celular';
+    $('#avb').className='abtn'+(activo?' sec':'');
+    $('#avt').style.display=activo?'block':'none';
+    if(!activo&&Notification.permission==='denied')msg('Los avisos están bloqueados para este sitio: habilitalos en la configuración del navegador.',1);
+  }
+  function abrir(){sh.classList.add('on');msg('');cur().then(paint,function(){paint(null);});}
+  function cerrar(){sh.classList.remove('on');}
+  function activar(){
+    if(busy)return;busy=true;msg('Activando…');
+    Notification.requestPermission().then(function(p){
+      if(p!=='granted')throw new Error('No diste permiso para mostrar avisos.');
+      return navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready;});
+    }).then(function(r){
+      return r.pushManager.getSubscription().then(function(s){return s?s.unsubscribe():0;}).then(function(){return api('/vapid');}).then(function(k){return r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(k.key)});});
+    }).then(function(sub){return api('/subscribe',{subscription:sub.toJSON(),prefs:pr});})
+    .then(function(){msg('Avisos activados en este celular.');return cur();}).then(paint)
+    .catch(function(e){msg((e&&e.message)||'No se pudo activar los avisos.',1);}).then(function(){busy=false;});
+  }
+  function desactivar(){
+    if(busy)return;busy=true;
+    cur().then(function(sub){if(!sub)return;return api('/unsubscribe',{endpoint:sub.endpoint}).catch(function(){}).then(function(){return sub.unsubscribe();});})
+    .then(function(){msg('Avisos desactivados.');paint(null);})
+    .catch(function(e){msg((e&&e.message)||'No se pudo desactivar.',1);}).then(function(){busy=false;});
+  }
+  bl.addEventListener('click',abrir);
+  $('#avx').addEventListener('click',cerrar);
+  sh.addEventListener('click',function(e){if(e.target===sh)cerrar();});
+  $('#avb').addEventListener('click',function(){activo?desactivar():activar();});
+  $('#avt').addEventListener('click',function(){
+    msg('Enviando prueba…');
+    cur().then(function(sub){if(!sub)throw new Error('Este celular no está suscripto.');return api('/test',{endpoint:sub.endpoint});})
+    .then(function(){msg('Prueba enviada: debería llegar en unos segundos.');}).catch(function(e){msg((e&&e.message)||'No se pudo enviar la prueba.',1);});
+  });
+  sh.addEventListener('change',function(e){
+    var k=e.target&&e.target.dataset&&e.target.dataset.k;if(!k)return;
+    pr[k]=e.target.checked;store(PK,pr);
+    if(activo)cur().then(function(sub){if(sub)return api('/subscribe',{subscription:sub.toJSON(),prefs:pr});}).then(function(){msg('Preferencias guardadas.');}).catch(function(e2){msg((e2&&e2.message)||'No se pudieron guardar.',1);});
+  });
+  cur().then(paint,function(){});
+})();
 /* Manifiesto para instalar como app (Android/Chrome); en iPhone aplican las etiquetas meta del encabezado. */
 var ICON512='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';
 try{
