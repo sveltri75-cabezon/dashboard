@@ -1,0 +1,30 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diagnóstico bonos</title>
+<style>body{margin:0;background:#0b0d10;color:#eef2f6;font:14px/1.4 system-ui,sans-serif;padding:14px}h1{font-size:18px;margin:0 0 10px}h2{font-size:15px;margin:16px 0 6px;color:#6fb1e0}
+pre{background:#14181d;border:1px solid #222831;border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-all;font-size:12px;max-height:340px;overflow:auto}
+button{background:#6fb1e0;color:#06121c;border:0;border-radius:99px;padding:10px 16px;font-weight:700;font-size:14px;margin:6px 6px 0 0}.m{color:#8b97a4}</style></head><body>
+<h1>Diagnóstico API de bonos</h1><div id="s" class="m">Consultando…</div><div id="o"></div>
+<button id="cp" style="display:none">Copiar todo</button>
+<script>
+(function(){
+var URL_='https://compararfondos.com.ar/api/bonos',out=[],s=document.getElementById('s'),o=document.getElementById('o');
+function sec(t,x){out.push('## '+t+'\n'+x);var h=document.createElement('h2');h.textContent=t;o.appendChild(h);var p=document.createElement('pre');p.textContent=x;o.appendChild(p);}
+function cut(v,n){var t=JSON.stringify(v);return t.length>n?t.slice(0,n)+'…':t;}
+fetch(URL_,{cache:'no-store'}).then(function(r){return r.text().then(function(t){return {st:r.status,t:t};});}).then(function(r){
+  var j;try{j=JSON.parse(r.t);}catch(e){s.textContent='La respuesta no es JSON válido (HTTP '+r.st+', '+r.t.length+' caracteres)';sec('Inicio',r.t.slice(0,600));sec('Final',r.t.slice(-600));fin();return;}
+  var b=j.bonds||[],by={};b.forEach(function(x){(by[x.tipo]=by[x.tipo]||[]).push(x);});
+  s.textContent='HTTP '+r.st+' · '+r.t.length+' caracteres · count='+j.count+' · recibidos='+b.length;
+  sec('Resumen',Object.keys(by).map(function(k){return k+': '+by[k].length+' → '+by[k].slice(0,40).map(function(x){return x.ticker;}).join(', ');}).join('\n')+'\nrueda: '+cut(j.rueda,300));
+  ['CER','DUAL','TAMAR','DL','Provincial','Treasury','International'].forEach(function(k){
+    var l=by[k];if(!l||!l.length){sec(k,'(ninguno)');return;}
+    var x=l[0],ks=Object.keys(x);
+    sec(k+' · ejemplo '+x.ticker,'Campos: '+ks.join(', ')+'\n\n'+cut(x,2500));
+  });
+  var sinFlujos=b.filter(function(x){return !x.flujos||!x.flujos.length;}).map(function(x){return x.ticker+' ('+x.tipo+')';});
+  sec('Sin flujos ('+sinFlujos.length+')',sinFlujos.slice(0,80).join(', ')||'(ninguno)');
+  var sinTir=b.filter(function(x){return x.tir==null;}).map(function(x){return x.ticker+' ('+x.tipo+')';});
+  sec('Sin TIR ('+sinTir.length+')',sinTir.slice(0,80).join(', ')||'(ninguno)');
+  fin();
+}).catch(function(e){s.textContent='Error: '+(e&&e.message||e);fin();});
+function fin(){var c=document.getElementById('cp');c.style.display='';c.onclick=function(){var t=out.join('\n\n');try{navigator.clipboard.writeText(t).then(function(){c.textContent='Copiado';});}catch(e){c.textContent='No se pudo copiar';}};}
+})();
+</script></body></html>
