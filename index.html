@@ -186,6 +186,19 @@ section[data-src=lic] .ctl em{display:none}
 .lnx{display:flex;align-items:center;gap:9px;border:1px dashed #2c3540;border-radius:8px;padding:3px 10px;background:#101419;font-size:13px;margin-top:4px;white-space:nowrap}
 .lnx .lst{font-size:10.5px}
 .lic-m{display:none}.mobonly{display:none}
+.bsc{flex:1 1 0;min-height:0;overflow:auto}.bsc th{position:sticky;top:0;background:var(--card)}
+.bseg{display:flex;background:#0f1317;border:1px solid var(--line);border-radius:99px;padding:3px;width:100%}
+.bseg button{flex:1;border:0;background:none;color:var(--mut);font:700 13px system-ui,sans-serif;padding:8px 0;border-radius:99px;cursor:pointer}.bseg button.on{background:#262d36;color:var(--ink)}
+.bo{display:grid;grid-template-columns:minmax(0,1fr) 56px 66px 70px;align-items:center;column-gap:4px;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.bo.h{border-top:0;color:var(--mut);font-size:12px;padding:2px 0 6px;cursor:default;white-space:nowrap}.bo.h div+div{text-align:right}
+.bo.sel{background:var(--me);margin:0 -14px;padding-left:14px;padding-right:14px}
+.bo .n{font-weight:700;font-size:15px}.bo .d{color:var(--mut);font-size:11.5px;margin-top:1px}
+.bo .x{text-align:right;font-size:13px}.bo .t{text-align:right;font-weight:700;font-size:16px}
+.bo .pill{min-width:0;padding:3px 5px;font-size:12.5px;justify-self:end}
+.bnote{color:var(--mut);font-size:12px;padding:8px 0 2px;border-top:1px solid var(--line)}
+.blg{margin-top:8px;font-size:12.5px}.blg div{display:flex;align-items:center;gap:8px;padding:3px 0}.blg i{display:inline-block;width:16px;height:3px;border-radius:2px;flex:none}
+.bch svg{display:block;width:100%;overflow:visible}.bch circle{cursor:pointer}
+@media (max-width:900px){.deskonly{display:none!important}.card.bsg{background:none;border:0;padding:0}}
 .lic-m .lh0{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:8px}
 .lic-m .lbig{font-size:34px;font-weight:700;line-height:1.1}.lic-m .lk{font-size:12px;color:var(--mut)}
 .lic-m table td{font-size:13.5px}
@@ -365,8 +378,11 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
   <div class="r3">
     <section data-src="stocks" class="card" data-tab="acciones"><h2>Acciones <i>ganadores y perdedores</i></h2>
       <div class="two"><div><div class="sub u">▲ Más subieron</div><div id="up"></div></div><div><div class="sub d">▼ Más bajaron</div><div id="down"></div></div></div></section>
-    <section class="card" data-tab="bonos"><h2>Bonos tasa fija <i>ejemplo</i></h2><div id="bf"></div></section>
-    <section class="card" data-tab="bonos"><h2>Bonos hard dólar <i>ejemplo · USD D</i></h2><div id="bh"></div></section>
+    <section data-src="bon" class="card deskonly" data-tab="bonos"><h2>Bonos tasa fija <i>TIR · pesos</i></h2><div class="bsc" id="bf"></div></section>
+    <section data-src="bon" class="card deskonly" data-tab="bonos"><h2>Bonos hard dólar <i>TIR · USD D</i></h2><div class="bsc" id="bh"></div></section>
+    <section class="card mobonly bsg" data-tab="bonos"><div class="bseg" id="bseg"><button type="button" data-g="pesos">Tasa fija $</button><button type="button" data-g="cer">CER</button><button type="button" data-g="usd">Hard dólar</button></div></section>
+    <section data-src="bon" class="card mobonly" data-tab="bonos" style="display:block"><h2 id="bt">Tasa fija en pesos <i id="bs"></i></h2><div id="bl2"></div></section>
+    <section class="card mobonly" data-tab="bonos" style="display:block"><h2 id="bct">Curva <i id="bcs"></i></h2><div class="bch" id="bch"></div><div class="blg" id="blg"></div></section>
   </div>
 </div>
 <div class="bn" id="bn"></div>
@@ -387,8 +403,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-31.1';
-var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000, API='https://data912.com';
+var VER='2026-10-31.2';
+var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
 var nfs={};
@@ -403,7 +419,7 @@ function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d'
 var SERIES=[{id:11,name:'BAIBAR'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
-var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,t:{bcra:0,pf:0}};
+var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
 
 /* ---------- red ---------- */
 function getJSON(url){
@@ -913,9 +929,7 @@ function trackBanks(cur){
 
 /* ---------- datos de ejemplo (sin fuente todavía) ---------- */
 var DUMMY={
-  cau:{v:28.40,d:-0.60,max:29.50,min:27.80},
-  bf:[['S29N6','101,85',31.2,'1 mes',0.12],['S15E7','98,40',30.1,'3 meses',0.21],['T30J7','121,30',29.4,'8 meses',-0.08],['TY30P','104,10',28.7,'1,5 años',0.33],['TO28','96,75',27.9,'2 años',-0.15]],
-  bh:[['AL30D','62,40',11.2,0.45],['GD30D','66,10',10.8,0.38],['AL35D','58,25',12.1,-0.22],['GD35D','63,90',11.6,-0.10],['AE38D','70,35',12.4,0.27]]
+  cau:{v:28.40,d:-0.60,max:29.50,min:27.80}
 };
 
 /* ---------- render ---------- */
@@ -1141,12 +1155,160 @@ function stockList(el,rows){
     return '<div class="sr"><b>'+esc(r.symbol)+'</b><span class="p">'+nf(r.c%1?2:0).format(r.c)+'</span>'+pill(r.pct_change)+'</div>';
   }).join(''):'<div class="empty">Sin datos</div>';
 }
-function renderBonos(){
-  $('#bf').innerHTML='<table><thead><tr><th>Especie</th><th>Precio</th><th>TIR</th><th>Plazo</th><th>Var.</th></tr></thead><tbody>'+
-    DUMMY.bf.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+nf(1).format(r[2])+' %</td><td>'+r[3]+'</td><td>'+pill(r[4])+'</td></tr>';}).join('')+'</tbody></table>';
-  $('#bh').innerHTML='<table><thead><tr><th>Especie</th><th>Precio</th><th>TIR</th><th>Var.</th></tr></thead><tbody>'+
-    DUMMY.bh.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+nf(1).format(r[2])+' %</td><td>'+pill(r[3])+'</td></tr>';}).join('')+'</tbody></table>';
+/* ---------- bonos: flujos y precios de compararfondos.com.ar (BYMA); TIR y duration se calculan acá ---------- */
+var BON_U='https://compararfondos.com.ar/api/bonos',BKEY='tablero-bonos-v1',BONG=recall('tablero-bonos-g')||'pesos',BONSEL=null;
+function isoD(t){var p=String(t).split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])/864e5;}
+function xirr(P,fl,t0){ /* TIR efectiva anual, base 365 */
+  var f=function(r){var v=-P,i;for(i=0;i<fl.length;i++)v+=fl[i].m/Math.pow(1+r,(fl[i].d-t0)/365);return v;},lo=-0.95,hi=20,m=0,i;
+  if(!(f(lo)>0)||!(f(hi)<0))return NaN;
+  for(i=0;i<120;i++){m=(lo+hi)/2;if(f(m)>0)lo=m;else hi=m;}
+  return m;
 }
+function bonDur(P,fl,t0,y){ /* duration modificada en años */
+  var num=0,den=0,i,t,pv;
+  for(i=0;i<fl.length;i++){t=(fl[i].d-t0)/365;pv=fl[i].m/Math.pow(1+y,t);num+=pv*t;den+=pv;}
+  return den>0?num/den/(1+y):NaN;
+}
+function bonGrupo(b){
+  var t=b.tipo,k=String(b.ticker||'');
+  if(t==='LECAP'||t==='BONCAP'||t==='FIJA')return 'pesos';
+  if(t==='CER')return 'cer';
+  if(t==='Soberano'&&b.moneda==='USD'&&/D$/.test(k))return 'usd';
+  return '';
+}
+function bonLey(k){return /^(AL|AE)\d/.test(k)?'Ley Argentina':/^GD\d/.test(k)?'Ley Nueva York':'BOPREAL';}
+function bonBuild(j){
+  var today=isoD(arNow().date),liq=j.rueda&&/^\d{4}-\d\d-\d\d$/.test(j.rueda.liquidacion||'')?isoD(j.rueda.liquidacion):today+1,t0=Math.max(liq,today),out=[];
+  j.bonds.forEach(function(b){
+    var g=bonGrupo(b);if(!g||!(b.precio>0)||!b.flujos||!b.flujos.length)return;
+    var fl=b.flujos.map(function(f){return {d:isoD(f.fecha),m:Number(f.monto)};}).filter(function(f){return f.d>t0&&f.m>0;});
+    if(!fl.length)return;
+    var y=xirr(Number(b.precio),fl,t0);if(!isFinite(y))return;
+    out.push({t:b.ticker,g:g,ley:g==='usd'?bonLey(b.ticker):'',p:Number(b.precio),pc:Number(b.pctChange)||0,v:b.vencimiento||'',y:y*100,dm:bonDur(Number(b.precio),fl,t0,y),days:Math.round(fl[fl.length-1].d-today),bullet:fl.length===1,stale:!!b.precioStale});
+  });
+  return {rows:out};
+}
+function loadBON(){
+  return getJSON(BON_U).then(function(j){
+    if(!j||!Array.isArray(j.bonds))throw new Error('formato');
+    var jj={bonds:j.bonds.filter(bonGrupo).map(function(b){return {ticker:b.ticker,tipo:b.tipo,moneda:b.moneda,precio:b.precio,pctChange:b.pctChange,vencimiento:b.vencimiento,flujos:b.flujos,precioStale:b.precioStale};}),rueda:j.rueda};
+    var r=bonBuild(jj);if(!r.rows.length)throw new Error('sin especies');
+    S.bon=r;S.bonErr=null;S.bonT=Date.now();store(BKEY,{t:Date.now(),j:jj});
+  },function(e){S.bonErr=e.message||'error';S.bonT=Date.now();throw e;});
+}
+(function(){var c=recall(BKEY);if(c&&c.j&&Array.isArray(c.j.bonds)){try{S.bon=bonBuild(c.j);}catch(e){}}})();
+
+/* tendencia: se prueban varias funciones y se elige por R² ajustado (con preferencia por la más simple) */
+var BFN=[['lineal',function(x){return [x];},function(c,x){return c[0]+c[1]*x;}],
+  ['logarítmica',function(x){return [Math.log(x+.25)];},function(c,x){return c[0]+c[1]*Math.log(x+.25);}],
+  ['raíz',function(x){return [Math.sqrt(x)];},function(c,x){return c[0]+c[1]*Math.sqrt(x);}],
+  ['cuadrática',function(x){return [x,x*x];},function(c,x){return c[0]+c[1]*x+c[2]*x*x;}]];
+function bonSolve(A,y){
+  var k=A[0].length,M=[],i,j,r,p,tm,f,v,c=[];
+  for(i=0;i<k;i++){M.push([]);for(j=0;j<k;j++){v=0;for(r=0;r<A.length;r++)v+=A[r][i]*A[r][j];M[i].push(v);}v=0;for(r=0;r<A.length;r++)v+=A[r][i]*y[r];M[i].push(v);}
+  for(i=0;i<k;i++){p=i;for(r=i+1;r<k;r++)if(Math.abs(M[r][i])>Math.abs(M[p][i]))p=r;tm=M[i];M[i]=M[p];M[p]=tm;if(Math.abs(M[i][i])<1e-12)return null;for(r=i+1;r<k;r++){f=M[r][i]/M[i][i];for(j=i;j<=k;j++)M[r][j]-=f*M[i][j];}}
+  for(i=k-1;i>=0;i--){v=M[i][k];for(j=i+1;j<k;j++)v-=M[i][j]*c[j];c[i]=v/M[i][i];}
+  return c;
+}
+function bonPick(D,xm){
+  var n=D.length;if(n<5)return null;
+  var y=D.map(function(r){return r.y;}),m=y.reduce(function(a,b){return a+b;},0)/n,st=y.reduce(function(a,v){return a+(v-m)*(v-m);},0),res=[];
+  if(!(st>1e-9))return null;
+  BFN.forEach(function(f){
+    var A=D.map(function(r){return [1].concat(f[1](r.dm));}),c=bonSolve(A,y);if(!c)return;
+    var sr=0,ok=true,q,v;D.forEach(function(r,i){var e=y[i]-f[2](c,r.dm);sr+=e*e;});
+    var k=A[0].length-1,r2=1-sr/st,adj=1-(1-r2)*(n-1)/(n-k-1);
+    for(q=0;q<=40;q++){v=f[2](c,xm*q/40);if(!(v>0&&v<200))ok=false;}
+    if(ok)res.push({n:f[0],c:c,f:f[2],adj:adj});
+  });
+  if(!res.length)return null;
+  res.sort(function(a,b){return b.adj-a.adj;});
+  var best=res[0],lin=res.filter(function(z){return z.n==='lineal';})[0];
+  if(lin&&best.adj-lin.adj<0.02)best=lin;
+  best.weak=best.adj<0.5;return best;
+}
+function niceTicks(a,b,n){
+  var raw=(b-a)/n,mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)),st=[1,2,2.5,5,10].map(function(x){return x*mag;}).filter(function(x){return x>=raw;})[0],o=[],v=Math.ceil(a/st-1e-9)*st;
+  for(;v<=b+1e-9;v+=st)o.push(Math.round(v*1000)/1000);
+  return o;
+}
+
+/* ---------- vista ---------- */
+var BTIT={pesos:['Tasa fija en pesos','TIR efectiva anual','Curva en pesos'],cer:['CER','TIR real (CER de hoy)','Curva CER'],usd:['Hard dólar','TIR en USD · cotización D','Curva en dólares']};
+var BCOL=['#6fb1e0','#e0a93b','#7bd88f'];
+function fmtVto(v){var p=String(v).split('-');return p.length<3?'':p[2]+'-'+MES[+p[1]-1]+'-'+p[0].slice(2);}
+function bonPlazo(r){return r.bullet?r.days+' d':'dur '+nf(1).format(r.dm)+' a';}
+function bonDesk(rows,leyCol){
+  if(!rows.length)return S.bonErr&&!S.bon?na():'<div class="empty">Cargando…</div>';
+  rows=rows.slice().sort(function(a,b){return a.dm-b.dm;});
+  return '<table><thead><tr><th>Especie</th><th>Precio</th><th>TIR</th><th>Plazo</th><th>Var.</th></tr></thead><tbody>'+rows.map(function(r){
+    return '<tr><td>'+r.t+(r.stale?' *':'')+'</td><td>'+nf(2).format(r.p)+'</td><td>'+nf(1).format(r.y)+' %</td><td>'+bonPlazo(r)+'</td><td>'+pill(r.pc)+'</td></tr>';}).join('')+'</tbody></table>';
+}
+function renderBonos(){
+  var fb=$('#bf'),fh=$('#bh');
+  if(fb)fb.innerHTML=bonDesk(bonRows('pesos'));
+  if(fh)fh.innerHTML=bonDesk(bonRows('usd'));
+  var seg=document.querySelectorAll('#bseg button');[].forEach.call(seg,function(b){b.classList.toggle('on',b.getAttribute('data-g')===BONG);});
+  var rows=bonRows(BONG),T=BTIT[BONG]||BTIT.pesos;
+  if($('#bt'))$('#bt').firstChild.nodeValue=T[0]+' ';
+  if($('#bs'))$('#bs').textContent=T[1];
+  if($('#bct'))$('#bct').firstChild.nodeValue=T[2]+' ';
+  var l=$('#bl2'),ch=$('#bch'),lg=$('#blg');if(!l)return;
+  if(!rows.length){l.innerHTML=S.bonErr&&!S.bon?na():'<div class="empty">Cargando…</div>';if(ch)ch.innerHTML='';if(lg)lg.innerHTML='';return;}
+  var sorted=rows.slice().sort(function(a,b){return b.dm-a.dm;}),stale=false;
+  var h='<div class="bo h"><div>Especie</div><div>Dur. mod.</div><div>TIR</div><div>Var.</div></div>';
+  sorted.forEach(function(r){
+    if(r.stale)stale=true;
+    h+='<div class="bo'+(r.t===BONSEL?' sel':'')+'" data-t="'+r.t+'"><div><div class="n">'+r.t+(r.stale?' *':'')+'</div><div class="d">'+fmtVto(r.v)+(r.bullet?' · '+r.days+' d':'')+(r.ley?' · '+(r.ley==='Ley Argentina'?'AR':r.ley==='Ley Nueva York'?'NY':'BOP'):'')+'</div></div><div class="x">'+nf(2).format(r.dm)+'</div><div class="t">'+nf(1).format(r.y)+' %</div>'+pill(r.pc)+'</div>';
+  });
+  h+='<div class="bnote">Duración modificada: cuánto cambia el precio si la tasa sube 1 punto.'+(stale?' * Precio sin operaciones recientes.':'')+(S.bonErr?' No se pudo actualizar: se muestran los últimos datos.':'')+' Fuente: compararfondos.com.ar (BYMA).</div>';
+  l.innerHTML=h;
+  bonChart(rows,ch,lg);
+}
+function bonRows(g){return S.bon?S.bon.rows.filter(function(r){return r.g===g;}):[];}
+function bonChart(rows,el,lg){
+  if(!el)return;
+  var W=336,H=250,L=38,R=16,T=14,B=28,xm=Math.max.apply(null,rows.map(function(r){return r.dm;}))*1.08||1,ys=rows.map(function(r){return r.y;}),
+    y0=Math.floor(Math.min.apply(null,ys)-0.6),y1=Math.ceil(Math.max.apply(null,ys)+0.6),yt=niceTicks(y0,y1,4),xt=niceTicks(0,xm,4);
+  var X=function(d){return L+d/xm*(W-L-R);},Y=function(t){return T+(y1-t)/(y1-y0)*(H-T-B);},s='<svg viewBox="0 0 '+W+' '+H+'">',leg='';
+  yt.forEach(function(t){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(t)+'" y2="'+Y(t)+'" stroke="#222831"/><text x="0" y="'+(Y(t)+4)+'" fill="#8b97a4" font-size="12">'+nf(0).format(t)+' %</text>';});
+  xt.forEach(function(d){s+='<text x="'+X(d)+'" y="'+(H-8)+'" fill="#8b97a4" font-size="12" text-anchor="middle">'+(d===0?'0':String(d).replace('.',','))+'</text>';});
+  var groups=BONG==='usd'?[['Ley Argentina',function(r){return r.ley==='Ley Argentina';}],['Ley Nueva York',function(r){return r.ley==='Ley Nueva York';}],['BOPREAL',function(r){return r.ley==='BOPREAL';}]]:[[BONG==='cer'?'CER':'Letras y bonos en pesos',function(){return true;}]];
+  var gcol=function(r){var i;for(i=0;i<groups.length;i++)if(groups[i][1](r))return BCOL[i];return BCOL[0];};
+  groups.forEach(function(g,gi){
+    var sub=rows.filter(g[1]);if(!sub.length)return;
+    var F=bonPick(sub,xm),col=BCOL[gi];
+    if(!F){leg+='<div><i style="background:'+col+'"></i><span>'+g[0]+' <span class="mut">· sin tendencia (menos de 5 especies)</span></span></div>';return;}
+    var xs=Math.min.apply(null,sub.map(function(r){return r.dm;}))*0.6,xe=Math.min(xm,Math.max.apply(null,sub.map(function(r){return r.dm;}))*1.06),pts=[],k,x,v;
+    for(k=0;k<=60;k++){x=xs+(xe-xs)*k/60;v=F.f(F.c,x);pts.push(X(x)+','+Y(Math.max(y0,Math.min(y1,v))));}
+    s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round" opacity="'+(F.weak?.4:.95)+'"/>';
+    leg+='<div><i style="background:'+col+'"></i><span>'+g[0]+' <span class="mut">· '+F.n+' · R² '+nf(2).format(Math.max(F.adj,0))+(F.weak?' · ajuste débil':'')+'</span></span></div>';
+  });
+  var S2=rows.map(function(r){return {r:r,x:X(r.dm),y:Y(r.y)};}).sort(function(a,b){return a.x-b.x;}),boxes=[],lab='',lead='',
+    cands=[[7,-7,'start'],[-7,-7,'end'],[7,15,'start'],[-7,15,'end'],[7,-22,'start'],[-7,-22,'end'],[7,31,'start'],[-7,31,'end'],[7,-37,'start'],[-7,-37,'end'],[7,47,'start'],[-7,47,'end']],
+    ov=function(a,b){return !(a[2]<b[0]||b[2]<a[0]||a[3]<b[1]||b[3]<a[1]);},dots=S2.map(function(q){return [q.x-6,q.y-6,q.x+6,q.y+6];});
+  S2.forEach(function(q,qi){
+    var t=q.r.t,w=t.length*6.9+2,done=false,c,dx,dy,an,bx,box,bad,on=q.r.t===BONSEL;
+    for(c=0;c<cands.length&&!done;c++){
+      dx=cands[c][0];dy=cands[c][1];an=cands[c][2];bx=an==='start'?q.x+dx:q.x+dx-w;box=[bx,q.y+dy-11,bx+w,q.y+dy+3];
+      if(box[0]<L-4||box[2]>W+2||box[1]<0||box[3]>H-B+6)continue;
+      bad=boxes.some(function(b){return ov(b,box);})||dots.some(function(d,di){return di!==qi&&ov(d,box);});
+      if(bad)continue;
+      boxes.push(box);done=true;
+      if(Math.abs(dy)>16)lead+='<line x1="'+q.x+'" y1="'+q.y+'" x2="'+(an==='start'?q.x+dx-2:q.x+dx+2)+'" y2="'+(q.y+dy-(dy<0?0:11))+'" stroke="#3a444f" stroke-width="1"/>';
+      lab+='<text x="'+(q.x+dx)+'" y="'+(q.y+dy)+'" text-anchor="'+an+'" font-size="11.5" font-weight="'+(on?800:600)+'" fill="'+(on?'#fff':'#b5c0cb')+'" data-t="'+t+'">'+t+'</text>';
+    }
+  });
+  s+=lead;
+  S2.forEach(function(q){var on=q.r.t===BONSEL;s+='<circle cx="'+q.x+'" cy="'+q.y+'" r="'+(on?6:4)+'" fill="'+(on?'#fff':'#14181d')+'" stroke="'+gcol(q.r)+'" stroke-width="2.2" data-t="'+q.r.t+'"/>';});
+  el.innerHTML=s+lab+'</svg>';if(lg)lg.innerHTML=leg;
+}
+(function(){
+  var seg=document.getElementById('bseg');
+  if(seg)seg.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-g]');if(!b)return;BONG=b.getAttribute('data-g');BONSEL=null;store('tablero-bonos-g',BONG);renderBonos();});
+  var pick=function(e){var a=e.target.closest&&e.target.closest('[data-t]');if(!a)return;var t=a.getAttribute('data-t');BONSEL=BONSEL===t?null:t;renderBonos();};
+  ['bl2','bch'].forEach(function(id){var n=document.getElementById(id);if(n)n.addEventListener('click',pick);});
+})();
 function renderHome(){
   if(!$('#hm-may'))return;
   var tilePill=function(v,sf){return v==null||!isFinite(v)?'':pill(v,sf==null?' %':sf,sf==null?2:0);};
@@ -1197,7 +1359,7 @@ function renderHome(){
 }
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
-  renderRates();renderPF();renderFCI();renderBanks();renderLic();renderHome();
+  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();
   stockList($('#up'),S.stocks.up);stockList($('#down'),S.stocks.down);
 }
 
@@ -1497,12 +1659,13 @@ function syncMode(){
 var busy=false,busyT=0,hiddenStale=false,hiddenAt=0,next=0;
 function refresh(force,skipFast){
   if(busy)return;busy=true;busyT=Date.now();$('#rf').classList.add('spin');
-  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;}
+  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.bonT=0;}
   var now=Date.now(),jobs=[loadFX().catch(function(){}),loadStocks().catch(function(){}),loadBanks().catch(function(){})];
   if(!skipFast)jobs.push(loadMAE().catch(function(){}),loadCAU().catch(function(){}));
   if(!S.t.bcra||now-S.t.bcra>=SLOW)jobs.push(loadBCRA().catch(function(){}));
   if(!S.t.pf||now-S.t.pf>=SLOW)jobs.push(loadPF().catch(function(){}));
   if(!S.fciT||now-S.fciT>=FCI_EVERY)jobs.push(loadFCI().catch(function(){}));
+  if(!S.bonT||now-S.bonT>=BON_EVERY)jobs.push(loadBON().catch(function(){}));
   Promise.all(jobs).then(function(){
     busy=false;$('#rf').classList.remove('spin');next=Date.now()+REFRESH;
     try{renderAll();}catch(e){console.error(e);}
@@ -1582,7 +1745,7 @@ function popHide(){clearTimeout(popT);if(popEl)popEl.classList.remove('on');popI
 })();
 
 /* ---------- cuenta regresiva y actualización por tarjeta ---------- */
-var GROUPS={lic:[loadLIC],may:[loadMAE,loadBCRA],cau:[loadCAU],fx:[loadFX],banks:[loadBanks],stocks:[loadStocks],bcra:[loadBCRA],pf:[loadPF],fci:[loadFCI]};
+var GROUPS={bon:[loadBON],lic:[loadLIC],may:[loadMAE,loadBCRA],cau:[loadCAU],fx:[loadFX],banks:[loadBanks],stocks:[loadStocks],bcra:[loadBCRA],pf:[loadPF],fci:[loadFCI]};
 var RUNNING={};
 var MINI='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg>';
 function dueOf(src){ /* instante del próximo refresco automático de cada tarjeta */
@@ -1591,6 +1754,7 @@ function dueOf(src){ /* instante del próximo refresco automático de cada tarje
   if(src==='bcra')return S.t.bcra?S.t.bcra+SLOW:0;
   if(src==='pf')return S.t.pf?S.t.pf+SLOW:0;
   if(src==='fci')return S.fciT?S.fciT+FCI_EVERY:0;
+  if(src==='bon')return S.bonT?S.bonT+BON_EVERY:0;
   return busy?0:next;
 }
 function fmtCD(ms){var s=Math.max(0,Math.ceil(ms/1000));return s>=60?Math.floor(s/60)+':'+('0'+s%60).slice(-2):s+' s';}
@@ -1623,7 +1787,7 @@ function runGroup(g){
 /* las fuentes lentas se actualizan en su momento exacto, sin esperar al ciclo de 30 s */
 function tickSlow(){
   if(document.hidden||busy)return;
-  ['bcra','pf','fci'].forEach(function(g){var d=dueOf(g);if(d&&d<=Date.now()&&!RUNNING[g])runGroup(g);});
+  ['bcra','pf','fci','bon'].forEach(function(g){var d=dueOf(g);if(d&&d<=Date.now()&&!RUNNING[g])runGroup(g);});
 }
 
 setInterval(function(){
