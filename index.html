@@ -55,7 +55,7 @@ th:first-child,td:first-child{text-align:left}
 td{white-space:nowrap;padding:9px 6px;text-align:right;border-top:1px solid var(--line);font-size:17px}
 td:first-child{font-weight:600}
 td .pill{font-size:12px;min-width:58px;padding:2px 6px}
-tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
+tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:first-child small{display:block;font-size:10.5px;font-style:normal;color:#e0a93b;opacity:1;margin-top:1px}tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 /* plazo fijo */
 .pf{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;column-gap:12px;padding:9px 0;border-top:1px solid var(--line)}
 .pf:first-of-type{border-top:0}
@@ -403,7 +403,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-10-31.5';
+var VER='2026-11-03.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -888,12 +888,14 @@ var BANK_DEFS=[
   {key:'cocos',name:'Cocos Bank',url:COCOS_URL,parse:parseCocos},
   {key:'reba',name:'Reba',url:REBA_URL,parse:parseICBC}
 ];
-var BANKS={};
+var BANKS={},BK_MER='tablero-bk-meridian-v1';
+function fmtOld(t){var d=new Date(t),f=function(x){return x.toLocaleDateString('es-AR',{timeZone:'America/Argentina/Buenos_Aires',day:'2-digit',month:'2-digit'});};return (f(d)===f(new Date())?'':f(d)+' ')+hhmm(t);}
 function loadBanks(){
   return Promise.allSettled(BANK_DEFS.map(function(b){return b.url?getJSON(b.url).then(b.parse):Promise.reject(new Error('pendiente'));})).then(function(res){
     res.forEach(function(r,i){
       var k=BANK_DEFS[i].key;
-      if(r.status==='fulfilled')BANKS[k]={q:r.value,err:null};
+      if(r.status==='fulfilled'){BANKS[k]={q:r.value,err:null};if(k==='meridian')store(BK_MER,{c:r.value.compra,v:r.value.venta,t:Date.now()});}
+      else if(k==='meridian'){BANKS[k]={q:null,old:recall(BK_MER)||null,err:(r.reason&&r.reason.message)||'error'};console.warn('Dólar por entidad:',k,BANKS[k].err);}
       else{BANKS[k]={q:BANKS[k]&&BANKS[k].q||null,err:(r.reason&&r.reason.message)||'error'};if(BANKS[k].err!=='pendiente')console.warn('Dólar por entidad:',k,BANKS[k].err);}
     });
     var fresh={};
@@ -1120,6 +1122,7 @@ function renderBanks(){
   var body=rows.map(function(r){
     var b=r.b,e=r.e,tr=b.mine?'<tr class="me">':'<tr>',nm='<td>'+esc(b.name)+'</td>';
     if(!e)return tr+nm+'<td colspan="3" class="mut" style="text-align:left">Cargando…</td></tr>';
+    if(!e.q&&e.old&&b.mine)return '<tr class="me old" title="'+esc('Sin respuesta de la pizarra: '+(e.err||''))+'"><td>'+esc(b.name)+'<small>último dato '+fmtOld(e.old.t)+'</small></td><td>'+nf(0).format(e.old.c)+'</td><td>'+nf(0).format(e.old.v)+'</td><td>'+nf(0).format(e.old.v-e.old.c)+'</td></tr>';
     if(!e.q)return tr+nm+'<td colspan="3" class="mut" style="text-align:left" title="'+esc(e.err||'')+'">'+(e.err==='pendiente'?'Falta cargar el Worker':'Sin respuesta')+'</td></tr>';
     return tr+nm+'<td>'+nf(0).format(e.q.compra)+'</td><td style="'+heat(e.q.venta,lo,hi)+'">'+nf(0).format(e.q.venta)+'</td><td>'+nf(0).format(e.q.venta-e.q.compra)+'</td></tr>';
   }).join('');
