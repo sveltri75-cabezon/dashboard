@@ -403,8 +403,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-04.1';
-var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000, API='https://data912.com';
+var VER='2026-11-05.1';
+var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
 var nfs={};
@@ -1419,9 +1419,10 @@ function licCorteTxt(c){
 function licItems(rows){
   var by={},ord=[];
   rows.forEach(function(x){
-    var t=String(x.titulo||'').toUpperCase(),conv=/CONVERSI/.test(t),ms=t.match(/\(([A-Z0-9]+)\)/g)||[];
-    ms=ms.map(function(q){return q.slice(1,-1);});
+    var t=String(x.titulo||'').toUpperCase(),conv=/CONVERSI/.test(t),ms=t.match(/\(([A-Z0-9]+)(?:\s*-[^)]*)?\)/g)||[];
+    ms=ms.map(function(q){return q.slice(1,-1).split(/\s*-/)[0];});
     var tk=conv&&ms.length>1?ms[0]+'→'+ms[1]:ms.length?ms[ms.length-1]:(/^(LETRA|BONO)/.test(t)&&validIso(x.fechaVencimiento)?(/^LETRA/.test(t)?'Letra ':'Bono ')+String(x.fechaVencimiento).slice(8,10)+'/'+String(x.fechaVencimiento).slice(5,7)+'/'+String(x.fechaVencimiento).slice(2,4):String(x.titulo||'').slice(0,12));
+    if(tk==='NUEVA'&&validIso(x.fechaVencimiento))tk='Nueva '+String(x.fechaVencimiento).slice(8,10)+'/'+String(x.fechaVencimiento).slice(5,7)+'/'+String(x.fechaVencimiento).slice(2,4);
     var amt=Number(x.monto_Adjudicado)||0,mon=x.moneda==='ARS PESOS'?'ARS':'USD',key=tk;
     if(!by[key]){by[key]={tk:tk,tipo:licTipo(t),venc:validIso(x.fechaVencimiento)?MES[+String(x.fechaVencimiento).slice(5,7)-1]+'-'+String(x.fechaVencimiento).slice(2,4):'',mon:mon,amt:0,corte:{k:'na'}};ord.push(key);}
     var it=by[key];it.amt+=amt;
@@ -1469,8 +1470,8 @@ function loadLIC(){
   })).then(function(rs){
     var all=[],ok=0,seen={};
     rs.forEach(function(r){if(!r)return;ok++;r.forEach(function(x){if(x&&x.id!=null&&!seen[x.id]){seen[x.id]=1;all.push(x);}});});
-    if(!ok){LIC.err=true;throw new Error('licitaciones sin respuesta');}
-    LIC.err=false;LIC.groups=licBuild(all);
+    if(!ok){LIC.err=true;S.licT=Date.now();throw new Error('licitaciones sin respuesta');}
+    LIC.err=false;LIC.groups=licBuild(all);S.licT=Date.now();
   });
 }
 function licState(g,now){return now<g.ini?['Próxima','nx']:now<g.fin?['Abierta','on']:now<g.liqE?['En liquidación','liq']:['Cerrada',''];}
@@ -1670,13 +1671,14 @@ function syncMode(){
 var busy=false,busyT=0,hiddenStale=false,hiddenAt=0,next=0;
 function refresh(force,skipFast){
   if(busy)return;busy=true;busyT=Date.now();$('#rf').classList.add('spin');
-  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.bonT=0;}
+  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.bonT=0;S.licT=S.licT?1:0;}
   var now=Date.now(),jobs=[loadFX().catch(function(){}),loadStocks().catch(function(){}),loadBanks().catch(function(){})];
   if(!skipFast)jobs.push(loadMAE().catch(function(){}),loadCAU().catch(function(){}));
   if(!S.t.bcra||now-S.t.bcra>=SLOW)jobs.push(loadBCRA().catch(function(){}));
   if(!S.t.pf||now-S.t.pf>=SLOW)jobs.push(loadPF().catch(function(){}));
   if(!S.fciT||now-S.fciT>=FCI_EVERY)jobs.push(loadFCI().catch(function(){}));
   if(!S.bonT||now-S.bonT>=BON_EVERY)jobs.push(loadBON().catch(function(){}));
+  if(S.licT&&now-S.licT>=LIC_EVERY)jobs.push(loadLIC().catch(function(){}));
   Promise.all(jobs).then(function(){
     busy=false;$('#rf').classList.remove('spin');next=Date.now()+REFRESH;
     try{renderAll();}catch(e){console.error(e);}
