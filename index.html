@@ -127,6 +127,7 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .mayo .cap{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px;color:var(--mut);font-size:12.5px;white-space:nowrap}
 .mayo.wait .big,.mayo.wait .mr svg{opacity:.45}.wtl{display:inline-block;padding:3px 9px;border-radius:7px;background:rgba(138,148,166,.16);color:var(--mut);font-weight:700;font-size:15px}.wdim{opacity:.45}
 #c-may,#c-cau{container-type:inline-size}
+.cpp{font-size:12px;color:var(--mut);margin-top:6px}.cpp b{color:var(--ink);font-weight:600}
 #c-may .mayo .big,#c-cau .mayo .big{font-size:clamp(24px,13cqw,40px)}
 .mayo .mr{min-width:84px}.mayo .cap{min-width:0}.mayo .cap .st{flex:none}.mayo .cap span{overflow:hidden;text-overflow:ellipsis;min-width:0}.mayo .wtl{white-space:nowrap;font-size:clamp(11px,5cqw,15px)}
 @media (max-width:900px){#c-may .mayo .big,#c-cau .mayo .big{font-size:clamp(24px,13cqw,30px)}}
@@ -403,7 +404,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-05.1';
+var VER='2026-11-05.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -668,9 +669,12 @@ function pickCAU(rows){
   var rs=rows.filter(function(o){return o&&String(fld(o,'ticker')).toUpperCase()==='CAARS'&&Number(fld(o,'plazo'))>0;});
   if(!rs.length)throw new Error('sin caución en pesos');
   rs.sort(function(a,b){return Number(fld(a,'plazo'))-Number(fld(b,'plazo'));});
-  var r=rs[0],rate=num(fld(r,'ultimatasa')),prev=num(fld(r,'cierreanterior'));
+  /* plazo más corto, salvo que opere casi nada (menos del 20% del volumen total): ahí se toma el de mayor volumen. La tasa es el promedio ponderado (tasaPP); la última operada puede ser una punta aislada. */
+  var vol=function(o){return num(fld(o,'volumen'))||0;},tot=rs.reduce(function(a,o){return a+vol(o);},0),r=rs[0];
+  if(tot>0&&vol(r)<0.2*tot)r=rs.slice().sort(function(a,b){return vol(b)-vol(a);})[0];
+  var pp=num(fld(r,'tasapp')),ul=num(fld(r,'ultimatasa')),rate=ul>0?ul:pp,prev=num(fld(r,'cierreanterior'));
   var mn=num(fld(r,'minimo')),mx=num(fld(r,'maximo'));
-  return {plazo:Number(fld(r,'plazo')),rate:rate>0?rate:null,prev:prev>0?prev:null,fecha:fld(r,'fechaliquidacion'),
+  return {plazo:Number(fld(r,'plazo')),pp:pp>0?pp:null,rate:rate>0?rate:null,prev:prev>0?prev:null,fecha:fld(r,'fechaliquidacion'),
     tk:String(fld(r,'ticker')).trim().toUpperCase(),seg:String(fld(r,'codigosegmento')||'K'),mon:String(fld(r,'moneda')||'$'),
     min:mn>0?mn:null,max:mx>0?mx:null};
 }
@@ -1005,7 +1009,7 @@ function renderCau(){
   var dd=pts?I.date:(c.hist?String(c.fecha||'').slice(0,10):''),wt=waitSess('CAU',dd);
   var ex=wt?'sin operar aún':other?'sesión '+other:c.hist?(c.fecha?'cierre '+fdate(String(c.fecha).slice(0,10)).slice(0,5):null):(c.fecha?'liq. '+fdate(String(c.fecha).slice(0,10)).slice(0,5):null);
   var rb=mn&&mx?rangeBar(c.rate,mn,mx):'';
-  box.innerHTML='<div class="mayo'+(wt?' wait':'')+'"><div class="ml"><div class="big">'+nf(2).format(c.rate)+' %</div><div>'+(wt?'<span class="wtl">Cierre '+fdate(dd).slice(0,5)+'</span>':(c.prev?pillBps(c.rate-c.prev):''))+'</div></div>'+
+  box.innerHTML='<div class="mayo'+(wt?' wait':'')+'"><div class="ml"><div class="big">'+nf(2).format(c.rate)+' %</div><div>'+(wt?'<span class="wtl">Cierre '+fdate(dd).slice(0,5)+'</span>':(c.prev?pillBps(c.rate-c.prev):''))+'</div>'+(c.pp?'<div class="cpp">Prom. pond. <b>'+nf(2).format(c.pp)+' %</b></div>':'')+'</div>'+
     '<div class="mr">'+chart+'<div class="cap">'+stateHTML('CAU',ex).replace('<small>','<span>').replace('</small>','</span>')+'</div></div></div>'+(wt?'<div class="wdim">'+rb+'</div>':rb);
 }
 function renderPFW(){
