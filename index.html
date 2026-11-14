@@ -348,6 +348,26 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 .lx-hd{display:grid;grid-template-columns:44px minmax(0,1fr) 74px 92px 8px;gap:6px;font:600 10px system-ui;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;padding-bottom:4px}.lx-hd span:nth-child(3),.lx-hd span:nth-child(4){text-align:right}
 @media (max-width:900px){.app{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}}
 .rf.th{bottom:calc(132px + env(safe-area-inset-bottom))}
+/* barra inferior (móvil) */
+.bnav,.mback,.msheet{display:none}
+@media (max-width:900px){
+  .tabs{display:none!important}
+  .bnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:30;height:calc(66px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--card);border-top:1px solid var(--line)}
+  .bnav button,.msheet button{border:0;background:none;color:var(--mut);font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-weight:600;font-size:11.5px;padding:0}
+  .bnav svg,.msheet svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .bnav button[aria-current=true]{color:var(--acc)}
+  .bnav button[aria-current=true] svg{stroke-width:2.3}
+  .app{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important;padding-top:env(safe-area-inset-top)}
+  .rf{bottom:calc(82px + env(safe-area-inset-bottom))}.rf.bl{bottom:calc(140px + env(safe-area-inset-bottom))}.rf.th{bottom:calc(198px + env(safe-area-inset-bottom))}
+  .mback{display:block;position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s}
+  .mback.on{opacity:1;pointer-events:auto}
+  .msheet{display:block;position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--card);border-radius:22px 22px 0 0;border-top:1px solid var(--line);padding:8px 14px calc(14px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .22s ease-out;visibility:hidden}
+  .msheet.on{transform:none;visibility:visible}
+  .mgrip{width:38px;height:4px;border-radius:99px;background:var(--dimb);margin:2px auto 8px}
+  .msheet button{display:flex;align-items:center;gap:14px;width:100%;height:54px;padding:0 6px;text-align:left;color:var(--ink);font-weight:600;font-size:16px;border-radius:12px}
+  .msheet button[aria-current=true]{color:var(--acc);background:var(--sf3)}
+}
 </style>
 </head>
 <body>
@@ -403,13 +423,16 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <button id="avt" class="abtn sec" type="button" style="display:none">Enviar aviso de prueba</button>
 <div id="avm" class="avm"></div>
 </div></div>
+<nav class="bnav" id="bnav" aria-label="Secciones"><button type="button" data-n="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></button><button type="button" data-n="dolar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.4 5 1.2 5 3.6 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2.1-.5-2.6-1.3M12 6.5V8m0 8v1.5"/></svg><span>Dólar</span></button><button type="button" data-n="tasas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg><span>Tasas</span></button><button type="button" data-n="bonos"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Bonos</span></button><button type="button" data-n="mas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg><span>Más</span></button></nav>
+<div class="mback" id="mback"></div>
+<div class="msheet" id="msheet" role="dialog" aria-label="Más secciones"><div class="mgrip"></div><button type="button" data-n="plazo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/></svg><span>Plazo fijo</span></button><button type="button" data-n="fci"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg><span>FCI</span></button><button type="button" data-n="acciones"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M5 8h4v7H5zM17 3v18M15 6h4v9h-4z"/></svg><span>Acciones</span></button><button type="button" data-n="lic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h12l-2.5 4L17 12H5"/></svg><span>Licitaciones</span></button></div>
 <button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button>
 <button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button>
 
 <script>
 (function(){
 'use strict';
-var VER='2026-11-14.1';
+var VER='2026-11-14.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1619,9 +1642,14 @@ var TABS=[['home','Home'],['dolar','Dólar'],['tasas','Tasas'],['plazo','Plazo f
 var tab='home'; /* al abrir siempre arranca en Home */
 if(!TABS.some(function(t){return t[0]===tab;}))tab='dolar';
 function tabIdx(){for(var i=0;i<TABS.length;i++)if(TABS[i][0]===tab)return i;return 0;}
-function setTH(){var t=$('#tabs');if(t)document.documentElement.style.setProperty('--th',t.offsetHeight+'px');}
+function setTH(){var t=$('#tabs');if(t)document.documentElement.style.setProperty('--th',t.offsetHeight?t.offsetHeight+'px':'env(safe-area-inset-top,0px)');}
 window.addEventListener('resize',setTH);
-function applyTab(dir){setTH();
+function navMark(){
+  var n={home:1,dolar:1,tasas:1,bonos:1},k=n[tab]?tab:'mas';
+  document.querySelectorAll('#bnav button').forEach(function(b){b.setAttribute('aria-current',b.dataset.n===k?'true':'false');});
+  document.querySelectorAll('#msheet button').forEach(function(b){b.setAttribute('aria-current',b.dataset.n===tab?'true':'false');});
+}
+function applyTab(dir){setTH();navMark();
   document.querySelectorAll('.card[data-tab]').forEach(function(c){
     var show=c.dataset.tab===tab;
     c.classList.toggle('off',!show);
@@ -1640,6 +1668,12 @@ function goTab(i,dir){
 }
 $('#tabs').innerHTML=TABS.map(function(t){return '<button class="tab" role="tab" data-t="'+t[0]+'">'+t[1]+'</button>';}).join('');
 $('#tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;var i=0;TABS.forEach(function(t,k){if(t[0]===b.dataset.t)i=k;});goTab(i,i>tabIdx()?1:-1);});
+function moreOpen(on){$('#msheet').classList.toggle('on',on);$('#mback').classList.toggle('on',on);}
+function navGo(id){var i=-1;TABS.forEach(function(t,k){if(t[0]===id)i=k;});if(i>=0)goTab(i,i>tabIdx()?1:-1);}
+$('#bnav').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.n==='mas'){moreOpen(true);return;}navGo(b.dataset.n);});
+$('#msheet').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;moreOpen(false);navGo(b.dataset.n);});
+$('#mback').addEventListener('click',function(){moreOpen(false);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')moreOpen(false);});
 document.addEventListener('click',function(e){
   var c=e.target.closest&&e.target.closest('.hm[data-go]');if(!c||!mq.matches)return;
   var i=-1;TABS.forEach(function(t,k){if(t[0]===c.dataset.go)i=k;});if(i>=0)goTab(i,1);
@@ -1665,7 +1699,7 @@ function syncMode(){
     });
   }
   app.addEventListener('touchstart',function(e){
-    if(!mq.matches||e.touches.length!==1||e.target.closest('.tabs')){on=false;return;}
+    if(!mq.matches||e.touches.length!==1||e.target.closest('.tabs,.bnav,.msheet')){on=false;return;}
     sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;t0=Date.now();lock=null;on=true;
   },{passive:true});
   app.addEventListener('touchmove',function(e){
