@@ -481,7 +481,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-14.6';
+var VER='2026-11-14.7';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -2067,7 +2067,7 @@ if(!isApp&&mq.matches){
       var m=/var VER='([^']+)'/.exec(t||'');
       if(!m||m[1]===VER||lget('tm_ver_x')===m[1]||shown)return;
       var nv=m[1];
-      shown=mk('bn-ver','Hay una versi\u00f3n nueva del tablero','Actualizar',function(){location.reload();},function(){lset('tm_ver_x',nv);});
+      shown=mk('bn-ver','Hay una versi\u00f3n nueva del tablero','Actualizar',function(){var base=location.href.split('#')[0].split('?')[0];fetch(base,{cache:'reload'}).catch(function(){}).then(function(){location.replace(base+'?v='+nv+location.hash);});},function(){lset('tm_ver_x',nv);});
     }).catch(function(){});
   }
   setTimeout(chkVer,20000);setInterval(chkVer,30*60*1000);
