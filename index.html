@@ -399,6 +399,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
   .tbb #th,.tbb #bl{display:none!important}
   .tbb .rf.hb{display:grid}
 }
+@media (max-width:900px){.bn{right:calc(12px + env(safe-area-inset-right));bottom:calc(78px + env(safe-area-inset-bottom))}}
+@media (max-width:360px){#banks th,#banks td{padding-left:3px!important;padding-right:3px!important}#banks td{font-size:12.5px}#banks th{font-size:9.5px;letter-spacing:0}}
 </style>
 </head>
 <body>
@@ -488,7 +490,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-14.10';
+var VER='2026-11-15.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
