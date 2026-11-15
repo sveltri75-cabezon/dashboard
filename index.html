@@ -377,6 +377,11 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
   .ptr.go{color:var(--up)}
 }
 .rf.hb{display:none}
+.fxu,.fxd{border-radius:8px}
+.fxu{animation:fxu 1.6s ease-out}.fxd{animation:fxd 1.6s ease-out}
+@keyframes fxu{0%{color:var(--up);background:rgba(31,178,106,.24);box-shadow:0 0 0 4px rgba(31,178,106,.24)}35%{color:var(--up);background:rgba(31,178,106,.15);box-shadow:0 0 0 4px rgba(31,178,106,.15)}100%{background:transparent;box-shadow:0 0 0 4px transparent}}
+@keyframes fxd{0%{color:var(--dn);background:rgba(229,72,77,.24);box-shadow:0 0 0 4px rgba(229,72,77,.24)}35%{color:var(--dn);background:rgba(229,72,77,.15);box-shadow:0 0 0 4px rgba(229,72,77,.15)}100%{background:transparent;box-shadow:0 0 0 4px transparent}}
+@media (prefers-reduced-motion:reduce){.fxu,.fxd{animation-duration:.6s}}
 .opt{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:8px 2px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font-family:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .opt:first-of-type{border-top:0}
 .opt:disabled{opacity:.5;cursor:default}
@@ -432,7 +437,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="stocks" class="card" data-tab="acciones"><h2>Acciones <i>ganadores y perdedores</i></h2>
       <div class="two"><div><div class="sub u">▲ Más subieron</div><div id="up"></div></div><div><div class="sub d">▼ Más bajaron</div><div id="down"></div></div></div></section>
     <section class="card mobonly" data-tab="ayuda"><h2>Apariencia <i>tema</i></h2><div role="radiogroup" aria-label="Tema"><button type="button" class="opt" role="radio" aria-checked="false" data-th="auto"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg><span class="ot"><b>Del dispositivo</b><span>Sigue el modo claro u oscuro de tu teléfono</span></span><span class="rd" aria-hidden="true"></span></button><button type="button" class="opt" role="radio" aria-checked="false" data-th="light"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="ot"><b>Claro</b><span>Fondo claro, mejor a pleno sol</span></span><span class="rd" aria-hidden="true"></span></button><button type="button" class="opt" role="radio" aria-checked="false" data-th="dark"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg><span class="ot"><b>Oscuro</b><span>Fondo oscuro, más cómodo de noche</span></span><span class="rd" aria-hidden="true"></span></button></div></section>
-    <section class="card mobonly" data-tab="ayuda"><h2>Avisos y datos</h2><button type="button" class="opt" id="o-av"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg><span class="ot"><b>Avisos de mercado</b><span id="o-avs">—</span></span><span class="oc" aria-hidden="true">›</span></button><button type="button" class="opt" id="o-rf"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v4.5h-4.5"/></svg><span class="ot"><b>Actualizar ahora</b><span>También podés tirar hacia abajo desde el principio de la pantalla</span></span></button><button type="button" class="opt" id="o-in" hidden><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11 12 15.5 16.5 11M5 20h14"/></svg><span class="ot"><b>Instalar como app</b><span id="o-ins"></span></span><span class="oc" aria-hidden="true">›</span></button><div class="opt ro"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="ot"><b>Versión</b></span><span class="ov" id="o-ver"></span></div></section>
+    <section class="card mobonly" data-tab="ayuda"><h2>Avisos y datos</h2><button type="button" class="opt" id="o-av"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg><span class="ot"><b>Avisos de mercado</b><span id="o-avs">—</span></span><span class="oc" aria-hidden="true">›</span></button><button type="button" class="opt" id="o-fx"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><span class="ot"><b>Resaltar cambios</b><span id="o-fxs">Activado</span></span><span class="oc" aria-hidden="true">›</span></button><button type="button" class="opt" id="o-rf"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v4.5h-4.5"/></svg><span class="ot"><b>Actualizar ahora</b><span>También podés tirar hacia abajo desde el principio de la pantalla</span></span></button><button type="button" class="opt" id="o-in" hidden><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11 12 15.5 16.5 11M5 20h14"/></svg><span class="ot"><b>Instalar como app</b><span id="o-ins"></span></span><span class="oc" aria-hidden="true">›</span></button><div class="opt ro"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="ot"><b>Versión</b></span><span class="ov" id="o-ver"></span></div></section>
     <section class="card mobonly hlp" data-tab="ayuda"><h2>Ayuda <i>cómo funciona el tablero</i></h2>
       <h3>Moverte entre secciones</h3>
       <p>Tocá un botón de la barra de abajo, o <b>deslizá el dedo a izquierda y derecha</b>: la sección activa se marca y la barra se corre sola para mostrarla. La barra también se desliza para ver las que quedan fuera de pantalla.</p>
@@ -443,6 +448,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
       <p>Los precios se refrescan solos cada 30 segundos. Plazo fijo, FCI, bonos y licitaciones cambian poco y se actualizan cada algunos minutos.</p>
       <h3>Colores y estados</h3>
       <ul><li><span class="gu">Verde</span> sube, <span class="gd">rojo</span> baja, gris sin cambios.</li>
+      <li>Cuando un valor cambia al actualizar, se marca unos segundos en verde (sube) o rojo (baja). Se apaga desde <b>Opciones → Resaltar cambios</b>.</li>
       <li>Un punto gris en <b>Forex cerrado</b> o <b>Caución cerrada</b> significa mercado fuera de horario: se muestra el último dato del día.</li>
       <li>En <b>Dólar por entidad</b>, la barra muestra dónde cae cada banco respecto del resto: el centro verde es la zona normal; ámbar y rojo marcan los extremos, más barato o más caro. La entrada en gris indica una cotización vieja o sin respuesta.</li></ul>
       <h3>Qué hay en cada sección</h3>
@@ -482,7 +488,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-14.9';
+var VER='2026-11-14.10';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -2105,6 +2111,36 @@ if(!isApp&&mq.matches){
   paintI();
   window.addEventListener('appinstalled',function(){ev=null;if(inst){inst.remove();inst=null;}});
   setTimeout(showInst,3000);
+})();
+
+/* resaltado de cambios: cuando un valor visible cambia entre actualizaciones, se tiñe de verde (sube) o rojo (baja) y se desvanece */
+(function(){
+  var SEL='.big,.hmb,.lbig,.p>b,.tn,.hb>span>b,.bo .pr,.bo .x,.bo .t,#banks td',MAP={},T=null,KEY='tablero-fx';
+  function on(){try{return localStorage.getItem(KEY)!=='0';}catch(e){return true;}}
+  function num(t){var m=/-?\d[\d.]*(?:,\d+)?/.exec(t);if(!m)return null;var v=parseFloat(m[0].replace(/\./g,'').replace(',','.'));return isNaN(v)?null:v;}
+  function idOf(el){var c=el.closest?el.closest('[id]'):null;return c?c.id:'';}
+  function rowOf(el){var r=el.closest?el.closest('tr,.bo[data-t],.fr,[data-bs],.hb>span'):null;if(!r)return null;
+    if(r.tagName==='TR')return r.cells[0]?r.cells[0].textContent.slice(0,24):'';
+    if(r.getAttribute('data-t'))return r.getAttribute('data-t');if(r.getAttribute('data-bs'))return r.getAttribute('data-bs');
+    var f=r.firstChild;return (f&&f.textContent||'').slice(0,24);}
+  function scan(){
+    T=null;var els=document.querySelectorAll(SEL),cnt={},seen={},i,el,k,t,v,o,rw,cls;
+    for(i=0;i<els.length;i++){el=els[i];t=el.textContent.replace(/\s+/g,' ').trim();v=num(t);if(v===null)continue;
+      rw=rowOf(el);cls=el.className||el.tagName;k=idOf(el)+'|'+(rw===null?'':rw)+'|'+cls;
+      if(rw===null||el.tagName==='TD'||el.tagName==='B'){cnt[k]=(cnt[k]||0)+1;k+='|'+cnt[k];}
+      if(seen[k])continue;seen[k]=1;
+      o=MAP[k];MAP[k]={t:t,v:v};
+      if(o&&o.t!==t&&on()&&o.v!==v&&!(el.getBoundingClientRect&&el.offsetParent===null)){
+        var c=v>o.v?'fxu':'fxd';el.classList.remove('fxu','fxd');void el.offsetWidth;el.classList.add(c);
+        (function(e){setTimeout(function(){e.classList.remove('fxu','fxd');},1800);})(el);}
+    }
+  }
+  function sched(){if(T===null)T=setTimeout(scan,80);}
+  try{new MutationObserver(sched).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(e){}
+  var b=document.getElementById('o-fx'),s=document.getElementById('o-fxs');
+  function paint(){if(s)s.textContent=on()?'Activado · los valores que cambian se marcan en verde o rojo':'Desactivado';}
+  if(b)b.addEventListener('click',function(){try{localStorage.setItem(KEY,on()?'0':'1');}catch(e){}paint();});
+  paint();
 })();
 renderBonos();renderAll();syncMode();
 refresh();
