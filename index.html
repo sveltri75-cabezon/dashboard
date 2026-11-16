@@ -401,6 +401,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 }
 @media (max-width:900px){.bn{right:calc(12px + env(safe-area-inset-right));bottom:calc(78px + env(safe-area-inset-bottom))}}
 @media (max-width:360px){#banks th,#banks td{padding-left:3px!important;padding-right:3px!important}#banks td{font-size:12.5px}#banks th{font-size:9.5px;letter-spacing:0}}
+#hm-may.wait .hmb,#hm-may.wait .hsp svg{opacity:.45}#hm-may .hcap{font-size:11px;color:var(--mut);text-align:right;margin-top:5px;line-height:1.25}#hm-may .wtl{align-self:flex-start;font-size:13px}
+.st{padding-left:6px}@keyframes pu{0%{box-shadow:0 0 0 0 rgba(31,178,106,.65)}100%{box-shadow:0 0 0 5px rgba(31,178,106,0)}}.mr svg,.hsp svg{overflow:visible}
 </style>
 </head>
 <body>
@@ -490,7 +492,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-15.1';
+var VER='2026-11-16.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1416,11 +1418,13 @@ function renderHome(){
   var fo=isOpen('FOR')&&!holidayGuess(),co=isOpen('CAU')&&!holidayGuess();
   $('#hm-st').innerHTML='<span class="st'+(fo?' on':'')+'">Forex '+(fo?'abierto':'cerrado')+'</span><span class="st'+(co?' on':'')+'">Caución '+(co?'abierta':'cerrada')+'</span><span class="upd">'+hhmm(Date.now())+'</span>';
   /* mayorista + MEP/CCL */
-  var m=S.mae,head='',sp='',mep=S.fx.mep,ccl=S.fx.ccl;
+  var m=S.mae,head='',sp='',mep=S.fx.mep,ccl=S.fx.ccl,hwait=false,hcap='';
   if(m){
-    var h=S.hist.mae,first=m.prev||(h.length>1?h[0].v:m.last),I=S.intra;
-    head='<div class="hmb" style="font-size:30px">'+nf(2).format(m.last)+'</div>'+(first!==m.last||m.prev?pill((m.last/first-1)*100):'');
-    sp=(I&&I.tk===m.tk&&I.pts.length>0)?sparkSVG(I.pts,m.prev,'FOR'):(m.daily&&m.daily.length>1?sparkDaily(m.daily):'');
+    var h=S.hist.mae,first=m.prev||(h.length>1?h[0].v:m.last),I=S.intra,hdd=(I&&I.tk===m.tk&&I.pts.length)?I.date:m.date,hwt=waitSess('FOR',hdd),hin=I&&I.tk===m.tk&&I.pts.length>0;
+    head='<div class="hmb" style="font-size:30px">'+nf(2).format(m.last)+'</div>'+(hwt?'<span class="wtl">Cierre '+fdate(hdd).slice(0,5)+'</span>':(first!==m.last||m.prev?pill((m.last/first-1)*100):''));
+    sp=hin?sparkSVG(I.pts,m.prev,'FOR'):(m.daily&&m.daily.length>1?sparkDaily(m.daily):'');
+    hwait=hwt;
+    hcap=hwt?'Sesión del '+fdate(hdd).slice(0,5)+'<br>hoy aún sin operar':(hin?(I.date===arNow().date?'sesión de hoy':'sesión '+fdate(I.date).slice(0,5)):(m.daily&&m.daily.length>1?'últimos '+m.daily.length+' días':''));
   }else{
     var p=S.bcra[MAYORISTA_ID];
     if(p){var l=p[p.length-1],pv=p[p.length-2];head='<div class="hmb" style="font-size:30px">'+nf(2).format(l.v)+'</div>'+(pv?pill((l.v/pv.v-1)*100):'');sp=spark(p,30);}
@@ -1431,7 +1435,8 @@ function renderHome(){
     var vs=S.hist[key].map(function(x){return x.v;}),f=vs.length>1?vs[0]:o.v;
     return '<span>'+lab+'<b>'+nf(1).format(o.v)+'</b>'+(vs.length>1?pill((o.v/f-1)*100):'')+'</span>';
   };
-  $('#hm-may').innerHTML='<div class="hw"><div>'+head+'</div><div class="hsp">'+sp+'</div></div><div class="hb">'+fx('MEP',mep,'mep')+fx('CCL',ccl,'ccl')+'</div>';
+  $('#hm-may').classList.toggle('wait',hwait);
+  $('#hm-may').innerHTML='<div class="hw"><div>'+head+'</div><div class="hsp">'+sp+(hcap?'<div class="hcap">'+hcap+'</div>':'')+'</div></div><div class="hb">'+fx('MEP',mep,'mep')+fx('CCL',ccl,'ccl')+'</div>';
   /* caución */
   var c=S.cau;
   if(c&&c.rate){
