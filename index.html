@@ -410,6 +410,10 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 .bg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.bg3>div{min-width:0}.bg3 small{display:block;color:var(--mut);font-size:11px}.bg3 b{display:block;font-size:15px;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}.bg3>div:last-child{text-align:right}
 .bbar{height:5px;border-radius:3px;background:var(--line);margin-top:11px;overflow:hidden}.bbar i{display:block;height:100%;border-radius:3px;background:var(--up)}.bbar i.d{background:var(--dn)}
 .bdr{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}.bdr:first-child{border-top:0}.bdr b{display:block;font-size:14px}.bdr small{color:var(--mut);font-size:11.5px}.bdr .bv{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.brs{display:inline-block;font-size:11px;padding:4px 8px;border-radius:7px;color:var(--mut);cursor:pointer;margin-left:2px}.brs.on{background:var(--acc);color:var(--onacc)}#bhr{display:flex;gap:0;background:var(--sunk);padding:2px;border-radius:9px;overflow:visible}
+.bhl{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:11px;color:var(--mut)}.bhl i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}.bhs{color:var(--mut);font-size:10.5px;margin-top:6px}#bhc svg{display:block;width:100%;height:auto}#bhc text{fill:var(--mut);font:10px system-ui,sans-serif}
+.brc>.bci{flex-direction:row;display:flex;align-items:center;gap:8px;background:var(--sunk);border-radius:12px;padding:8px 10px;margin:4px 0 6px}.bci span:first-child{color:var(--mut);font-size:12px}.bci b{font-size:13px;color:var(--mut)}.bci input{flex:1;min-width:0;width:100%;background:none;border:0;outline:0;color:var(--ink);font:700 18px ui-monospace,monospace;text-align:right}.bcc{display:flex;gap:4px}.bcc i{font-style:normal;font-size:11px;padding:4px 7px;border-radius:7px;border:1px solid var(--line);color:var(--mut);cursor:pointer}.bcc i.on{border-color:var(--acc);color:var(--acc)}
+.bcw{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:6px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13px}.bcw.h{border-top:0;padding:2px 0;color:var(--mut);font-size:10.5px}.bcw span{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}.bcw.h span{font-weight:500}.bcw span.u{color:var(--up)}.bcw span.d{color:var(--dn)}
 .bdr .bv.u{color:var(--up)}.bdr .bv.d{color:var(--dn)}.bg3 b.u{color:var(--up)}.bg3 b.d{color:var(--dn)}
 @media (min-width:1880px){.r3{grid-template-columns:1.15fr 1fr 1fr .85fr}}
 </style>
@@ -482,11 +486,13 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="bon" class="card deskonly" data-tab="bonos"><h2>Bonos tasa fija <i>TIR · pesos</i></h2><div class="bsc" id="bf"></div></section>
     <section data-src="bon" class="card deskonly" data-tab="bonos"><h2>Bonos hard dólar <i>TIR · USD D</i></h2><div class="bsc" id="bh"></div></section>
     <section data-src="fx" class="card deskonly" data-tab="brecha"><h2>Brecha del dólar <i id="h-brc">Oficial</i></h2><div id="brd"></div></section>
-    <section data-src="fx" class="card mobonly brc" data-tab="brecha"><h2>Oficial vs MEP <i class="bpl" id="bph0"></i></h2><div id="brm0"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs MEP <i class="bpl" id="bph0"></i></h2><div id="brm0"></div></section>
     <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs CCL <i class="bpl" id="bph1"></i></h2><div id="brm1"></div></section>
     <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs Cripto <i class="bpl" id="bph2"></i></h2><div id="brm2"></div></section>
     <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs Blue <i class="bpl" id="bph3"></i></h2><div id="brm3"></div></section>
     <section class="card mobonly brc" data-tab="brecha"><h2>Canje · MEP vs CCL <i class="bpl" id="bph4"></i></h2><div id="brm4"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Evolución de la brecha <i class="bpl" id="bhr"><span class="brs" data-r="30">30 d</span><span class="brs" data-r="90">90 d</span><span class="brs" data-r="365">1 año</span></i></h2><div id="bhc"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Calculadora <i class="bpl">USD a pesos</i></h2><div class="bci"><span>Monto</span><b>USD</b><input id="bcv" type="text" inputmode="decimal" value="1000" autocomplete="off" aria-label="Monto en dólares"><span class="bcc"><i data-v="100">100</i><i data-v="1000">1.000</i><i data-v="10000">10.000</i></span></div><div id="bcr"></div></section>
     <section class="card mobonly bsg" data-tab="bonos"><div class="bseg" id="bseg"><button type="button" data-g="pesos">Tasa fija $</button><button type="button" data-g="cer">CER</button><button type="button" data-g="usd">Hard dólar</button><button type="button" data-g="bop">BOPREAL</button></div></section>
     <section data-src="bon" class="card mobonly" data-tab="bonos"><h2 id="bt">Tasa fija en pesos <i id="bs"></i></h2><div id="bl2"></div></section>
     <section class="card mobonly" data-tab="bonos"><h2 id="bct">Curva <i id="bcs"></i></h2><div class="bch" id="bch"></div><div class="blg" id="blg"></div></section>
@@ -508,7 +514,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.1';
+var VER='2026-11-20.3';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1508,6 +1514,73 @@ function brOficial(){
   return null;
 }
 function brFmt(d){return (d>=0?'+':'\u2212')+nf(2).format(Math.abs(d));}
+/* historial de brecha (ArgentinaDatos, cierres diarios) y calculadora */
+var BRH={day:'',data:null,loading:false,r:90,fail:false},BRC={v:1000};
+var BRK=[['bolsa','MEP','#6fb1e0'],['contadoconliqui','CCL','#e0a93b'],['cripto','Cripto','#38d27d'],['blue','Blue','#c58bff']];
+try{var _r=parseInt(localStorage.getItem('tablero-brr'),10);if(_r===30||_r===90||_r===365)BRH.r=_r;}catch(e){}
+function brToday(){return licDay(new Date().toISOString());}
+function loadBrHist(){
+  var day=brToday();if(BRH.loading||BRH.day===day)return;
+  var c=recall('tablero-brh-v1');
+  if(c&&c.day===day&&c.data){BRH.data=c.data;BRH.day=day;return;}
+  BRH.loading=true;
+  var cut=new Date(Date.now()-400*86400000).toISOString().slice(0,10),out={},cs=['oficial'].concat(BRK.map(function(k){return k[0];})),n=0;
+  cs.forEach(function(cs1){
+    getJSON('https://api.argentinadatos.com/v1/cotizaciones/dolares/'+cs1).then(function(a){
+      var m=[];(a||[]).forEach(function(r){if(r&&r.fecha>=cut&&r.venta>0)m.push([r.fecha,r.venta]);});out[cs1]=m;
+    },function(){out[cs1]=null;}).then(function(){
+      if(++n<cs.length)return;
+      BRH.loading=false;
+      if(out.oficial&&out.oficial.length){BRH.data=out;BRH.day=day;BRH.fail=false;store('tablero-brh-v1',{day:day,data:out});}
+      else BRH.fail=true;
+      renderBrHist();
+    });
+  });
+}
+function brSeries(cs1,of,cur,range){
+  var d=BRH.data,om={},res=[];if(!d||!d.oficial||!d[cs1])return res;
+  d.oficial.forEach(function(r){om[r[0]]=r[1];});
+  var from=new Date(Date.now()-range*86400000).toISOString().slice(0,10),today=brToday();
+  d[cs1].forEach(function(r){if(r[0]>=from&&r[0]<today&&om[r[0]]>0)res.push([r[0],(r[1]/om[r[0]]-1)*100]);});
+  if(of>0&&cur>0)res.push([today,(cur/of-1)*100]);
+  return res;
+}
+function renderBrHist(){
+  var box=$('#bhc');if(!box)return;
+  var bs=document.querySelectorAll('#bhr .brs');for(var i=0;i<bs.length;i++)bs[i].className='brs'+(+bs[i].getAttribute('data-r')===BRH.r?' on':'');
+  if(!BRH.data){box.innerHTML='<div class="bhs">'+(BRH.fail?'Historial no disponible por ahora.':'Cargando historial…')+'</div>';return;}
+  var of=brOficial(),live={bolsa:S.fx.mep,contadoconliqui:S.fx.ccl,cripto:S.fx.usdt,blue:S.fx.blue};
+  var ser=BRK.map(function(k){return {n:k[1],c:k[2],p:brSeries(k[0],of&&of.v,live[k[0]]&&live[k[0]].v,BRH.r)};}).filter(function(x){return x.p.length>1;});
+  if(!ser.length){box.innerHTML='<div class="bhs">Sin datos para este período.</div>';return;}
+  var t0=Infinity,t1=-Infinity,mn=0,mx=-Infinity;
+  ser.forEach(function(x){x.p.forEach(function(q){q.t=Date.parse(q[0]);if(q.t<t0)t0=q.t;if(q.t>t1)t1=q.t;if(q[1]>mx)mx=q[1];if(q[1]<mn)mn=q[1];});});
+  var step=mx-mn>40?10:mx-mn>16?5:mx-mn>8?2:1;mx=Math.ceil(mx/step)*step;mn=Math.floor(mn/step)*step;if(mx===mn)mx=mn+step;
+  var W=300,H=140,L=2,R=34,T=6,B=4,pw=W-L-R,ph=H-T-B;
+  function X(t){return L+(t1===t0?0:(t-t0)/(t1-t0))*pw;}function Y(v){return T+(1-(v-mn)/(mx-mn))*ph;}
+  var g='';for(var v=mn;v<=mx+1e-9;v+=step){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v).toFixed(1)+'" y2="'+Y(v).toFixed(1)+'" stroke="var(--line)"/><text x="'+(W-R+4)+'" y="'+(Y(v)+3.5).toFixed(1)+'">'+v+'%</text>';}
+  var pa='';ser.forEach(function(x){var d='';x.p.forEach(function(q,i){d+=(i?'L':'M')+X(q.t).toFixed(1)+' '+Y(q[1]).toFixed(1);});pa+='<path d="'+d+'" fill="none" stroke="'+x.c+'" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';});
+  var lg='';ser.forEach(function(x){var l=x.p[x.p.length-1][1];lg+='<span><i style="background:'+x.c+'"></i>'+x.n+' '+brFmt(l)+'%</span>';});
+  box.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de la brecha contra el oficial">'+g+pa+'</svg><div class="bhl">'+lg+'</div><div class="bhs">Brecha contra el dólar oficial. Fuente: ArgentinaDatos (cierres diarios) y valores actuales del tablero.</div>';
+}
+function brNum(t){var s=String(t||'').replace(/[^\d,.]/g,'');if(s.indexOf(',')>=0)s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');var n=parseFloat(s);return isFinite(n)&&n>=0?n:0;}
+function renderBrCalc(){
+  var box=$('#bcr');if(!box)return;
+  var of=brOficial(),rows=[['Oficial',of&&of.v],['MEP',S.fx.mep&&S.fx.mep.v],['Blue',S.fx.blue&&S.fx.blue.v],['CCL',S.fx.ccl&&S.fx.ccl.v],['Cripto',S.fx.usdt&&S.fx.usdt.v]],base=of&&of.v,u=BRC.v;
+  var h='<div class="bcw h"><span style="text-align:left">Dólar</span><span>Recibís</span><span>Dif. vs oficial</span></div>';
+  rows.forEach(function(r,i){var ok=r[1]>0,tot=ok?u*r[1]:0,d=ok&&base>0?tot-u*base:0;
+    h+='<div class="bcw"><b>'+r[0]+'</b><span>'+(ok?'$ '+nf(0).format(Math.round(tot)):'—')+'</span><span class="'+(i&&ok&&base>0?(d>0?'u':d<0?'d':''):'')+'">'+(i&&ok&&base>0?(d>=0?'+':'−')+nf(0).format(Math.abs(Math.round(d))):'—')+'</span></div>';});
+  box.innerHTML=h;
+  var cs=document.querySelectorAll('.bcc i');for(var i=0;i<cs.length;i++)cs[i].className=+cs[i].getAttribute('data-v')===u?'on':'';
+}
+(function(){
+  document.addEventListener('click',function(e){
+    var t=e.target;if(!t||!t.closest)return;
+    var r=t.closest('.brs');if(r){BRH.r=+r.getAttribute('data-r');try{localStorage.setItem('tablero-brr',BRH.r);}catch(x){}renderBrHist();return;}
+    var c=t.closest('.bcc i');if(c){BRC.v=+c.getAttribute('data-v');var inp=$('#bcv');if(inp)inp.value=nf(0).format(BRC.v);renderBrCalc();}
+  });
+  var inp=$('#bcv');if(inp)inp.addEventListener('input',function(){BRC.v=brNum(inp.value);renderBrCalc();});
+  if(inp)inp.addEventListener('blur',function(){inp.value=nf(BRC.v%1?2:0).format(BRC.v);});
+})();
 function renderBrecha(){
   if(!$('#brd'))return;
   var of=brOficial(),mep=S.fx.mep&&S.fx.mep.v,ccl=S.fx.ccl&&S.fx.ccl.v,us=S.fx.usdt&&S.fx.usdt.v,bl=S.fx.blue&&S.fx.blue.v;
@@ -1522,6 +1595,7 @@ function renderBrecha(){
   });
   $('#brd').innerHTML=dk;
   var h=$('#h-brc');if(h)h.textContent=of?'vs '+of.n+' '+nf(2).format(of.v):'Oficial sin datos';
+  loadBrHist();renderBrHist();renderBrCalc();
 }
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
@@ -2022,6 +2096,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
   var bl=$('#bl'),row=$('#o-av'),st=$('#o-avs'),hb=$('#hb');
   $('#o-ver').textContent=VER;
   $('#o-rf').addEventListener('click',function(){refresh(true);});
+  $('#rf').addEventListener('click',function(){refresh(true);});
   hb.addEventListener('click',function(){navGo('ayuda');});
   if(!bl||!row)return;
   function sync(){var off=bl.style.display==='none';row.disabled=off;st.textContent=off?'No disponible en este navegador':(bl.classList.contains('on')?'Activados en este celular':'Desactivados · tocá para configurar');}
