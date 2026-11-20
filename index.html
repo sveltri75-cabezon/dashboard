@@ -414,6 +414,9 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 .bhl{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:11px;color:var(--mut)}.bhl i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}.bhs{color:var(--mut);font-size:10.5px;margin-top:6px}#bhc svg{display:block;width:100%;height:auto}#bhc text{fill:var(--mut);font:10px system-ui,sans-serif}
 .brc>.bci{flex-direction:row;display:flex;align-items:center;gap:8px;background:var(--sunk);border-radius:12px;padding:8px 10px;margin:4px 0 6px}.bci span:first-child{color:var(--mut);font-size:12px}.bci b{font-size:13px;color:var(--mut)}.bci input{flex:1;min-width:0;width:100%;background:none;border:0;outline:0;color:var(--ink);font:700 18px ui-monospace,monospace;text-align:right}.bcc{display:flex;gap:4px}.bcc i{font-style:normal;font-size:11px;padding:4px 7px;border-radius:7px;border:1px solid var(--line);color:var(--mut);cursor:pointer}.bcc i.on{border-color:var(--acc);color:var(--acc)}
 .bcw{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:6px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13px}.bcw.h{border-top:0;padding:2px 0;color:var(--mut);font-size:10.5px}.bcw span{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}.bcw.h span{font-weight:500}.bcw span.u{color:var(--up)}.bcw span.d{color:var(--dn)}
+@media (max-width:900px){.card.tsr h2{grid-template-columns:minmax(0,1fr) auto auto}.card.tsr h2 i.bpl:not(.go){grid-column:2;grid-row:1;display:block;overflow:visible;white-space:nowrap;margin:0}.card.tsr h2 .ctl{grid-column:3;margin-left:8px}}
+.card.tsr h2{flex-wrap:wrap;row-gap:6px}
+#tsr{display:flex;gap:0;background:var(--sunk);padding:2px;border-radius:9px;overflow:visible}
 .bdr .bv.u{color:var(--up)}.bdr .bv.d{color:var(--dn)}.bg3 b.u{color:var(--up)}.bg3 b.d{color:var(--dn)}
 @media (min-width:1880px){.r3{grid-template-columns:1.15fr 1fr 1fr .85fr}}
 </style>
@@ -444,7 +447,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
   </div>
 
   <div class="r2">
-    <section data-src="bcra" class="card" data-tab="tasas"><h2>Tasas BCRA</h2><div id="rates"></div></section>
+    <section data-src="bcra" class="card tsr" data-tab="tasas"><h2>Tasas BCRA <i class="bpl" id="tsr"><span class="brs" data-q="30">30 d</span><span class="brs" data-q="90">90 d</span><span class="brs" data-q="365">1 año</span></i></h2><div id="rates"></div></section>
     <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pf"></div><div class="tape" id="tape"></div></section>
     <section data-src="fci" class="card" data-tab="fci"><h2>FCI Money Market <i id="h-fci">TNA</i></h2><div id="fci"></div></section>
     <section data-src="banks" class="card" data-tab="dolar"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
@@ -514,7 +517,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.3';
+var VER='2026-11-20.5';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -527,7 +530,7 @@ function bps(dpp){return Math.round(dpp*100);} /* diferencia en puntos porcentua
 function pillBps(dpp){return pill(bps(dpp),' bps',0);}
 function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d':'n')+'">'+sgn(v,d)+(suf==null?' %':suf)+'</span>';}
 
-var SERIES=[{id:11,name:'BAIBAR'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
+var SERIES=[{id:11,name:'BAIBAR'},{id:150,name:'Pases 1 d'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:7,name:'BADLAR'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
 var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
@@ -552,7 +555,7 @@ function pushHist(k,v){var h=S.hist[k];h.push({t:Date.now(),v:v});if(h.length>80
 /* ---------- BCRA ---------- */
 function loadBCRA(){
   var iso=function(d){return d.toISOString().slice(0,10);};
-  var q='?desde='+iso(new Date(Date.now()-150*864e5))+'&hasta='+iso(new Date(Date.now()+864e5))+'&limit=1000';
+  var q='?desde='+iso(new Date(Date.now()-400*864e5))+'&hasta='+iso(new Date(Date.now()+864e5))+'&limit=1000';
   var ids=SERIES.map(function(s){return s.id;}).concat([MAYORISTA_ID]);
   return Promise.allSettled(ids.map(function(id){return getJSON('https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/'+id+q);})).then(function(res){
     var ok=0;
@@ -1139,12 +1142,16 @@ function spark(pts,n){
   var up=vs[vs.length-1]>=vs[0];
   return '<svg viewBox="0 0 100 32" preserveAspectRatio="none"><polyline fill="none" stroke="'+(up?'#1fb26a':'#e5484d')+'" stroke-width="1.6" vector-effect="non-scaling-stroke" points="'+pts2+'"/></svg>';
 }
+var TSR=30;try{var _q=parseInt(localStorage.getItem('tablero-tsr'),10);if(_q===30||_q===90||_q===365)TSR=_q;}catch(e){}
+function sparkDays(p,days){var end=dayNum(p[p.length-1].d),q=p.filter(function(x){return dayNum(x.d)>=end-days;});return spark(q.length>1?q:p.slice(-2),9999);}
+document.addEventListener('click',function(e){var t=e.target&&e.target.closest&&e.target.closest('#tsr .brs');if(!t)return;TSR=+t.getAttribute('data-q');try{localStorage.setItem('tablero-tsr',TSR);}catch(x){}renderRates();});
 function renderRates(){
+  var bs=document.querySelectorAll('#tsr .brs');for(var i=0;i<bs.length;i++)bs[i].className='brs'+(+bs[i].getAttribute('data-q')===TSR?' on':'');
   $('#rates').innerHTML=SERIES.map(function(s){
     var p=S.bcra[s.id];
     if(!p)return '<div class="row"><div class="t"><b>'+esc(s.name)+'</b><span>Sin datos</span></div></div>';
     var last=p[p.length-1],prev=p[p.length-2];
-    return '<div class="row" data-bs="'+s.id+'"><div class="t"><b>'+esc(s.name)+'</b><span>'+fdate(last.d)+'</span></div><div class="sp">'+spark(p,30)+'</div>'+'<div class="p"><b>'+nf(2).format(last.v)+' %</b><span>TNA</span></div>'+(prev?pillBps(last.v-prev.v):'')+'</div>';
+    return '<div class="row" data-bs="'+s.id+'"><div class="t"><b>'+esc(s.name)+'</b><span>'+fdate(last.d)+'</span></div><div class="sp">'+sparkDays(p,TSR)+'</div>'+'<div class="p"><b>'+nf(2).format(last.v)+' %</b><span>TNA</span></div>'+(prev?pillBps(last.v-prev.v):'')+'</div>';
   }).join('');
 }
 function chipHTML(b){return '<span class="chip'+(b.me?' me':'')+'">'+esc(b.name)+'</span>';}
@@ -1949,7 +1956,7 @@ function refresh(force,skipFast){
   });
 }
 /* ---------- ventana emergente: histórico de 90 días de una serie BCRA ---------- */
-var POPN={11:'BAIBAR',13:'Adelantos en cuenta',14:'Préstamos personales',44:'TAMAR',12:'Plazo fijo',5:'Dólar mayorista · Com. A 3500'};
+var POPN={7:'BADLAR bancos privados',150:'Pases entre terceros a 1 día',11:'BAIBAR',13:'Adelantos en cuenta',14:'Préstamos personales',44:'TAMAR',12:'Plazo fijo',5:'Dólar mayorista · Com. A 3500'};
 var POP_DAYS=90,popEl=null,popT=0,popId=null,popAnchor=null;
 function popData(id){
   var p=S.bcra[id];if(!p||!p.length)return null;
