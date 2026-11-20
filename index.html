@@ -403,6 +403,15 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 @media (max-width:360px){#banks th,#banks td{padding-left:3px!important;padding-right:3px!important}#banks td{font-size:12.5px}#banks th{font-size:9.5px;letter-spacing:0}}
 #hm-may.wait .hmb,#hm-may.wait .hsp svg{opacity:.45}#hm-may .hcap{font-size:11px;color:var(--mut);text-align:right;margin-top:5px;line-height:1.25}#hm-may .wtl{align-self:flex-start;font-size:13px}
 .st{padding-left:6px}@keyframes pu{0%{box-shadow:0 0 0 0 rgba(31,178,106,.65)}100%{box-shadow:0 0 0 5px rgba(31,178,106,0)}}.mr svg,.hsp svg{overflow:visible}
+
+.brc>div{display:flex;flex-direction:column;gap:0}
+.bpl .pill{font-size:12.5px}
+@media (max-width:900px){.card.brc h2{grid-template-columns:minmax(0,1fr) auto auto}.card.brc h2 i.bpl:not(.go){grid-column:2;grid-row:1;display:block;overflow:visible;white-space:nowrap;margin:0}.card.brc h2 .ctl{grid-column:3;margin-left:8px}}
+.bg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.bg3>div{min-width:0}.bg3 small{display:block;color:var(--mut);font-size:11px}.bg3 b{display:block;font-size:15px;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}.bg3>div:last-child{text-align:right}
+.bbar{height:5px;border-radius:3px;background:var(--line);margin-top:11px;overflow:hidden}.bbar i{display:block;height:100%;border-radius:3px;background:var(--up)}.bbar i.d{background:var(--dn)}
+.bdr{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}.bdr:first-child{border-top:0}.bdr b{display:block;font-size:14px}.bdr small{color:var(--mut);font-size:11.5px}.bdr .bv{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bdr .bv.u{color:var(--up)}.bdr .bv.d{color:var(--dn)}.bg3 b.u{color:var(--up)}.bg3 b.d{color:var(--dn)}
+@media (min-width:1880px){.r3{grid-template-columns:1.15fr 1fr 1fr .85fr}}
 </style>
 </head>
 <body>
@@ -452,6 +461,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
       <p>Los precios se refrescan solos cada 30 segundos. Plazo fijo, FCI, bonos y licitaciones cambian poco y se actualizan cada algunos minutos.</p>
       <h3>Colores y estados</h3>
       <ul><li><span class="gu">Verde</span> sube, <span class="gd">rojo</span> baja, gris sin cambios.</li>
+      <li><b>Brecha:</b> diferencia del MEP, CCL, USDT (cripto) y blue contra el dólar oficial (venta de Meridian; si no está, la de Nación). El canje es la brecha del CCL contra el MEP.</li>
       <li>Cuando un valor cambia al actualizar, se marca unos segundos en verde (sube) o rojo (baja). Se apaga desde <b>Opciones → Resaltar cambios</b>.</li>
       <li>Un punto gris en <b>Forex cerrado</b> o <b>Caución cerrada</b> significa mercado fuera de horario: se muestra el último dato del día.</li>
       <li>En <b>Dólar por entidad</b>, la barra muestra dónde cae cada banco respecto del resto: el centro verde es la zona normal; ámbar y rojo marcan los extremos, más barato o más caro. La entrada en gris indica una cotización vieja o sin respuesta.</li></ul>
@@ -467,10 +477,16 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
       <h3>Instalar como app</h3>
       <p>En el menú del navegador elegí <b>Agregar a pantalla de inicio</b>. Se abre sin barra del navegador y se actualiza sola al cerrarla y volver a abrirla.</p>
       <h3>Fuentes</h3>
-      <p>BCRA, MAE, data912, ArgentinaDatos, compararfondos y las páginas públicas de cada banco. La información es orientativa y no constituye asesoramiento financiero.</p>
+      <p>BCRA, MAE, data912, ArgentinaDatos, CriptoYa, DolarApi, compararfondos y las páginas públicas de cada banco. La información es orientativa y no constituye asesoramiento financiero.</p>
     </section>
     <section data-src="bon" class="card deskonly" data-tab="bonos"><h2>Bonos tasa fija <i>TIR · pesos</i></h2><div class="bsc" id="bf"></div></section>
     <section data-src="bon" class="card deskonly" data-tab="bonos"><h2>Bonos hard dólar <i>TIR · USD D</i></h2><div class="bsc" id="bh"></div></section>
+    <section data-src="fx" class="card deskonly" data-tab="brecha"><h2>Brecha del dólar <i id="h-brc">Oficial</i></h2><div id="brd"></div></section>
+    <section data-src="fx" class="card mobonly brc" data-tab="brecha"><h2>Oficial vs MEP <i class="bpl" id="bph0"></i></h2><div id="brm0"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs CCL <i class="bpl" id="bph1"></i></h2><div id="brm1"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs Cripto <i class="bpl" id="bph2"></i></h2><div id="brm2"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Oficial vs Blue <i class="bpl" id="bph3"></i></h2><div id="brm3"></div></section>
+    <section class="card mobonly brc" data-tab="brecha"><h2>Canje · MEP vs CCL <i class="bpl" id="bph4"></i></h2><div id="brm4"></div></section>
     <section class="card mobonly bsg" data-tab="bonos"><div class="bseg" id="bseg"><button type="button" data-g="pesos">Tasa fija $</button><button type="button" data-g="cer">CER</button><button type="button" data-g="usd">Hard dólar</button><button type="button" data-g="bop">BOPREAL</button></div></section>
     <section data-src="bon" class="card mobonly" data-tab="bonos"><h2 id="bt">Tasa fija en pesos <i id="bs"></i></h2><div id="bl2"></div></section>
     <section class="card mobonly" data-tab="bonos"><h2 id="bct">Curva <i id="bcs"></i></h2><div class="bch" id="bch"></div><div class="blg" id="blg"></div></section>
@@ -492,7 +508,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-16.2';
+var VER='2026-11-20.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -547,8 +563,11 @@ function loadBCRA(){
 
 /* ---------- MEP y CCL (data912) ---------- */
 function loadFX(){
-  return Promise.allSettled([getJSON(API+'/live/mep'),getJSON(API+'/live/ccl')]).then(function(r){
+  var blueP=getJSON('https://dolarapi.com/v1/dolares/blue').then(function(j){var v=num(j&&j.venta);if(!(v>0))throw new Error('blue');return v;}).catch(function(){return getJSON('https://api.bluelytics.com.ar/v2/latest').then(function(j){var v=num(j&&j.blue&&j.blue.value_sell);if(!(v>0))throw new Error('blue');return v;});});
+  return Promise.allSettled([getJSON(API+'/live/mep'),getJSON(API+'/live/ccl'),getJSON('https://criptoya.com/api/usdt/ars/1'),blueP]).then(function(r){
     var m=r[0],c=r[1];
+    if(r[2].status==='fulfilled'&&r[2].value&&typeof r[2].value==='object'){var ak=Object.keys(r[2].value).map(function(k){var x=r[2].value[k];return x&&num(x.ask);}).filter(function(x){return x>0;});if(ak.length>=3)S.fx.usdt={v:median(ak),n:ak.length};}
+    if(r[3].status==='fulfilled'&&r[3].value>0)S.fx.blue={v:r[3].value};
     if(m.status==='fulfilled'&&Array.isArray(m.value)){
       var row=null;
       ['AL30','GD30'].some(function(t){row=m.value.find(function(x){return x.ticker===t&&x.mark>0;});return !!row;});
@@ -1480,9 +1499,33 @@ document.addEventListener('click',function(e){var r=e.target.closest&&e.target.c
 themeApply();
 (function(){var b=document.getElementById('th');if(b)b.addEventListener('click',function(){var t=themeGet(),n=t==='auto'?'light':t==='light'?'dark':'auto';try{if(n==='auto')localStorage.removeItem(THEME_KEY);else localStorage.setItem(THEME_KEY,n);}catch(e){}themeApply();if(typeof renderAll==='function')renderAll();});
   if(window.matchMedia){var mq=window.matchMedia('(prefers-color-scheme: light)'),f=function(){if(themeGet()==='auto'){themeApply();if(typeof renderAll==='function')renderAll();}};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f);}})();
+
+/* ---------- brecha del dólar: oficial (venta Meridian, o Nación si no está) contra MEP, CCL, cripto (USDT) y blue; canje = CCL vs MEP ---------- */
+function brOficial(){
+  var m=BANKS.meridian,n=BANKS.bna;
+  if(m&&m.q&&m.q.venta>0)return {v:m.q.venta,n:'Meridian'};
+  if(n&&n.q&&n.q.venta>0)return {v:n.q.venta,n:'Nación'};
+  return null;
+}
+function brFmt(d){return (d>=0?'+':'\u2212')+nf(2).format(Math.abs(d));}
+function renderBrecha(){
+  if(!$('#brd'))return;
+  var of=brOficial(),mep=S.fx.mep&&S.fx.mep.v,ccl=S.fx.ccl&&S.fx.ccl.v,us=S.fx.usdt&&S.fx.usdt.v,bl=S.fx.blue&&S.fx.blue.v;
+  var items=[['MEP','Oficial vs MEP',mep,of&&of.v],['CCL','Oficial vs CCL',ccl,of&&of.v],['Cripto','Oficial vs Cripto',us,of&&of.v],['Blue','Oficial vs Blue',bl,of&&of.v],['Canje','Canje · MEP vs CCL',ccl,mep]];
+  var dk='';
+  items.forEach(function(it,i){
+    var cur=it[2],base=it[3],ok=cur>0&&base>0,d=ok?cur-base:0,pc=ok?(cur/base-1)*100:0,cls=d>0.00001?'u':d<-0.00001?'d':'n',canje=i===4;
+    var box=$('#brm'+i),ph=$('#bph'+i);
+    if(ph)ph.innerHTML=ok?pill(pc):'';
+    if(box)box.innerHTML=ok?'<div class="bg3"><div><small>'+(canje?'MEP':'Oficial')+'</small><b class="bv">'+nf(2).format(base)+'</b></div><div><small>'+(canje?'CCL':it[0])+'</small><b class="bv">'+nf(2).format(cur)+'</b></div><div><small>Diferencia</small><b class="bv '+cls+'">$ '+brFmt(d)+'</b></div></div><div class="bbar"><i class="'+(d<0?'d':'')+'" style="width:'+Math.min(100,Math.max(3,Math.abs(pc)/15*100)).toFixed(0)+'%"></i></div>':na();
+    dk+='<div class="bdr"><div><b>'+(canje?'Canje MEP/CCL':it[0])+'</b><small>'+(ok?nf(2).format(cur)+(canje?' vs '+nf(2).format(base):''):'Sin datos')+'</small></div>'+(ok?'<span class="bv '+cls+'">$ '+brFmt(d)+'</span>'+pill(pc):'<span></span><span></span>')+'</div>';
+  });
+  $('#brd').innerHTML=dk;
+  var h=$('#h-brc');if(h)h.textContent=of?'vs '+of.n+' '+nf(2).format(of.v):'Oficial sin datos';
+}
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
-  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();
+  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderBrecha();
   stockList($('#up'),S.stocks.up);stockList($('#down'),S.stocks.down);
 }
 
@@ -1703,7 +1746,7 @@ function popBuildLic(){
 }
 
 /* ---------- tabs (móvil) ---------- */
-var TABS=[['home','Home'],['dolar','Dólar'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones'],['ayuda','Opciones']];
+var TABS=[['home','Home'],['dolar','Dólar'],['brecha','Brecha'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones'],['ayuda','Opciones']];
 var TICON={"home": "<path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z\"/>", "dolar": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.4 5 1.2 5 3.6 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2.1-.5-2.6-1.3M12 6.5V8m0 8v1.5\"/>", "tasas": "<path d=\"M4 19V5M4 19h16M8 15l3-4 3 2 5-6\"/>", "plazo": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"15\" rx=\"2\"/><path d=\"M4 10h16M8 3v4M16 3v4\"/>", "fci": "<path d=\"M12 3a9 9 0 1 0 9 9h-9z\"/><path d=\"M15 3.5A9 9 0 0 1 20.5 9H15z\"/>", "acciones": "<path d=\"M7 4v16M5 8h4v7H5zM17 3v18M15 6h4v9h-4z\"/>", "bonos": "<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"M8 8h8M8 12h8M8 16h5\"/>", "lic": "<path d=\"M5 21V4M5 4h12l-2.5 4L17 12H5\"/>", "ayuda": "<path d=\"M4 7h9M17 7h3M4 17h3M11 17h9\"/><circle cx=\"15\" cy=\"7\" r=\"2\"/><circle cx=\"9\" cy=\"17\" r=\"2\"/>"};
 var tab='home'; /* al abrir siempre arranca en Home */
 if(!TABS.some(function(t){return t[0]===tab;}))tab='dolar';
@@ -1728,6 +1771,7 @@ function goTab(i,dir){
   if(i<0||i>=TABS.length||TABS[i][0]===tab)return;
   tab=TABS[i][0];store('tablero-tab-v1',tab);applyTab(dir||(i>tabIdx()?1:-1));window.scrollTo(0,0);
 }
+TICON.brecha='<path d="M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4"/>';
 $('#tabs').innerHTML=TABS.map(function(t){return '<button class="tab" role="tab" data-t="'+t[0]+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+TICON[t[0]]+'</svg><span>'+t[1]+'</span></button>';}).join('');
 $('#tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;var i=0;TABS.forEach(function(t,k){if(t[0]===b.dataset.t)i=k;});goTab(i,i>tabIdx()?1:-1);});
 document.addEventListener('click',function(e){
@@ -2122,7 +2166,7 @@ if(!isApp&&mq.matches){
 
 /* resaltado de cambios: cuando un valor visible cambia entre actualizaciones, se tiñe de verde (sube) o rojo (baja) y se desvanece */
 (function(){
-  var SEL='.big,.hmb,.lbig,.p>b,.tn,.hb>span>b,.bo .pr,.bo .x,.bo .t,#banks td',MAP={},T=null,KEY='tablero-fx';
+  var SEL='.big,.hmb,.lbig,.p>b,.tn,.hb>span>b,.bo .pr,.bo .x,.bo .t,#banks td,.bv',MAP={},T=null,KEY='tablero-fx';
   function on(){try{return localStorage.getItem(KEY)!=='0';}catch(e){return true;}}
   function num(t){var m=/-?\d[\d.]*(?:,\d+)?/.exec(t);if(!m)return null;var v=parseFloat(m[0].replace(/\./g,'').replace(',','.'));return isNaN(v)?null:v;}
   function idOf(el){var c=el.closest?el.closest('[id]'):null;return c?c.id:'';}
