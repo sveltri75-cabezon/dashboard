@@ -60,6 +60,14 @@ td:first-child{font-weight:600}
 td .pill{font-size:12px;min-width:58px;padding:2px 6px}
 tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:first-child small{display:block;font-size:10.5px;font-style:normal;color:var(--amb);opacity:1;margin-top:1px}tr.me td{background:var(--me)}tr.me td:first-child{color:var(--acc)}
 /* plazo fijo */
+.pfm{background:var(--me);border-radius:14px;padding:12px 14px;margin:6px 0 10px}
+.pfm small{display:block;color:var(--mut);font-size:11px;font-weight:500}.pfh{display:flex;justify-content:space-between;align-items:center;gap:10px}.pfr{display:block;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.pfk{background:var(--acc);color:var(--onacc);font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap}.pfm.ld .pfk{background:var(--up);color:#fff}
+.pfg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.pfg>div{min-width:0}.pfg b{display:block;font-size:14px;font-variant-numeric:tabular-nums;margin-top:1px}.pfg b.u{color:var(--up)}.pfg b.d{color:var(--dn)}
+.pfm{border-left:7px solid var(--zc,var(--acc))}.pfm.zg,.pf.zg{--zc:var(--up);--zb:rgba(31,178,106,.16)}.pfm.za,.pf.za{--zc:#e5a912;--zb:rgba(224,169,59,.2)}.pfm.zr,.pf.zr{--zc:var(--dn);--zb:rgba(229,72,77,.16)}
+.pfm .pfk{background:var(--zc)}.pfm.za .pfk{color:#1a1200}.pfm.zg .pfk,.pfm.zr .pfk{color:#fff}
+.pf.me.zg,.pf.me.za,.pf.me.zr{box-shadow:inset 5px 0 0 var(--zc)}
+.pf.me{border-top-color:transparent}.pf.me+.pf{border-top-color:transparent}.pf.me .rk{background:var(--zc);color:#fff}.pf.me.za .rk{color:#1a1200}.pf.me .nm b{color:var(--ink);font-weight:800}
 .pf{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;column-gap:12px;padding:9px 0;border-top:1px solid var(--line)}
 .pf:first-of-type{border-top:0}
 .pf.me{background:var(--me);margin:0 -14px;padding:9px 14px}
@@ -448,7 +456,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 
   <div class="r2">
     <section data-src="bcra" class="card tsr" data-tab="tasas"><h2>Tasas BCRA <i class="bpl" id="tsr"><span class="brs" data-q="30">30 d</span><span class="brs" data-q="90">90 d</span><span class="brs" data-q="365">1 año</span></i></h2><div id="rates"></div></section>
-    <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pf"></div><div class="tape" id="tape"></div></section>
+    <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pfm"></div><div id="pf"></div><div class="tape" id="tape"></div></section>
     <section data-src="fci" class="card" data-tab="fci"><h2>FCI Money Market <i id="h-fci">TNA</i></h2><div id="fci"></div></section>
     <section data-src="banks" class="card" data-tab="dolar"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
   </div>
@@ -517,7 +525,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.5';
+var VER='2026-11-20.8';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -871,7 +879,7 @@ function pickDense(j,n){
   rates.sort(function(a,b){return b-a;});
   var me=null;
   rows.forEach(function(x){if(!me&&/meridian/i.test(x.entidad))me={rate:x.tasa_sin_relacion,name:bankName(x.entidad)};});
-  if(me){me.rank=rates.indexOf(me.rate)+1;me.count=rows.filter(function(x){return x.tasa_sin_relacion===me.rate;}).length;}
+  if(me){me.rank=rates.indexOf(me.rate)+1;me.count=rows.filter(function(x){return x.tasa_sin_relacion===me.rate;}).length;me.better=rows.filter(function(x){return x.tasa_sin_relacion>me.rate;}).length;me.total=rows.length;}
   return {me:me,best:rates[0],groups:rates.slice(0,n).map(function(r,i){
     return {rank:i+1,rate:r,banks:rows.filter(function(x){return x.tasa_sin_relacion===r;}).map(function(x){
       var nm=bankName(x.entidad);
@@ -1211,7 +1219,20 @@ function renderTapeB(){
   evShowB(0,false);evLoopB();
 }
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#evbb');if(b&&EVB.length>1){evShowB(evIB+1,true);evLoopB();}});
+function renderPFMe(){
+  var el=$('#pfm');if(!el)return;
+  var m=PF.groups&&PF.me,b=PF.best;
+  if(!m||!(b>0)){el.innerHTML='';return;}
+  var lead=m.rank===1,d=bps(b-m.rate),oth=m.count-1;
+  var st=function(k,v,c){return '<div><small>'+k+'</small><b'+(c?' class="'+c+'"':'')+'>'+v+'</b></div>';};
+  var s2=st('Comparte con',oth>0?oth+(oth===1?' banco':' bancos'):'Nadie',oth>0?'':'');
+  var s3=lead?st('Mejor tasa','Líder','u'):st('Vs. el primero',sgn(-d,0)+' bps','d');
+  var s4=st('Con mejor tasa',m.better===0?'Ninguno':m.better+(m.better===1?' banco':' bancos'),m.better===0?'u':'');
+  var zn=m.rank===1?'zg':m.rank===2?'za':'zr',ic=m.rank===1?'▲':m.rank===2?'●':'▼';
+  el.innerHTML='<div class="pfm '+zn+'"><div class="pfh"><div><small>Meridian</small><b class="pfr">'+nf(2).format(m.rate)+' %</b></div><span class="pfk">'+ic+' '+m.rank+'° puesto</span></div><div class="pfg">'+s2+s4+s3+'</div></div>';
+}
 function renderPF(){
+  renderPFMe();
   var box=$('#pf');
   if(!PF.groups){box.innerHTML='<div class="empty">'+(PF.err?'Sin respuesta del servicio de tasas':'Cargando…')+'</div>';renderTape();return;}
   var myRate=null;PF.groups.forEach(function(g){if(g.banks.some(function(b){return b.me;}))myRate=g.rate;});
@@ -1219,7 +1240,7 @@ function renderPF(){
     var mine=g.banks.some(function(b){return b.me;});
     var dl='';
     if(!mine&&myRate!=null){var df=g.rate-myRate;dl='<span class="dl '+(df>0?'u':'d')+'">'+sgn(df,2)+'</span>';}
-    return '<div class="pf'+(mine?' me':'')+'"><div class="rk">'+g.rank+'</div><div><div class="r">'+nf(2).format(g.rate)+' %</div><div class="nm">'+g.banks.map(function(b){return b.me?'<b>'+esc(b.name)+'</b>':esc(b.name);}).join(' · ')+'</div></div>'+dl+'</div>';
+    return '<div class="pf'+(mine?' me '+(g.rank===1?'zg':g.rank===2?'za':'zr'):'')+'"><div class="rk">'+g.rank+'</div><div><div class="r">'+nf(2).format(g.rate)+' %</div><div class="nm">'+g.banks.map(function(b){return b.me?'<b>'+esc(b.name)+'</b>':esc(b.name);}).join(' · ')+'</div></div>'+dl+'</div>';
   }).join('');
   renderTape();
 }
