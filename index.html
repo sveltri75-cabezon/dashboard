@@ -67,7 +67,8 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .pfm{border-left:7px solid var(--zc,var(--acc))}.pfm.zg,.pf.zg{--zc:var(--up);--zb:rgba(31,178,106,.16)}.pfm.za,.pf.za{--zc:#e5a912;--zb:rgba(224,169,59,.2)}.pfm.zr,.pf.zr{--zc:var(--dn);--zb:rgba(229,72,77,.16)}
 .pfm .pfk{background:var(--zc)}.pfm.za .pfk{color:#1a1200}.pfm.zg .pfk,.pfm.zr .pfk{color:#fff}
 .pf.me.zg,.pf.me.za,.pf.me.zr{box-shadow:inset 5px 0 0 var(--zc)}
-.pf.me{border-top-color:transparent}.pf.me+.pf{border-top-color:transparent}.pf.me .rk{background:var(--zc);color:#fff}.pf.me.za .rk{color:#1a1200}.pf.me .nm b{color:var(--ink);font-weight:800}
+.pf.me{border-top-color:transparent}.pf.me+.pf{border-top-color:transparent}
+.mp{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.mp:first-child{border-top:0}.mp .r{font-size:22px;font-weight:700;white-space:nowrap;line-height:1.1}.mp .nm{font-size:14px;color:var(--ink);margin-top:2px;line-height:1.3}.mp .nm b{font-weight:800;color:var(--acc)}.pl{font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
 .pf{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;column-gap:12px;padding:9px 0;border-top:1px solid var(--line)}
 .pf:first-of-type{border-top:0}
 .pf.me{background:var(--me);margin:0 -14px;padding:9px 14px}
@@ -78,6 +79,7 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .logos{display:flex;gap:8px;flex:1;flex-wrap:wrap;min-width:0}
 .chip{padding:6px 12px;border-radius:99px;background:var(--sf);color:var(--ink);font-weight:600;font-size:14px;white-space:nowrap}
 .chip.me{background:var(--acc);color:var(--onacc)}
+.tape#tapeb{margin:0 0 10px;border-top:0;padding:0 0 9px;border-bottom:1px solid var(--line)}
 .tape{margin-top:auto;border-top:1px solid var(--line);padding-top:9px;min-height:30px}
 .evh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}.evh b{font-size:13px}.evh span{font-size:11.5px;color:var(--mut)}
 .evb{position:relative;height:46px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -458,7 +460,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="bcra" class="card tsr" data-tab="tasas"><h2>Tasas BCRA <i class="bpl" id="tsr"><span class="brs" data-q="30">30 d</span><span class="brs" data-q="90">90 d</span><span class="brs" data-q="365">1 año</span></i></h2><div id="rates"></div></section>
     <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pfm"></div><div id="pf"></div><div class="tape" id="tape"></div></section>
     <section data-src="fci" class="card" data-tab="fci"><h2>FCI Money Market <i id="h-fci">TNA</i></h2><div id="fci"></div></section>
-    <section data-src="banks" class="card" data-tab="dolar"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
+    <section data-src="banks" class="card" data-tab="pizarras"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div class="tape" id="tapeb"></div><div id="semb" class="semb"></div><div id="banks"></div></section>
+    <section class="card" data-tab="pizarras"><h2>Mejores</h2><div id="pzr"></div></section>
   </div>
 
   <div class="r3">
@@ -525,7 +528,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.8';
+var VER='2026-11-20.12';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1256,6 +1259,17 @@ function heat(v,lo,hi){
   var t=hi>lo?(v-lo)/(hi-lo):0,h=Math.round(138-t*138); /* verde = venta más baja, rojo = venta más alta */
   return 'background:hsl('+h+' 62% 27%);color:#fff;font-weight:700';
 }
+function renderPizTop(live){
+  var el=$('#pzr');if(!el)return;
+  var rows=live.filter(function(r){return r.q&&r.q.venta>0&&r.q.compra>0;});
+  if(rows.length<2){el.innerHTML='<div class="empty">Sin datos suficientes</div>';return;}
+  var defs=[['Compra','mayor precio de compra',function(q){return q.compra;},-1],['Venta','menor precio de venta',function(q){return q.venta;},1],['Spread','venta − compra',function(q){return q.venta-q.compra;},1]];
+  el.innerHTML=defs.map(function(d){
+    var f=d[2],best=rows.map(function(r){return f(r.q);}).sort(function(a,b){return (a-b)*d[3];})[0];
+    var nm=rows.filter(function(r){return f(r.q)===best;}).map(function(r){var n=esc(r.b.name.replace(/^Banco\s+/i,''));return r.b.mine?'<b>'+n+'</b>':n;}).join(' · ');
+    return '<div class="mp"><div><div class="pl">'+d[0]+'</div><div class="nm">'+nm+'</div></div><div class="r">'+nf(0).format(best)+'</div></div>';
+  }).join('');
+}
 function renderBanks(){
   var rows=BANK_DEFS.map(function(b){var e=BANKS[b.key];return {b:b,e:e,q:e&&e.q};});
   var live=rows.filter(function(r){return r.q;}),lo=Infinity,hi=-Infinity;
@@ -1264,6 +1278,7 @@ function renderBanks(){
     if(x.q&&y.q)return x.q.venta-y.q.venta||x.b.name.localeCompare(y.b.name,'es');
     if(x.q)return -1;if(y.q)return 1;return 0;
   });
+  renderPizTop(live);
   var body=rows.map(function(r){
     var b=r.b,e=r.e,tr=b.mine?'<tr class="me">':'<tr>',nm='<td>'+esc(b.name)+'</td>';
     if(!e)return tr+nm+'<td colspan="3" class="mut" style="text-align:left">Cargando…</td></tr>';
@@ -1848,8 +1863,9 @@ function popBuildLic(){
 }
 
 /* ---------- tabs (móvil) ---------- */
-var TABS=[['home','Home'],['dolar','Dólar'],['brecha','Brecha'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones'],['ayuda','Opciones']];
+var TABS=[['home','Home'],['dolar','Dólar'],['pizarras','Pizarras'],['brecha','Brecha'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones'],['ayuda','Opciones']];
 var TICON={"home": "<path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z\"/>", "dolar": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.4 5 1.2 5 3.6 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2.1-.5-2.6-1.3M12 6.5V8m0 8v1.5\"/>", "tasas": "<path d=\"M4 19V5M4 19h16M8 15l3-4 3 2 5-6\"/>", "plazo": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"15\" rx=\"2\"/><path d=\"M4 10h16M8 3v4M16 3v4\"/>", "fci": "<path d=\"M12 3a9 9 0 1 0 9 9h-9z\"/><path d=\"M15 3.5A9 9 0 0 1 20.5 9H15z\"/>", "acciones": "<path d=\"M7 4v16M5 8h4v7H5zM17 3v18M15 6h4v9h-4z\"/>", "bonos": "<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"M8 8h8M8 12h8M8 16h5\"/>", "lic": "<path d=\"M5 21V4M5 4h12l-2.5 4L17 12H5\"/>", "ayuda": "<path d=\"M4 7h9M17 7h3M4 17h3M11 17h9\"/><circle cx=\"15\" cy=\"7\" r=\"2\"/><circle cx=\"9\" cy=\"17\" r=\"2\"/>"};
+TICON.pizarras='<path d="M3 9.5l9-5.5 9 5.5"/><path d="M5 10v7M9.5 10v7M14.5 10v7M19 10v7M3 20h18"/>';
 var tab='home'; /* al abrir siempre arranca en Home */
 if(!TABS.some(function(t){return t[0]===tab;}))tab='dolar';
 function tabIdx(){for(var i=0;i<TABS.length;i++)if(TABS[i][0]===tab)return i;return 0;}
