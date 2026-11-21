@@ -539,7 +539,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.15';
+var VER='2026-11-20.16';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1312,7 +1312,7 @@ function renderBanks(){
   if(ph){
     var mq=mer&&mer.q?mer.q:null;
     if(!mq){ph.hidden=true;}
-    else{ph.hidden=false;ph.className='card pzh'+(sm.z==='g'?' zg':sm.z==='a'?' za':sm.z==='r'?' zr':'');
+    else{ph.hidden=false;ph.classList.remove('zg','za','zr');if(sm.z==='g'||sm.z==='a'||sm.z==='r')ph.classList.add('z'+sm.z);
       ph.innerHTML='<div class="hn">Meridian</div><div class="g3"><div><small>COMPRA</small><b>'+nf(0).format(mq.compra)+'</b></div><div><small>VENTA</small><b>'+nf(0).format(mq.venta)+'</b></div><div><small>SPREAD</small><b>'+nf(0).format(mq.venta-mq.compra)+'</b></div></div>';}
   }
   var sd=$('#semd'),sb=$('#semb');
