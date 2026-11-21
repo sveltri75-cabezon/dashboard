@@ -68,7 +68,9 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .pfm .pfk{background:var(--zc)}.pfm.za .pfk{color:#1a1200}.pfm.zg .pfk,.pfm.zr .pfk{color:#fff}
 .pf.me.zg,.pf.me.za,.pf.me.zr{box-shadow:inset 5px 0 0 var(--zc)}
 .pf.me{border-top-color:transparent}.pf.me+.pf{border-top-color:transparent}
-.mp{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.mp:first-child{border-top:0}.mp .r{font-size:22px;font-weight:700;white-space:nowrap;line-height:1.1}.mp .nm{font-size:14px;color:var(--ink);margin-top:2px;line-height:1.3}.mp .nm b{font-weight:800;color:var(--acc)}.pl{font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.pzh{border-left:7px solid var(--zc,var(--acc));background:var(--me)}.pzh[hidden]{display:none}.pzh .hn{font-size:13px;font-weight:700;color:var(--acc);margin-bottom:6px}.pzh .g3{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}.pzh .g3>div+div{border-left:1px solid var(--line)}.pzh small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--mut)}.pzh b{display:block;font-size:24px;font-variant-numeric:tabular-nums;margin-top:2px}
+.pzh.zg{--zc:var(--up)}.pzh.za{--zc:#e5a912}.pzh.zr{--zc:var(--dn)}
+.mp{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line)}.mp:first-child{border-top:0}.mp .r{font-size:19px;font-weight:700;white-space:nowrap;line-height:1.1}.mp .nm{font-size:13px;color:var(--ink);margin-top:2px;line-height:1.3}.mp .nm b{font-weight:800;color:var(--acc)}.pl{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
 .pf{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;column-gap:12px;padding:9px 0;border-top:1px solid var(--line)}
 .pf:first-of-type{border-top:0}
 .pf.me{background:var(--me);margin:0 -14px;padding:9px 14px}
@@ -79,7 +81,6 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .logos{display:flex;gap:8px;flex:1;flex-wrap:wrap;min-width:0}
 .chip{padding:6px 12px;border-radius:99px;background:var(--sf);color:var(--ink);font-weight:600;font-size:14px;white-space:nowrap}
 .chip.me{background:var(--acc);color:var(--onacc)}
-.tape#tapeb{margin:0 0 10px;border-top:0;padding:0 0 9px;border-bottom:1px solid var(--line)}
 .tape{margin-top:auto;border-top:1px solid var(--line);padding-top:9px;min-height:30px}
 .evh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}.evh b{font-size:13px}.evh span{font-size:11.5px;color:var(--mut)}
 .evb{position:relative;height:46px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -460,7 +461,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="bcra" class="card tsr" data-tab="tasas"><h2>Tasas BCRA <i class="bpl" id="tsr"><span class="brs" data-q="30">30 d</span><span class="brs" data-q="90">90 d</span><span class="brs" data-q="365">1 año</span></i></h2><div id="rates"></div></section>
     <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pfm"></div><div id="pf"></div><div class="tape" id="tape"></div></section>
     <section data-src="fci" class="card" data-tab="fci"><h2>FCI Money Market <i id="h-fci">TNA</i></h2><div id="fci"></div></section>
-    <section data-src="banks" class="card" data-tab="pizarras"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div class="tape" id="tapeb"></div><div id="semb" class="semb"></div><div id="banks"></div></section>
+    <section class="card pzh" data-tab="pizarras" id="pzh" hidden></section>
+    <section data-src="banks" class="card" data-tab="pizarras"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
     <section class="card" data-tab="pizarras"><h2>Mejores</h2><div id="pzr"></div></section>
   </div>
 
@@ -528,7 +530,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.12';
+var VER='2026-11-20.13';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1296,6 +1298,13 @@ function renderBanks(){
     sm.z=(hi-lo<5)?'g':(mv<p10||mv>p90)?'r':(mv<q1||mv>q3)?'a':'g';
     sm.pr=[sv[0],Math.round(q1),Math.round(q3),sv[sv.length-1]];sm.mv=mv;sm.qs=[p10,q1,med,q3,p90];sm.lo=sv[0];sm.hi=sv[sv.length-1];
     sm.tip='Meridian '+rk+'° de '+live.length+' por venta · '+nf(0).format(mer.q.venta)+' · mediana de los demás '+nf(0).format(md)+' ('+sgn(mer.q.venta-md,0)+')'+(hi-lo<5?' · mercado muy junto, se considera en línea':' · zona verde: '+nf(0).format(Math.round(q1))+' a '+nf(0).format(Math.round(q3))+' (50% central)');
+  }
+  var ph=$('#pzh');
+  if(ph){
+    var mq=mer&&mer.q?mer.q:null;
+    if(!mq){ph.hidden=true;}
+    else{ph.hidden=false;ph.className='card pzh'+(sm.z==='g'?' zg':sm.z==='a'?' za':sm.z==='r'?' zr':'');
+      ph.innerHTML='<div class="hn">Meridian</div><div class="g3"><div><small>COMPRA</small><b>'+nf(0).format(mq.compra)+'</b></div><div><small>VENTA</small><b>'+nf(0).format(mq.venta)+'</b></div><div><small>SPREAD</small><b>'+nf(0).format(mq.venta-mq.compra)+'</b></div></div>';}
   }
   var sd=$('#semd'),sb=$('#semb');
   if(sd){sd.innerHTML='<i class="r'+(sm.z==='r'?' on':'')+'"></i><i class="a'+(sm.z==='a'?' on':'')+'"></i><i class="g'+(sm.z==='g'?' on':'')+'"></i>';sd.title=sm.tip;}
