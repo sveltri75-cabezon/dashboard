@@ -227,7 +227,7 @@ details.lh summary b{font-weight:700}details.lh summary .m{color:var(--mut);font
 details.lh summary:after{content:'›';color:var(--dim);transition:transform .15s}details.lh[open] summary:after{transform:rotate(90deg)}
 details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6px 3px}
 .pop table td{font-size:13px;padding:5px 4px}.pop table th{font-size:10px}
-@media (min-width:901px){.mobonly{display:none!important}}
+@media (min-width:901px){.mobonly{display:none!important}#pfm{display:none!important}}
 @media (min-width:901px){#banks td{padding:7px 6px}}
 .tl{display:inline-flex;gap:4px;margin-left:10px;vertical-align:middle;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px 7px}
 .tl i{width:10px;height:10px;border-radius:50%;background:var(--gl);display:block;margin:0}
@@ -541,7 +541,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.1';
+var VER='2026-11-25.2';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
