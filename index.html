@@ -186,6 +186,7 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .lst{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:99px;letter-spacing:.04em;background:var(--gl);color:var(--mut);white-space:nowrap;flex:none}
 .lst.on{background:var(--lon);color:var(--okt)}.lst.liq{background:var(--lliq);color:var(--amb2)}.lst.nx{background:var(--lnx);color:var(--lnxt)}
 section[data-src=lic] .ctl em{display:none}
+.lx-tg{display:inline-block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:99px;margin-left:6px;vertical-align:2px;background:var(--gl);color:var(--mut)}.lx-tg.n{background:var(--lnx);color:var(--lnxt)}
 .tp{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:4px;background:var(--sf);color:var(--mut2);margin-right:5px;letter-spacing:.02em;vertical-align:1px}
 .lic .stat{justify-content:flex-start;gap:0;min-height:0}
 .lic-d{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -540,7 +541,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-24.5';
+var VER='2026-11-24.6';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1709,20 +1710,20 @@ function licCorteTxt(c){
   if(c.k==='p')return nf(2).format(c.v);
   return (c.k==='tem'?'TEM ':c.k==='mar'?'Mg ':'')+nf(2).format(c.v)+' %';
 }
-function licItems(rows){
+function licItems(rows,liq){
   var by={},ord=[];
   rows.forEach(function(x){
-    var t=String(x.titulo||'').toUpperCase(),conv=/CONVERSI/.test(t),ms=t.match(/\(([A-Z0-9]+)(?:\s*-[^)]*)?\)/g)||[];
+    var t=String(x.titulo||'').toUpperCase().trim(),conv=/CONVERSI/.test(t),ms=t.match(/\(([A-Z0-9]+)(?:\s*-[^)]*)?\)/g)||[];
     ms=ms.map(function(q){return q.slice(1,-1).split(/\s*-/)[0];});
     var tk=conv&&ms.length>1?ms[0]+'→'+ms[1]:ms.length?ms[ms.length-1]:(/^(LETRA|BONO)/.test(t)&&validIso(x.fechaVencimiento)?(/^LETRA/.test(t)?'Letra ':'Bono ')+String(x.fechaVencimiento).slice(8,10)+'/'+String(x.fechaVencimiento).slice(5,7)+'/'+String(x.fechaVencimiento).slice(2,4):String(x.titulo||'').slice(0,12));
     if(tk==='NUEVA'&&validIso(x.fechaVencimiento))tk='Nueva '+String(x.fechaVencimiento).slice(8,10)+'/'+String(x.fechaVencimiento).slice(5,7)+'/'+String(x.fechaVencimiento).slice(2,4);
-    var amt=Number(x.monto_Adjudicado)||0,mon=x.moneda==='ARS PESOS'?'ARS':'USD',key=tk;
-    if(!by[key]){by[key]={tk:tk,tipo:licTipo(t),venc:validIso(x.fechaVencimiento)?MES[+String(x.fechaVencimiento).slice(5,7)-1]+'-'+String(x.fechaVencimiento).slice(2,4):'',mon:mon,amt:0,corte:{k:'na'}};ord.push(key);}
+    var cond=/-\s*NUEVA\s*$/.test(t)?'N':/-\s*REAPERTURA\s*$/.test(t)?'R':'',kind=/^\s*LETRA/.test(t)?'Letra':'Bono',vD=validIso(x.fechaVencimiento)?String(x.fechaVencimiento).slice(0,10):'',amt=Number(x.monto_Adjudicado)||0,mon=x.moneda==='ARS PESOS'?'ARS':'USD',key=tk;
+    if(!by[key]){by[key]={tk:tk,tipo:licTipo(t),cond:cond,kind:kind,venD:vD,plazo:vD&&liq?diffDays(liq,vD):null,venc:validIso(x.fechaVencimiento)?MES[+String(x.fechaVencimiento).slice(5,7)-1]+'-'+String(x.fechaVencimiento).slice(2,4):'',mon:mon,amt:0,corte:{k:'na'}};ord.push(key);}
     var it=by[key];it.amt+=amt;
     var c=licCorte(x.valor_Corte);if(it.corte.k==='na'&&c.k!=='na')it.corte=c;
   });
   var a=ord.map(function(k){return by[k];});
-  a.sort(function(x,y){return (x.mon===y.mon?0:x.mon==='ARS'?-1:1)||y.amt-x.amt;});
+  a.sort(function(x,y){return (x.mon===y.mon?0:x.mon==='ARS'?-1:1)||y.amt-x.amt||((x.plazo==null?1e9:x.plazo)-(y.plazo==null?1e9:y.plazo));});
   return a;
 }
 function licBuild(all){
@@ -1749,7 +1750,7 @@ function licBuild(all){
     var d0=licDay(new Date(Math.min.apply(null,src.map(function(x){return Date.parse(x.fechaFin);}))).toISOString());
     if(!o.real.length)fin=ini+86400000-1;
     else if(fin>liqE)fin=liqE;
-    var items=licItems(o.real);
+    var items=licItems(o.real,k);
     return {liq:k,day:d0,ini:ini,fin:fin,liqE:liqE,items:items,conv:o.real.length>0&&o.real.every(function(x){return /CONVERSI/i.test(x.titulo||'');}),
       ars:items.filter(function(i){return i.mon==='ARS';}).reduce(function(a,i){return a+i.amt;},0),
       usd:items.filter(function(i){return i.mon!=='ARS';}).reduce(function(a,i){return a+i.amt;},0)};
@@ -1775,7 +1776,7 @@ function licAmt(mon,v){
 function dmy(d){return d?d.slice(8,10)+'/'+d.slice(5,7):'';}
 function licRows(items,n){
   var rest=n&&items.length>n?items.length-(n-1):0,list=rest?items.slice(0,n-1):items;
-  return list.map(function(i){return '<tr><td>'+(i.tipo?'<span class="tp">'+i.tipo+'</span>':'')+esc(i.tk)+'</td><td>'+i.venc+'</td><td>'+licAmt(i.mon,i.amt)+'</td><td>'+licCorteTxt(i.corte)+'</td></tr>';}).join('')+
+  return list.map(function(i){return '<tr><td>'+(i.tipo?'<span class="tp">'+i.tipo+'</span>':'')+esc(i.tk)+licTg(i)+'</td><td>'+i.venc+'</td><td>'+licAmt(i.mon,i.amt)+'</td><td>'+licCorteTxt(i.corte)+'</td></tr>';}).join('')+
     (rest?'<tr><td class="mu" colspan="4">+'+rest+' títulos más · pasá el mouse por la tarjeta</td></tr>':'');
 }
 function licTable(items,n){return '<table><thead><tr><th>Título</th><th>Vence</th><th>Adjud.</th><th>Corte</th></tr></thead><tbody>'+licRows(items,n)+'</tbody></table>';}
@@ -1801,7 +1802,7 @@ function licItemsC(items,ars,dots){
   var ci=0,nn=lxN(items);
   return items.map(function(i){
     var ar=i.mon==='ARS'&&ars>0,pc=ar?Math.round(i.amt/ars*100):0,col=ar?lxCol(ci++,nn):'#3a4552';
-    return '<div class="lx-ic">'+(dots?'<svg class="dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="3" fill="'+col+'"/></svg>':'')+'<div class="n"><b>'+esc(i.tk)+'</b><span>'+(i.tipo?i.tipo+(i.mon!=='ARS'?' · en dólares':'')+' · ':(i.mon!=='ARS'?'en dólares · ':''))+(i.venc?'vence '+i.venc:'')+'</span></div>'+
+    return '<div class="lx-ic">'+(dots?'<svg class="dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="3" fill="'+col+'"/></svg>':'')+'<div class="n"><b>'+esc(i.tk)+'</b>'+licTg(i)+'<span>'+(licFam(i)?licFam(i)+' · ':'')+(i.venD?'vence '+licDMY(i.venD)+(licPl(i)?' · '+licPl(i):''):'')+'</span></div>'+
       '<div class="r"><b>'+licAmt(i.mon,i.amt)+'</b><span>'+(ar?(pc<1?'<1':pc)+' % · ':'')+lxCorte(i.corte)+'</span></div></div>';
   }).join('');
 }
@@ -1830,13 +1831,20 @@ function licMobileC(L,now){
 }
 function licRowsP(items,n){
   var rest=n&&items.length>n?items.length-(n-1):0,list=rest?items.slice(0,n-1):items;
-  return list.map(function(i){return '<tr><td>'+(i.tipo?'<span class="tp">'+i.tipo+'</span>':'')+esc(i.tk)+'</td><td>'+i.venc+'</td></tr>';}).join('')+(rest?'<tr><td class="mu" colspan="2">+'+rest+' títulos más · pasá el mouse por la tarjeta</td></tr>':'');
+  return list.map(function(i){return '<tr><td>'+(i.tipo?'<span class="tp">'+i.tipo+'</span>':'')+esc(i.tk)+licTg(i)+'</td><td>'+(licDMY(i.venD)||i.venc)+'</td><td>'+(i.plazo!=null&&i.plazo>=0?nf(0).format(i.plazo)+' d':'')+'</td></tr>';}).join('')+(rest?'<tr><td class="mu" colspan="3">+'+rest+' títulos más · pasá el mouse por la tarjeta</td></tr>':'');
 }
 function licItemsP(items){
   return items.map(function(i){
-    return '<div class="lx-ic"><div class="n"><b>'+esc(i.tk)+'</b><span>'+(i.tipo?i.tipo+(i.mon!=='ARS'?' · en dólares':''):(i.mon!=='ARS'?'en dólares':''))+'</span></div><div class="r"><b>'+(i.venc||'')+'</b><span>vence</span></div></div>';
+    return '<div class="lx-ic"><div class="n"><b>'+esc(i.tk)+'</b>'+licTg(i)+'<span>'+licFam(i)+'</span></div><div class="r"><b>'+(licDMY(i.venD)||i.venc||'')+'</b><span>'+(licPl(i)||'vence')+'</span></div></div>';
   }).join('');
 }
+function licFam(i){
+  var k=i.kind==='Letra'?'Letra':'Bono',f={LECAP:'Letra capitalizable · LECAP',BONCAP:'Bono capitalizable · BONCAP',CER:k+' CER',TAMAR:k+' TAMAR',DUAL:'Bono dual TAMAR/dólar',LK:k+' dólar linked',USD:k+' en dólares',CANJE:'Canje de deuda'};
+  return i.tipo?(f[i.tipo]||i.tipo):(i.mon!=='ARS'?'en dólares':'');
+}
+function licTg(i){return i.cond==='N'?'<i class="lx-tg n">NUEVA</i>':i.cond==='R'?'<i class="lx-tg">REAPERTURA</i>':'';}
+function licDMY(d){return d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(2,4):'';}
+function licPl(i){return i.plazo!=null&&i.plazo>=0?nf(0).format(i.plazo)+(i.plazo===1?' día':' días'):'';}
 function licHasRes(L){return L.ars>0||L.usd>0;}
 function renderLic(){
   var box=$('#c-lic'),hd=$('#h-lic'),st=$('#s-lic'),nb=$('#c-licn'),hb=$('#c-lich');
@@ -1855,7 +1863,7 @@ function renderLic(){
     hd.textContent='liquida '+dmy(C.liq);
     var lx=L?'<span class="lst">Última</span><b>'+dmy(L.day)+'</b> '+(L.ars>0?'$ '+nf(2).format(L.ars/1e12)+' bi':L.usd>0?'USD '+nf(0).format(L.usd/1e6)+' M':'sin adjudicar'):'<span class="mut">Sin licitaciones liquidadas</span>';
     box.innerHTML='<div class="lic-d"><div class="lbd"><div class="lL"><div class="lk">'+lab+' · '+dmy(C.day)+'</div><div class="lbig">'+b.big+'</div><div class="lun">'+b.unit+'</div><div class="lsec">'+b.sec+'</div></div><div class="lR">'+
-      (C.items.length?(has?licTable(C.items,4):'<table><thead><tr><th>Título</th><th>Vence</th></tr></thead><tbody>'+licRowsP(C.items,4)+'</tbody></table>'):'<div class="mu" style="padding-top:6px">Títulos a confirmar</div>')+'</div></div><div class="lnx">'+lx+'</div></div>'+
+      (C.items.length?(has?licTable(C.items,4):'<table><thead><tr><th>Título</th><th>Vence</th><th>Plazo</th></tr></thead><tbody>'+licRowsP(C.items,4)+'</tbody></table>'):'<div class="mu" style="padding-top:6px">Títulos a confirmar</div>')+'</div></div><div class="lnx">'+lx+'</div></div>'+
       '<div class="lic-m"><div class="lx-nx"><div><div class="d">'+C.day.slice(8,10)+'/'+C.day.slice(5,7)+'/'+C.day.slice(0,4)+(C.conv?' · conversión':'')+'</div><div class="mu">Liquida '+dmy(C.liq)+'</div></div>'+(when?'<span class="lst nx">'+when+'</span>':'')+'</div>'+
       (has?licMobileC(C,P.now):(C.items.length?licStepC(C,P.now)+licItemsP(C.items):'<div class="mu" style="margin-top:8px">Títulos a confirmar</div>'))+
       (P.fut.length?'<div class="lx-chips">'+P.fut.map(function(g){return '<span>'+dmy(g.day)+'</span>';}).join('')+'<em>cronograma</em></div>':'')+'</div>';
