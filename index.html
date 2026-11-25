@@ -472,9 +472,9 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="bcra" class="card tsr" data-tab="tasas"><h2>Tasas BCRA <i class="bpl" id="tsr"><span class="brs" data-q="30">30 d</span><span class="brs" data-q="90">90 d</span><span class="brs" data-q="365">1 año</span></i></h2><div id="rates"></div></section>
     <section data-src="pf" class="card" data-tab="plazo"><h2>Plazo fijo online <i>sin relación · top 5</i></h2><div id="pfm"></div><div id="pf"></div><div class="tape" id="tape"></div></section>
     <section data-src="fci" class="card" data-tab="fci"><h2>FCI Money Market <i id="h-fci">TNA</i></h2><div id="fci"></div></section>
-    <section class="card pzh" data-tab="pizarras" id="pzh" hidden></section>
+    <section class="card pzh mobonly" data-tab="pizarras" id="pzh" hidden></section>
     <section data-src="banks" class="card" data-tab="pizarras"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
-    <section class="card pzm" data-tab="pizarras"><h2>Mejores</h2><div id="pzr"></div></section>
+    <section class="card pzm mobonly" data-tab="pizarras"><h2>Mejores</h2><div id="pzr"></div></section>
   </div>
 
   <div class="r3">
@@ -541,7 +541,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-24.6';
+var VER='2026-11-25.1';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
