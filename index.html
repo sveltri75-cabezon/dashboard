@@ -387,7 +387,8 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
   .ptr{display:grid;place-items:center;position:fixed;left:50%;top:0;z-index:24;width:38px;height:38px;margin-left:-19px;border-radius:50%;background:var(--sf4);border:1px solid var(--line);color:var(--acc);box-shadow:0 4px 14px rgba(0,0,0,.3);opacity:0;pointer-events:none;transform:translateY(-50px)}
   .ptr.go{color:var(--up)}
 }
-.rf.hb{display:none}
+.rf.hb{display:none}.rf.sh{display:none}
+@media (max-width:900px){.tbb .rf.sh{display:grid}.rf.sh[disabled]{opacity:.5}}
 .fxu,.fxd{border-radius:8px}
 .fxu{animation:fxu 1.6s ease-out}.fxd{animation:fxd 1.6s ease-out}
 @keyframes fxu{0%{color:var(--up);background:rgba(31,178,106,.24);box-shadow:0 0 0 4px rgba(31,178,106,.24)}35%{color:var(--up);background:rgba(31,178,106,.15);box-shadow:0 0 0 4px rgba(31,178,106,.15)}100%{background:transparent;box-shadow:0 0 0 4px transparent}}
@@ -442,7 +443,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 </style>
 </head>
 <body>
-<header class="topbar" id="topbar"><span class="tbt">Tablero de Mercados</span><div class="tbb" id="tbb"><button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button><button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button><button id="hb" class="rf hb" type="button" aria-label="Opciones y ayuda" title="Opciones y ayuda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></div></header>
+<header class="topbar" id="topbar"><span class="tbt">Tablero de Mercados</span><div class="tbb" id="tbb"><button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button><button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button id="sh" class="rf sh" type="button" aria-label="Compartir captura de esta pestaña" title="Compartir captura"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button><button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button><button id="hb" class="rf hb" type="button" aria-label="Opciones y ayuda" title="Opciones y ayuda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></div></header>
 <div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></div>
 <div class="app" id="app">
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -539,7 +540,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-20.16';
+var VER='2026-11-24.4';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -2159,6 +2160,66 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
   $('#o-ver').textContent=VER;
   $('#o-rf').addEventListener('click',function(){refresh(true);});
   $('#rf').addEventListener('click',function(){refresh(true);});
+  /* Compartir captura de la pestaña actual (sin librerías: se dibuja el DOM como imagen SVG) */
+  (function(){
+    var btn=$('#sh');if(!btn)return;
+    function pad(n){return (n<10?'0':'')+n;}
+    function build(cb,fail){
+      var app=$('#app'),de=document.documentElement,W=de.clientWidth,i,name=tab;
+      TABS.forEach(function(t){if(t[0]===tab)name=t[1];});
+      app.querySelectorAll('input').forEach(function(x){x.setAttribute('value',x.value);});
+      var clone=app.cloneNode(true),d=new Date();
+      clone.removeAttribute('id');
+      var rm=clone.querySelectorAll('.ctl,.from-r,.from-l');
+      for(i=0;i<rm.length;i++){if(rm[i].classList.contains('ctl'))rm[i].parentNode.removeChild(rm[i]);else rm[i].classList.remove('from-r','from-l');}
+      var xs=clone.querySelectorAll('#tabs,#bn,.bn,.ptr');for(i=0;i<xs.length;i++)xs[i].parentNode.removeChild(xs[i]);
+      var fx=clone.querySelectorAll('.fxu,.fxd');for(i=0;i<fx.length;i++)fx[i].classList.remove('fxu','fxd');
+      clone.style.minHeight='0';clone.style.height='auto';clone.style.setProperty('padding-top','4px','important');clone.style.setProperty('padding-bottom','16px','important');
+      var cs=getComputedStyle(document.body),H0=0;
+      var vis=[].slice.call(app.querySelectorAll('.card')).filter(function(c){return c.offsetParent!==null;});
+      if(!vis.length){fail&&fail();return;}
+      var r0=app.getBoundingClientRect(),last=vis[vis.length-1].getBoundingClientRect();
+      var cardsH=last.bottom-vis[0].getBoundingClientRect().top+(vis.length>1?0:0);
+      var head=document.createElement('div');
+      head.style.cssText='display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:14px 20px 4px;font:700 17px system-ui,sans-serif;white-space:nowrap';
+      head.innerHTML='<span>'+name+'</span><span style="font:500 12px system-ui,sans-serif;opacity:.65">'+pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes())+'</span>';
+      var wrap=document.createElement('div');
+      wrap.style.cssText='width:'+W+'px;background:'+cs.backgroundColor+';color:'+cs.color+';font-family:'+cs.fontFamily+';font-size:'+cs.fontSize;
+      var st=document.createElement('style');
+      var css='';[].forEach.call(document.querySelectorAll('style'),function(x){css+=x.textContent+'\n';});
+      st.textContent=css;
+      wrap.appendChild(st);wrap.appendChild(head);wrap.appendChild(clone);
+      wrap.style.position='absolute';wrap.style.left='-99999px';wrap.style.top='0';wrap.style.visibility='hidden';
+      document.body.appendChild(wrap);var H=Math.ceil(wrap.getBoundingClientRect().height);document.body.removeChild(wrap);
+      wrap.style.position='';wrap.style.left='';wrap.style.top='';wrap.style.visibility='';
+      var attrs='';for(i=0;i<de.attributes.length;i++){var a=de.attributes[i];if(a.name!=='class'&&a.name!=='style')attrs+=' '+a.name+'="'+String(a.value).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"';}
+      var xml=new XMLSerializer().serializeToString(wrap);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"'+attrs+' style="'+(de.getAttribute('style')||'').replace(/"/g,'&quot;')+'"><foreignObject x="0" y="0" width="100%" height="100%">'+xml+'</foreignObject></svg>';
+      var img=new Image();
+      img.onload=function(){
+        var sc=Math.min(2,window.devicePixelRatio||1)||1,cv=document.createElement('canvas');
+        cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);
+        var cx=cv.getContext('2d');cx.fillStyle=cs.backgroundColor;cx.fillRect(0,0,cv.width,cv.height);cx.scale(sc,sc);cx.drawImage(img,0,0,W,H);
+        try{cv.toBlob(function(b){b?cb(b,name):(fail&&fail());},'image/png');}catch(e){fail&&fail();}
+      };
+      img.onerror=function(){fail&&fail();};
+      img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    }
+    btn.addEventListener('click',function(){
+      if(btn.disabled)return;btn.disabled=true;
+      var done=function(){btn.disabled=false;};
+      build(function(blob,name){
+        var d=new Date(),fn=String(name).replace(/[\\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').replace(/^\s+|\s+$/g,'')+'.png';
+        var file;try{file=new File([blob],fn,{type:'image/png'});}catch(e){file=null;}
+        if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+          navigator.share({files:[file],title:'Tablero de Mercados · '+name}).then(done,function(){done();});
+        }else{
+          var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();
+          setTimeout(function(){URL.revokeObjectURL(u);if(a.parentNode)a.parentNode.removeChild(a);},4000);done();
+        }
+      },function(){done();alert('No se pudo generar la captura en este navegador.');});
+    });
+  })();
   hb.addEventListener('click',function(){navGo('ayuda');});
   if(!bl||!row)return;
   function sync(){var off=bl.style.display==='none';row.disabled=off;st.textContent=off?'No disponible en este navegador':(bl.classList.contains('on')?'Activados en este celular':'Desactivados · tocá para configurar');}
