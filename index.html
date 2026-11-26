@@ -262,7 +262,7 @@ html.w .r1 .card h2{flex-wrap:wrap;row-gap:1px}
 html.w .r1 .card h2 i{order:3;flex:0 0 100%;margin:0;font-size:11px}
 html.w .r1 .card .mm{gap:16px}
 html.w .r1 .card .mm b{font-size:17px}
-html.w .r1 .card .pill{font-size:13.5px}
+html.w .r1 .card .pill{font-size:13px}
 html.w .r1 .card{padding:9px 14px}
 html.w .r1 .card h2{margin-bottom:3px}
 html.w .r1 .card .big{font-size:38px;line-height:1}
@@ -439,7 +439,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 #tsr{display:flex;gap:0;background:var(--sunk);padding:2px;border-radius:9px;overflow:visible}
 .bdr .bv.u{color:var(--up)}.bdr .bv.d{color:var(--dn)}.bg3 b.u{color:var(--up)}.bg3 b.d{color:var(--dn)}
 html.w .r3{grid-template-columns:1.15fr 1fr 1fr .85fr}
-html.w .r2{grid-template-columns:1.05fr 1.15fr .85fr 1fr .85fr}
+html.w .r2{grid-template-columns:.95fr 1.1fr .85fr 1fr 1fr}
 html.z .app{min-height:var(--ih,100vh)}
 .rpd .hsp svg{display:block;width:100%;height:34px;margin-top:6px}.rpd .rph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rpd .rpb{font-size:25px;font-weight:700;line-height:1.1}.rpd .hmu{color:var(--mut);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mnd .mur{display:grid;grid-template-columns:minmax(0,1fr) 64px auto auto;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line,rgba(127,127,127,.18))}.mnd .mur:first-child{border-top:0}
@@ -447,6 +447,34 @@ html.z .app{min-height:var(--ih,100vh)}
 .mnd .mnf{color:var(--mut);font-size:11px;margin-top:8px}.mnd .mnf{display:none}.card.mobonly .mnf{display:block}
 .mnd .mur .ms svg{display:block;width:100%;height:24px;overflow:visible}.mnd .mur .mp{font-size:15px;font-weight:700;text-align:right;white-space:nowrap}.mnd .mur .pill{min-width:62px;justify-content:center;text-align:center}
 .card.nw{display:none}html.w .card.nw{display:flex}
+/* ===== escritorio: cinta Merval, botones en la cinta y escala tipográfica ===== */
+.tkr,.rf.fs{display:none}
+@keyframes tkm{to{transform:translateX(-50%)}}
+@media (min-width:901px){
+  .tkr{display:flex;flex:none;align-items:center;height:34px;margin:-14px -20px 0;padding-right:150px;background:var(--card);border-bottom:1px solid var(--line);overflow:hidden;position:relative}
+  .tkr .tl{flex:none;align-self:stretch;display:flex;align-items:center;padding:0 14px;font:700 11px system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);background:var(--card);border-right:1px solid var(--line);z-index:2}
+  .tkr .tv{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+  .tkr .tt{display:inline-flex;white-space:nowrap;animation:tkm var(--tkd,90s) linear infinite;will-change:transform}
+  .tkr:hover .tt{animation-play-state:paused}
+  .tkr .ti{display:inline-flex;align-items:baseline;gap:7px;padding:0 16px;font-size:13px;line-height:34px;border-right:1px solid var(--line)}
+  .tkr .ti b{font-weight:700}.tkr .ti .tkp{font-weight:600}.tkr .ti .tkc{font-weight:700;font-size:12.5px}.tkr .ti .tkc.u{color:var(--up)}.tkr .ti .tkc.d{color:var(--dn)}.tkr .ti .tkc.n{color:var(--mut)}
+  .tbb{display:flex;position:fixed;top:0;right:0;z-index:60;height:34px;align-items:center;gap:6px;padding:0 10px 0 26px;background:linear-gradient(90deg,transparent,var(--card) 20px)}
+  .tbb .rf{position:static!important;width:26px;height:26px;box-shadow:none;border-radius:8px;z-index:auto}
+  .tbb .rf svg{width:15px;height:15px}
+  .tbb .rf.fs{display:grid}
+  .tbb .rf:hover{border-color:var(--acc);color:var(--acc)}
+}
+@media (prefers-reduced-motion:reduce){.tkr .tt{animation:none}.tkr .tv{overflow-x:auto}}
+@media (max-width:900px){.xr{display:none!important}}
+html.w .r2{flex:1.15 0 auto}html.w .r3{flex:1 0 auto}
+/* escala: KPI 34 · dato principal 17 · nombre 16 · pastilla 13 */
+html.w .r1 .card .big,html.w #c-may .mayo .big,html.w #c-cau .mayo .big,html.w .lic-d .lbig,html.w .rpd .rpb{font-size:34px;line-height:1}
+html.w .row .p b,html.w #rates .row .p b,html.w .pf .r,html.w .fr .tn,html.w .sr .p,html.w .mnd .mur .mp,html.w #banks td,html.w .bdr .bv{font-size:17px}
+html.w .row .t b,html.w #rates .row .t b,html.w .sr b,html.w .fr .nm,html.w .mnd .mur .mn b,html.w .bdr b{font-size:16px}
+html.w .pill,html.w .r1 .card .pill{font-size:13px;padding:3px 9px}
+html.w .mnd .mur{padding:4px 0;grid-template-columns:minmax(0,1fr) 50px auto auto;gap:8px}html.w .mnd .mur .ms svg{height:20px}html.w .mnd .mur .mn b{font-size:15px}html.w .mnd .mur .pill{min-width:0}
+html.w .rpd .hsp svg{height:30px}
+
 @media (max-width:900px){
 #banks td{padding-top:8px;padding-bottom:8px}
 .semb{margin-top:-2px}
@@ -459,9 +487,10 @@ html.z .app{min-height:var(--ih,100vh)}
 </style>
 </head>
 <body>
-<header class="topbar" id="topbar"><span class="tbt">Tablero de Mercados</span><div class="tbb" id="tbb"><button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button><button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button id="sh" class="rf sh" type="button" aria-label="Compartir captura de esta pestaña" title="Compartir captura"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button><button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button><button id="hb" class="rf hb" type="button" aria-label="Opciones y ayuda" title="Opciones y ayuda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></div></header>
+<header class="topbar" id="topbar"><span class="tbt">Tablero de Mercados</span><div class="tbb" id="tbb"><button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button><button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button id="fs" class="rf fs" type="button" aria-label="Pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button><button id="sh" class="rf sh" type="button" aria-label="Compartir captura de esta pestaña" title="Compartir captura"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button><button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button><button id="hb" class="rf hb" type="button" aria-label="Opciones y ayuda" title="Opciones y ayuda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></div></header>
 <div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></div>
 <div class="app" id="app">
+  <div class="tkr deskonly" id="tkr" role="marquee" aria-label="Acciones del Merval"><span class="tl">Merval</span><div class="tv"><div class="tt" id="tkt"></div></div></div>
   <div class="tabs" role="tablist" id="tabs"></div>
 
   <div class="r1">
@@ -560,7 +589,7 @@ html.z .app{min-height:var(--ih,100vh)}
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.6';
+var VER='2026-11-25.7';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, RP_EVERY=10*60*1000, MU_EVERY=2*60*1000, MU_U='https://rendimientos.co/api/mundo', RP_U='https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais', API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -576,7 +605,7 @@ function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d'
 var SERIES=[{id:11,name:'BAIBAR'},{id:150,name:'Pases 1 d'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:7,name:'BADLAR'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
-var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,rpT:0,mu:null,muT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
+var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,rpT:0,stT:0,stAll:null,mu:null,muT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
 
 /* ---------- red ---------- */
 function getJSON(url){
@@ -866,9 +895,9 @@ function loadCAU(){
 function isUsdLine(x){return /(\.D|D|C)$/.test(x.symbol)&&x.c<15;}
 function pickStocks(d){
   var rows=d.filter(function(x){return x&&x.symbol&&isFinite(x.pct_change)&&x.c>0&&x.v>0&&x.q_op>=5&&!isUsdLine(x);}).sort(function(a,b){return b.pct_change-a.pct_change;});
-  return {up:rows.slice(0,5),down:rows.slice(-5).reverse()};
+  return {up:rows.slice(0,7),down:rows.slice(-7).reverse()};
 }
-function loadStocks(){return getJSON(API+'/live/arg_stocks').then(function(d){if(!Array.isArray(d))throw new Error('formato');S.stocks=pickStocks(d);});}
+function loadStocks(){return getJSON(API+'/live/arg_stocks').then(function(d){if(!Array.isArray(d))throw new Error('formato');S.stocks=pickStocks(d);var m={};d.forEach(function(x){if(x&&x.symbol)m[x.symbol]=x;});S.stAll=m;S.stT=Date.now();});}
 
 /* ---------- plazo fijo sin relación ---------- */
 /* Worker propio sobre bcra.gob.ar/plazos-fijos-online. Debe responder con Access-Control-Allow-Origin. */
@@ -1026,7 +1055,7 @@ function renderMU(){
 function loadFCI(){
   return Promise.all([getJSON(FCI_U),getJSON(FCI_P)]).then(function(r){
     if(!Array.isArray(r[0])||!Array.isArray(r[1]))throw new Error('formato');
-    var rows=pickFCI(r[0],r[1],5);
+    var rows=pickFCI(r[0],r[1],6);
     if(!rows.length)throw new Error('sin fondos');
     S.fci=rows;S.fciErr=null;S.fciT=Date.now();
   },function(e){S.fciErr=e.message||'error';S.fciT=Date.now();throw e;});
@@ -1322,7 +1351,7 @@ function renderFCI(){
   var box=$('#fci'),html;
   $('#h-fci').textContent=S.fci&&S.fci[0]?'TNA · último dato '+fdate(S.fci[0].fecha):'TNA';
   if(!S.fci)html='<div class="empty">'+(S.fciErr?'Sin respuesta del servicio de FCI':'Cargando…')+'</div>';
-  else html=S.fci.map(function(r){return '<div class="fr"><div class="nm">'+esc(r.name)+'<span>'+esc(r.clase)+'</span></div><div class="tn">'+nf(2).format(r.tna)+' %</div></div>';}).join('');
+  else html=S.fci.map(function(r,i){return '<div class="fr'+(i>=5?' xr':'')+'"><div class="nm">'+esc(r.name)+'<span>'+esc(r.clase)+'</span></div><div class="tn">'+nf(2).format(r.tna)+' %</div></div>';}).join('');
   if(html!==lastFci){box.innerHTML=html;lastFci=html;}
 }
 function heat(v,lo,hi){
@@ -1391,8 +1420,8 @@ function renderBanks(){
   renderTapeB();
 }
 function stockList(el,rows){
-  el.innerHTML=rows.length?rows.map(function(r){
-    return '<div class="sr"><b>'+esc(r.symbol)+'</b><span class="p">'+nf(r.c%1?2:0).format(r.c)+'</span>'+pill(r.pct_change)+'</div>';
+  el.innerHTML=rows.length?rows.map(function(r,i){
+    return '<div class="sr'+(i>=5?' xr':'')+'"><b>'+esc(r.symbol)+'</b><span class="p">'+nf(r.c%1?2:0).format(r.c)+'</span>'+pill(r.pct_change)+'</div>';
   }).join(''):'<div class="empty">Sin datos</div>';
 }
 /* ---------- bonos: flujos y precios de compararfondos.com.ar (BYMA); TIR y duration se calculan acá ---------- */
@@ -1596,7 +1625,7 @@ function renderHome(){
   var pm=PF.me;
   $('#hm-pf').innerHTML=pm?'<div class="hmb">'+nf(2).format(pm.rate)+' %</div><span class="pill a">Puesto '+pm.rank+'</span><div class="hmu">mejor tasa '+nf(2).format(PF.best)+' %</div>':'<div class="mut">'+(PF.groups?'Sin tasa':'Cargando…')+'</div>';
   /* FCI */
-  var fb=null;if(S.fci)S.fci.forEach(function(r){if(!fb||r.tna>fb.tna)fb=r;});
+  var fb=null;if(S.fci)S.fci.slice(0,5).forEach(function(r){if(!fb||r.tna>fb.tna)fb=r;});
   $('#hm-fci').innerHTML=fb?'<div class="hmb">'+nf(2).format(fb.tna)+' %</div><div class="hmu">TNA · mejor fondo</div><div class="hmu">'+esc(fb.name)+'</div>':'<div class="mut">'+(S.fciErr?'Sin respuesta':'Cargando…')+'</div>';
   /* acciones */
   var u=S.stocks.up[0],d=S.stocks.down[0];
@@ -1717,9 +1746,28 @@ function renderBrecha(){
   var h=$('#h-brc');if(h)h.textContent=of?'vs '+of.n+' '+nf(2).format(of.v):'Oficial sin datos';
   loadBrHist();renderBrHist();renderBrCalc();
 }
+/* cinta del Merval (solo escritorio): acciones líderes en pesos, de data912; se actualiza sin reiniciar el desplazamiento */
+var MERVAL=['GGAL','YPFD','PAMP','BMA','BBAR','SUPV','TGSU2','CEPU','EDN','LOMA','TXAR','ALUA','CRES','TECO2','TGNO4','TRAN','VALO','BYMA','COME','IRSA','METR','MIRG','CVH'],tkSig='';
+function tkChg(v){return '<span class="tkc '+(v>0.004?'u':v<-0.004?'d':'n')+'">'+(v>0.004?'▲ ':v<-0.004?'▼ ':'')+sgn(v,2)+' %</span>';}
+function renderTkr(){
+  var tt=$('#tkt');if(!tt||!window.matchMedia('(min-width:901px)').matches)return;
+  var m=S.stAll;
+  if(!m){tt.style.animation='none';tt.innerHTML='<span class="ti"><span class="tkp mut">'+(S.stT?'Sin datos del Merval':'Cargando…')+'</span></span>';tkSig='';return;}
+  var rows=MERVAL.map(function(k){return m[k];}).filter(function(x){return x&&x.c>0&&isFinite(x.pct_change)&&!isUsdLine(x);});
+  if(!rows.length){tt.style.animation='none';tt.innerHTML='<span class="ti"><span class="tkp mut">Sin datos del Merval</span></span>';tkSig='';return;}
+  var sig=rows.map(function(x){return x.symbol;}).join(',');
+  function item(x){return '<span class="ti" data-s="'+esc(x.symbol)+'"><b>'+esc(x.symbol)+'</b><span class="tkp">'+nf(x.c%1?2:0).format(x.c)+'</span>'+tkChg(x.pct_change)+'</span>';}
+  if(sig!==tkSig){
+    var one=rows.map(item).join('');tt.innerHTML=one+one;tkSig=sig;tt.style.animation='none';
+    requestAnimationFrame(function(){var w=tt.scrollWidth/2;tt.style.setProperty('--tkd',Math.max(30,w/55).toFixed(0)+'s');tt.style.animation='';});
+  }else rows.forEach(function(x){
+    var ns=tt.querySelectorAll('.ti[data-s="'+x.symbol+'"]');
+    for(var i=0;i<ns.length;i++){ns[i].querySelector('.tkp').textContent=nf(x.c%1?2:0).format(x.c);var c=ns[i].querySelector('.tkc'),t=document.createElement('span');t.innerHTML=tkChg(x.pct_change);c.className=t.firstChild.className;c.textContent=t.firstChild.textContent;}
+  });
+}
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
-  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderRP();renderMU();renderBrecha();
+  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderRP();renderMU();renderTkr();renderBrecha();
   stockList($('#up'),S.stocks.up);stockList($('#down'),S.stocks.down);
 }
 
@@ -2251,6 +2299,13 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
   $('#o-ver').textContent=VER;
   $('#o-rf').addEventListener('click',function(){refresh(true);});
   $('#rf').addEventListener('click',function(){refresh(true);});
+/* pantalla completa (escritorio) */
+(function(){var b=$('#fs');if(!b)return;var de=document.documentElement,IN='<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',OUT='<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>';
+  function on(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  if(!(de.requestFullscreen||de.webkitRequestFullscreen)){b.style.display='none';return;}
+  b.addEventListener('click',function(){try{if(on()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);}else{(de.requestFullscreen||de.webkitRequestFullscreen).call(de);}}catch(e){}});
+  function sync(){var f=!!on();b.querySelector('svg').innerHTML=f?OUT:IN;b.title=b.ariaLabel=f?'Salir de pantalla completa':'Pantalla completa';}
+  document.addEventListener('fullscreenchange',sync);document.addEventListener('webkitfullscreenchange',sync);})();
 /* escritorio: el tablero se diseña sobre un lienzo de DW px de ancho y se escala solo, para que la disposición no cambie con el zoom ni el tamaño de la ventana */
 (function(){
   var DW=2030,MINW=1180,de=document.documentElement;
