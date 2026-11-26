@@ -442,6 +442,10 @@ html.w .r3{grid-template-columns:1.15fr 1fr 1fr .85fr}
 html.w .r2{grid-template-columns:1.05fr 1.15fr .85fr 1fr .85fr}
 html.z .app{min-height:var(--ih,100vh)}
 .rpd .hsp svg{display:block;width:100%;height:34px;margin-top:6px}.rpd .rph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rpd .rpb{font-size:25px;font-weight:700;line-height:1.1}.rpd .hmu{color:var(--mut);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mnd .mur{display:grid;grid-template-columns:minmax(0,1fr) 64px auto auto;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line,rgba(127,127,127,.18))}.mnd .mur:first-child{border-top:0}
+.mnd .mur .mn{min-width:0}.mnd .mur .mn b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mnd .mur .mn span{color:var(--mut);font-size:11px}
+.mnd .mnf{color:var(--mut);font-size:11px;margin-top:8px}.mnd .mnf{display:none}.card.mobonly .mnf{display:block}
+.mnd .mur .ms svg{display:block;width:100%;height:24px;overflow:visible}.mnd .mur .mp{font-size:15px;font-weight:700;text-align:right;white-space:nowrap}.mnd .mur .pill{min-width:62px;justify-content:center;text-align:center}
 .card.nw{display:none}html.w .card.nw{display:flex}
 @media (max-width:900px){
 #banks td{padding-top:8px;padding-bottom:8px}
@@ -488,12 +492,13 @@ html.z .app{min-height:var(--ih,100vh)}
     <section class="card pzh mobonly" data-tab="pizarras" id="pzh" hidden></section>
     <section data-src="banks" class="card" data-tab="pizarras"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
     <section class="card pzm mobonly" data-tab="pizarras"><h2>Mejores</h2><div id="pzr"></div></section>
-    <section class="card nw" data-tab="pizarras" id="nw1"></section>
+    <section class="card nw mnd" data-tab="pizarras" id="nw1"><h2>Mercados del mundo <i id="h-mu">futuros</i></h2><div id="c-mu"></div></section>
   </div>
 
   <div class="r3">
     <section data-src="stocks" class="card" data-tab="acciones"><h2>Acciones <i>ganadores y perdedores</i></h2>
       <div class="two"><div><div class="sub u">▲ Más subieron</div><div id="up"></div></div><div><div class="sub d">▼ Más bajaron</div><div id="down"></div></div></div></section>
+    <section class="card mobonly mnd" data-tab="mundo"><h2>Mercados del mundo <i id="h-mu2">futuros</i></h2><div id="mu-m"></div><div class="mnf">Fuente: rendimientos.co · índices y commodities son futuros; variación vs. cierre previo</div></section>
     <section class="card mobonly" data-tab="ayuda"><h2>Apariencia <i>tema</i></h2><div role="radiogroup" aria-label="Tema"><button type="button" class="opt" role="radio" aria-checked="false" data-th="auto"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg><span class="ot"><b>Del dispositivo</b><span>Sigue el modo claro u oscuro de tu teléfono</span></span><span class="rd" aria-hidden="true"></span></button><button type="button" class="opt" role="radio" aria-checked="false" data-th="light"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="ot"><b>Claro</b><span>Fondo claro, mejor a pleno sol</span></span><span class="rd" aria-hidden="true"></span></button><button type="button" class="opt" role="radio" aria-checked="false" data-th="dark"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg><span class="ot"><b>Oscuro</b><span>Fondo oscuro, más cómodo de noche</span></span><span class="rd" aria-hidden="true"></span></button></div></section>
     <section class="card mobonly" data-tab="ayuda"><h2>Avisos y datos</h2><button type="button" class="opt" id="o-av"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg><span class="ot"><b>Avisos de mercado</b><span id="o-avs">—</span></span><span class="oc" aria-hidden="true">›</span></button><button type="button" class="opt" id="o-fx"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><span class="ot"><b>Resaltar cambios</b><span id="o-fxs">Activado</span></span><span class="oc" aria-hidden="true">›</span></button><button type="button" class="opt" id="o-rf"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v4.5h-4.5"/></svg><span class="ot"><b>Actualizar ahora</b><span>También podés tirar hacia abajo desde el principio de la pantalla</span></span></button><button type="button" class="opt" id="o-in" hidden><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11 12 15.5 16.5 11M5 20h14"/></svg><span class="ot"><b>Instalar como app</b><span id="o-ins"></span></span><span class="oc" aria-hidden="true">›</span></button><div class="opt ro"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="ot"><b>Versión</b></span><span class="ov" id="o-ver"></span></div></section>
     <section class="card mobonly hlp" data-tab="ayuda"><h2>Ayuda <i>cómo funciona el tablero</i></h2>
@@ -555,8 +560,8 @@ html.z .app{min-height:var(--ih,100vh)}
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.5';
-var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, RP_EVERY=10*60*1000, RP_U='https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais', API='https://data912.com';
+var VER='2026-11-25.6';
+var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, RP_EVERY=10*60*1000, MU_EVERY=2*60*1000, MU_U='https://rendimientos.co/api/mundo', RP_U='https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais', API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
 var nfs={};
@@ -571,7 +576,7 @@ function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d'
 var SERIES=[{id:11,name:'BAIBAR'},{id:150,name:'Pases 1 d'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:7,name:'BADLAR'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
-var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,rpT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
+var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,rpT:0,mu:null,muT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
 
 /* ---------- red ---------- */
 function getJSON(url){
@@ -997,6 +1002,26 @@ function renderRP(){
     h='<div class="rph"><div class="rpb">'+nf(0).format(l.v)+'</div><span class="pill '+c+'">'+(d>0?'+':'')+nf(0).format(d)+' pb</span></div><div class="hsp" data-bs="-2">'+sp+'</div><div class="hmu">'+fdate(l.d)+' · últimos 30 días</div>';
   }
   var a=$('#c-rp'),b=$('#hm-rp');if(a)a.innerHTML=h;if(b)b.innerHTML=h.replace(' data-bs="-2"','');
+}
+var MU_LIST=[['ES=F','S&P 500','futuro'],['NQ=F','Nasdaq 100','futuro'],['YM=F','Dow Jones','futuro'],['CL=F','Petróleo','WTI · USD/bbl'],['GC=F','Oro','USD/oz'],['ZS=F','Soja','USD/t'],['EURUSD=X','EUR/USD','euro'],['BRL=X','USD/BRL','real'],['BTC-USD','Bitcoin','USD']];
+function loadMU(){
+  return getJSON(MU_U).then(function(r){
+    var a=r&&r.data;if(!Array.isArray(a))throw new Error('formato');
+    var m={};a.forEach(function(x){var k=x&&x.symbol;if(k){try{k=decodeURIComponent(k);}catch(e){}m[k]=x;}});
+    S.mu={m:m,upd:r.updated};S.muT=Date.now();
+  },function(e){S.muT=Date.now();throw e;});
+}
+function renderMU(){
+  var el=$('#c-mu'),el2=$('#mu-m');if(!el)return;
+  if(!S.mu){var w='<div class="mut">'+(S.muT?'Sin datos':'Cargando…')+'</div>';el.innerHTML=w;if(el2)el2.innerHTML=w;return;}
+  var h=MU_LIST.map(function(it){
+    var x=S.mu.m[it[0]];if(!x||!(x.price>0))return '<div class="mur"><div class="mn"><b>'+it[1]+'</b><span>'+it[2]+'</span></div><div></div><div class="mp">–</div><div></div></div>';
+    var v=x.price,dg=v>=10000?0:v>=1000?1:v<10?4:2,ch=+x.change||0,sp=Array.isArray(x.sparkline)&&x.sparkline.length>2?spark(x.sparkline.map(function(q){return {v:+q};}),9999):'';
+    return '<div class="mur"><div class="mn"><b>'+it[1]+'</b><span>'+it[2]+'</span></div><div class="ms">'+sp+'</div><div class="mp">'+nf(dg).format(v)+'</div>'+pill(ch,' %',2)+'</div>';
+  }).join('');
+  el.innerHTML=h;if(el2)el2.innerHTML=h;
+  var d=S.mu.upd?new Date(S.mu.upd):null,tx='futuros'+(d&&!isNaN(d)?' · '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2):'');
+  ['#h-mu','#h-mu2'].forEach(function(q){var hi=$(q);if(hi)hi.textContent=tx;});
 }
 function loadFCI(){
   return Promise.all([getJSON(FCI_U),getJSON(FCI_P)]).then(function(r){
@@ -1694,7 +1719,7 @@ function renderBrecha(){
 }
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
-  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderRP();renderBrecha();
+  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderRP();renderMU();renderBrecha();
   stockList($('#up'),S.stocks.up);stockList($('#down'),S.stocks.down);
 }
 
@@ -1944,8 +1969,9 @@ function popBuildLic(){
 }
 
 /* ---------- tabs (móvil) ---------- */
-var TABS=[['home','Home'],['dolar','Dólar'],['pizarras','Pizarras'],['brecha','Brecha'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['bonos','Bonos'],['lic','Licitaciones'],['ayuda','Opciones']];
+var TABS=[['home','Home'],['dolar','Dólar'],['pizarras','Pizarras'],['brecha','Brecha'],['tasas','Tasas'],['plazo','Plazo fijo'],['fci','FCI'],['acciones','Acciones'],['mundo','Mundo'],['bonos','Bonos'],['lic','Licitaciones'],['ayuda','Opciones']];
 var TICON={"home": "<path d=\"M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z\"/>", "dolar": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.4 5 1.2 5 3.6 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2.1-.5-2.6-1.3M12 6.5V8m0 8v1.5\"/>", "tasas": "<path d=\"M4 19V5M4 19h16M8 15l3-4 3 2 5-6\"/>", "plazo": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"15\" rx=\"2\"/><path d=\"M4 10h16M8 3v4M16 3v4\"/>", "fci": "<path d=\"M12 3a9 9 0 1 0 9 9h-9z\"/><path d=\"M15 3.5A9 9 0 0 1 20.5 9H15z\"/>", "acciones": "<path d=\"M7 4v16M5 8h4v7H5zM17 3v18M15 6h4v9h-4z\"/>", "bonos": "<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\"/><path d=\"M8 8h8M8 12h8M8 16h5\"/>", "lic": "<path d=\"M5 21V4M5 4h12l-2.5 4L17 12H5\"/>", "ayuda": "<path d=\"M4 7h9M17 7h3M4 17h3M11 17h9\"/><circle cx=\"15\" cy=\"7\" r=\"2\"/><circle cx=\"9\" cy=\"17\" r=\"2\"/>"};
+TICON.mundo='<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/>';
 TICON.pizarras='<path d="M3 9.5l9-5.5 9 5.5"/><path d="M5 10v7M9.5 10v7M14.5 10v7M19 10v7M3 20h18"/>';
 var tab='home'; /* al abrir siempre arranca en Home */
 if(!TABS.some(function(t){return t[0]===tab;}))tab='dolar';
@@ -2060,12 +2086,13 @@ function syncMode(){
 var busy=false,busyT=0,hiddenStale=false,hiddenAt=0,next=0;
 function refresh(force,skipFast){
   if(busy)return;busy=true;busyT=Date.now();$('#rf').classList.add('spin');
-  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.rpT=0;S.bonT=0;S.licT=S.licT?1:0;}
+  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.rpT=0;S.muT=0;S.bonT=0;S.licT=S.licT?1:0;}
   var now=Date.now(),jobs=[loadFX().catch(function(){}),loadStocks().catch(function(){}),loadBanks().catch(function(){})];
   if(!skipFast)jobs.push(loadMAE().catch(function(){}),loadCAU().catch(function(){}));
   if(!S.t.bcra||now-S.t.bcra>=SLOW)jobs.push(loadBCRA().catch(function(){}));
   if(!S.t.pf||now-S.t.pf>=SLOW)jobs.push(loadPF().catch(function(){}));
   if(!S.fciT||now-S.fciT>=FCI_EVERY)jobs.push(loadFCI().catch(function(){}));
+  if(!S.muT||now-S.muT>=MU_EVERY)jobs.push(loadMU().catch(function(){}));
   if(!S.rpT||now-S.rpT>=RP_EVERY)jobs.push(loadRP().catch(function(){}));
   if(!S.bonT||now-S.bonT>=BON_EVERY)jobs.push(loadBON().catch(function(){}));
   if(S.licT&&now-S.licT>=LIC_EVERY)jobs.push(loadLIC().catch(function(){}));
