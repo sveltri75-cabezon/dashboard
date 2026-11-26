@@ -65,6 +65,7 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .pfk{background:var(--acc);color:var(--onacc);font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap}.pfm.ld .pfk{background:var(--up);color:#fff}
 .pfg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.pfg>div{min-width:0}.pfg b{display:block;font-size:14px;font-variant-numeric:tabular-nums;margin-top:1px}.pfg b.u{color:var(--up)}.pfg b.d{color:var(--dn)}
 .pfm{border-left:7px solid var(--zc,var(--acc))}.pfm.zg,.pf.zg{--zc:var(--up);--zb:rgba(31,178,106,.16)}.pfm.za,.pf.za{--zc:#e5a912;--zb:rgba(224,169,59,.2)}.pfm.zr,.pf.zr{--zc:var(--dn);--zb:rgba(229,72,77,.16)}
+.pill.pz.zg{background:var(--up);color:#fff}.pill.pz.za{background:#e5a912;color:#1a1200}.pill.pz.zr{background:var(--dn);color:#fff}
 .pfm .pfk{background:var(--zc)}.pfm.za .pfk{color:#1a1200}.pfm.zg .pfk,.pfm.zr .pfk{color:#fff}
 .pf.me.zg,.pf.me.za,.pf.me.zr{box-shadow:inset 5px 0 0 var(--zc)}
 .pf.me{border-top-color:transparent}.pf.me+.pf{border-top-color:transparent}
@@ -591,7 +592,7 @@ html.w #rates .row{padding:6px 0}html.w .fr{padding:7px 0}
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.8';
+var VER='2026-11-25.9';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, RP_EVERY=10*60*1000, MU_EVERY=2*60*1000, MU_U='https://rendimientos.co/api/mundo', RP_U='https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais', API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1245,7 +1246,7 @@ function renderPFW(){
   if(!PF.groups){$('#c-pfw').innerHTML='<div class="empty">'+(PF.err?'Sin respuesta':'Cargando…')+'</div>';return;}
   if(!m){$('#c-pfw').innerHTML='<div class="empty">Meridian no informa tasa para no clientes</div>';return;}
   var top=PF.groups&&PF.groups[0],kb=top&&top.banks?top.banks.length:0;
-  $('#c-pfw').innerHTML='<div class="hd pfh"><div class="big">'+nf(2).format(m.rate)+' %</div><span class="pill a">Puesto '+m.rank+' ('+m.count+')</span><span class="pill n">Mejor tasa '+nf(2).format(PF.best)+' %'+(kb?' ('+kb+')':'')+'</span></div>';
+  $('#c-pfw').innerHTML='<div class="hd pfh"><div class="big">'+nf(2).format(m.rate)+' %</div><span class="pill pz '+(m.rank===1?'zg':m.rank===2?'za':'zr')+'">'+(m.rank===1?'▲':m.rank===2?'●':'▼')+' Puesto '+m.rank+' ('+m.count+')</span><span class="pill n">Mejor tasa '+nf(2).format(PF.best)+' %'+(kb?' ('+kb+')':'')+'</span></div>';
 }
 function spark(pts,n){
   var p=pts.slice(-n);if(p.length<2)return '<svg viewBox="0 0 100 32"></svg>';
