@@ -448,32 +448,34 @@ html.z .app{min-height:var(--ih,100vh)}
 .mnd .mur .ms svg{display:block;width:100%;height:24px;overflow:visible}.mnd .mur .mp{font-size:15px;font-weight:700;text-align:right;white-space:nowrap}.mnd .mur .pill{min-width:62px;justify-content:center;text-align:center}
 .card.nw{display:none}html.w .card.nw{display:flex}
 /* ===== escritorio: cinta Merval, botones en la cinta y escala tipográfica ===== */
-.tkr,.rf.fs{display:none}
+.tkr,.rf.fs,.tkv{display:none}
 @keyframes tkm{to{transform:translateX(-50%)}}
 @media (min-width:901px){
-  .tkr{display:flex;flex:none;align-items:center;height:34px;margin:-14px -20px 0;padding-right:150px;background:var(--card);border-bottom:1px solid var(--line);overflow:hidden;position:relative}
-  .tkr .tl{flex:none;align-self:stretch;display:flex;align-items:center;padding:0 14px;font:700 11px system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);background:var(--card);border-right:1px solid var(--line);z-index:2}
+  .tkr{display:flex;flex:none;align-items:center;height:46px;margin:-14px -20px 0;padding-right:262px;background:var(--card);border-bottom:1px solid var(--line);overflow:hidden;position:relative}
+  .tkr .tl{flex:none;align-self:stretch;display:flex;align-items:center;padding:0 16px;font:700 12.5px system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);background:var(--card);border-right:1px solid var(--line);z-index:2}
   .tkr .tv{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
   .tkr .tt{display:inline-flex;white-space:nowrap;animation:tkm var(--tkd,90s) linear infinite;will-change:transform}
   .tkr:hover .tt{animation-play-state:paused}
-  .tkr .ti{display:inline-flex;align-items:baseline;gap:7px;padding:0 16px;font-size:13px;line-height:34px;border-right:1px solid var(--line)}
-  .tkr .ti b{font-weight:700}.tkr .ti .tkp{font-weight:600}.tkr .ti .tkc{font-weight:700;font-size:12.5px}.tkr .ti .tkc.u{color:var(--up)}.tkr .ti .tkc.d{color:var(--dn)}.tkr .ti .tkc.n{color:var(--mut)}
-  .tbb{display:flex;position:fixed;top:0;right:0;z-index:60;height:34px;align-items:center;gap:6px;padding:0 10px 0 26px;background:linear-gradient(90deg,transparent,var(--card) 20px)}
-  .tbb .rf{position:static!important;width:26px;height:26px;box-shadow:none;border-radius:8px;z-index:auto}
-  .tbb .rf svg{width:15px;height:15px}
+  .tkr .ti{display:inline-flex;align-items:baseline;gap:7px;padding:0 20px;font-size:16px;line-height:46px;border-right:1px solid var(--line)}
+  .tkr .ti b{font-weight:700}.tkr .ti .tkp{font-weight:600}.tkr .ti .tkc{font-weight:700;font-size:14.5px}.tkr .ti .tkc.u{color:var(--up)}.tkr .ti .tkc.d{color:var(--dn)}.tkr .ti .tkc.n{color:var(--mut)}
+  .tbb{display:flex;position:fixed;top:0;right:0;z-index:60;height:46px;align-items:center;gap:6px;padding:0 12px 0 28px;background:linear-gradient(90deg,transparent,var(--card) 20px)}
+  .tbb .rf{position:static!important;width:30px;height:30px;box-shadow:none;border-radius:8px;z-index:auto}
+  .tbb .rf svg{width:17px;height:17px}
+  .tkv{display:flex;align-items:center;gap:4px;margin-right:6px;padding-right:10px;border-right:1px solid var(--line)}.tkv .rf{font:700 15px system-ui,sans-serif;line-height:1}.tkv #tkx{min-width:34px;text-align:center;font:700 12.5px system-ui,sans-serif;color:var(--mut)}
   .tbb .rf.fs{display:grid}
   .tbb .rf:hover{border-color:var(--acc);color:var(--acc)}
 }
 @media (prefers-reduced-motion:reduce){.tkr .tt{animation:none}.tkr .tv{overflow-x:auto}}
 @media (max-width:900px){.xr{display:none!important}}
-html.w .r2{flex:1.15 0 auto}html.w .r3{flex:1 0 auto}
+html.w .r2{flex:.85 0 auto}html.w .r3{flex:1.15 0 auto}
 /* escala: KPI 34 · dato principal 17 · nombre 16 · pastilla 13 */
 html.w .r1 .card .big,html.w #c-may .mayo .big,html.w #c-cau .mayo .big,html.w .lic-d .lbig,html.w .rpd .rpb{font-size:34px;line-height:1}
 html.w .row .p b,html.w #rates .row .p b,html.w .pf .r,html.w .fr .tn,html.w .sr .p,html.w .mnd .mur .mp,html.w #banks td,html.w .bdr .bv{font-size:17px}
 html.w .row .t b,html.w #rates .row .t b,html.w .sr b,html.w .fr .nm,html.w .mnd .mur .mn b,html.w .bdr b{font-size:16px}
 html.w .pill,html.w .r1 .card .pill{font-size:13px;padding:3px 9px}
-html.w .mnd .mur{padding:4px 0;grid-template-columns:minmax(0,1fr) 50px auto auto;gap:8px}html.w .mnd .mur .ms svg{height:20px}html.w .mnd .mur .mn b{font-size:15px}html.w .mnd .mur .pill{min-width:0}
+html.w .mnd .mur{padding:6px 0;grid-template-columns:minmax(0,1fr) 50px auto auto;gap:8px}html.w .mnd .mur .ms svg{height:20px}html.w .mnd .mur .mn b{font-size:15px}html.w .mnd .mur .pill{min-width:0}
 html.w .rpd .hsp svg{height:30px}
+html.w #rates .row{padding:6px 0}html.w .fr{padding:7px 0}
 
 @media (max-width:900px){
 #banks td{padding-top:8px;padding-bottom:8px}
@@ -487,7 +489,7 @@ html.w .rpd .hsp svg{height:30px}
 </style>
 </head>
 <body>
-<header class="topbar" id="topbar"><span class="tbt">Tablero de Mercados</span><div class="tbb" id="tbb"><button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button><button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button id="fs" class="rf fs" type="button" aria-label="Pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button><button id="sh" class="rf sh" type="button" aria-label="Compartir captura de esta pestaña" title="Compartir captura"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button><button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button><button id="hb" class="rf hb" type="button" aria-label="Opciones y ayuda" title="Opciones y ayuda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></div></header>
+<header class="topbar" id="topbar"><span class="tbt">Tablero de Mercados</span><div class="tbb" id="tbb"><span class="tkv" role="group" aria-label="Velocidad de la cinta"><button id="tkm" class="rf" type="button" aria-label="Cinta más lenta" title="Más lenta">«</button><span id="tkx">1×</span><button id="tkp" class="rf" type="button" aria-label="Cinta más rápida" title="Más rápida">»</button></span><button id="th" class="rf th" type="button" aria-label="Tema" title="Tema"></button><button id="bl" class="rf bl" type="button" aria-label="Avisos" title="Avisos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button id="fs" class="rf fs" type="button" aria-label="Pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button><button id="sh" class="rf sh" type="button" aria-label="Compartir captura de esta pestaña" title="Compartir captura"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button><button id="rf" class="rf" type="button" aria-label="Actualizar todo" title="Actualizar todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></button><button id="hb" class="rf hb" type="button" aria-label="Opciones y ayuda" title="Opciones y ayuda"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></div></header>
 <div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.1"/><path d="M20 4v7h-7"/></svg></div>
 <div class="app" id="app">
   <div class="tkr deskonly" id="tkr" role="marquee" aria-label="Acciones del Merval"><span class="tl">Merval</span><div class="tv"><div class="tt" id="tkt"></div></div></div>
@@ -589,7 +591,7 @@ html.w .rpd .hsp svg{height:30px}
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.7';
+var VER='2026-11-25.8';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, RP_EVERY=10*60*1000, MU_EVERY=2*60*1000, MU_U='https://rendimientos.co/api/mundo', RP_U='https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais', API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1044,9 +1046,9 @@ function renderMU(){
   var el=$('#c-mu'),el2=$('#mu-m');if(!el)return;
   if(!S.mu){var w='<div class="mut">'+(S.muT?'Sin datos':'Cargando…')+'</div>';el.innerHTML=w;if(el2)el2.innerHTML=w;return;}
   var h=MU_LIST.map(function(it){
-    var x=S.mu.m[it[0]];if(!x||!(x.price>0))return '<div class="mur"><div class="mn"><b>'+it[1]+'</b><span>'+it[2]+'</span></div><div></div><div class="mp">–</div><div></div></div>';
+    var x=S.mu.m[it[0]];if(!x||!(x.price>0))return '<div class="mur"><div class="mn"><b>'+it[1]+'</b></div><div></div><div class="mp">–</div><div></div></div>';
     var v=x.price,dg=v>=10000?0:v>=1000?1:v<10?4:2,ch=+x.change||0,sp=Array.isArray(x.sparkline)&&x.sparkline.length>2?spark(x.sparkline.map(function(q){return {v:+q};}),9999):'';
-    return '<div class="mur"><div class="mn"><b>'+it[1]+'</b><span>'+it[2]+'</span></div><div class="ms">'+sp+'</div><div class="mp">'+nf(dg).format(v)+'</div>'+pill(ch,' %',2)+'</div>';
+    return '<div class="mur"><div class="mn"><b>'+it[1]+'</b></div><div class="ms">'+sp+'</div><div class="mp">'+nf(dg).format(v)+'</div>'+pill(ch,' %',2)+'</div>';
   }).join('');
   el.innerHTML=h;if(el2)el2.innerHTML=h;
   var d=S.mu.upd?new Date(S.mu.upd):null,tx='futuros'+(d&&!isNaN(d)?' · '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2):'');
@@ -1446,6 +1448,11 @@ function bonGrupo(b){
   return '';
 }
 function bonLey(k){return /^(AL|AE)\d/.test(k)?'Ley Argentina':/^GD\d/.test(k)?'Ley Nueva York':'BOPREAL';}
+/* TNA (base 365): bullet → interés simple (VF/precio − 1) × 365 / días; con cupones → la TEA llevada a TNA con capitalización cada 30 días */
+function bonTna(P,fl,t0,y){
+  if(fl.length===1){var d=fl[0].d-t0;return d>0?(fl[0].m/P-1)*365/d*100:NaN;}
+  return (Math.pow(1+y,30/365)-1)*365/30*100;
+}
 function bonBuild(j){
   var today=isoD(arNow().date),liq=j.rueda&&/^\d{4}-\d\d-\d\d$/.test(j.rueda.liquidacion||'')?isoD(j.rueda.liquidacion):today+1,t0=Math.max(liq,today),out=[];
   j.bonds.forEach(function(b){
@@ -1453,7 +1460,7 @@ function bonBuild(j){
     var fl=b.flujos.map(function(f){return {d:isoD(f.fecha),m:Number(f.monto)};}).filter(function(f){return f.d>t0&&f.m>0;});
     if(!fl.length)return;
     var y=xirr(Number(b.precio),fl,t0);if(!isFinite(y))return;
-    out.push({t:b.ticker,g:g,ley:g==='usd'?bonLey(b.ticker):g==='bop'?'BOPREAL':'',p:Number(b.precio),pc:Number(b.pctChange)||0,v:b.vencimiento||'',y:y*100,dm:bonDur(Number(b.precio),fl,t0,y),days:Math.round(fl[fl.length-1].d-today),bullet:fl.length===1,stale:!!b.precioStale});
+    out.push({t:b.ticker,g:g,ley:g==='usd'?bonLey(b.ticker):g==='bop'?'BOPREAL':'',p:Number(b.precio),pc:Number(b.pctChange)||0,v:b.vencimiento||'',y:y*100,dm:bonDur(Number(b.precio),fl,t0,y),days:Math.round(fl[fl.length-1].d-today),bullet:fl.length===1,tna:bonTna(Number(b.precio),fl,t0,y),stale:!!b.precioStale});
   });
   return {rows:out};
 }
@@ -1508,20 +1515,22 @@ var BCOLD=['#6fb1e0','#e0a93b','#7bd88f'],BCOLL=['#1d6fb8','#b07d12','#1e8f4e'];
 function bcol(i){return document.documentElement.getAttribute('data-eff')==='light'?BCOLL[i]:BCOLD[i];}
 function fmtVto(v){var p=String(v).split('-');return p.length<3?'':p[2]+'-'+MES[+p[1]-1]+'-'+p[0].slice(2);}
 function bonPlazo(r){return r.bullet?r.days+' d':'dur '+nf(1).format(r.dm)+' a';}
-var BSORT={m:{k:'dm',d:-1},bf:{k:'dm',d:1},bh:{k:'dm',d:1}};
-function bonVal(r,k){return k==='t'?r.t:k==='days'?(r.bullet?r.days:null):r[k];}
+var BSORT={m:{k:'dm',d:-1},bf:{k:'dv',d:1},bh:{k:'dm',d:1}};
+function bonVal(r,k){return k==='t'?r.t:k==='days'?(r.bullet?r.days:null):k==='dv'?r.days:r[k];}
 function bonOrd(rows,key){var s=BSORT[key];return rows.slice().sort(function(a,b){var x=bonVal(a,s.k),y=bonVal(b,s.k);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return (x<y?-1:x>y?1:0)*s.d;});}
 function bonHd(key,k,lab){var s=BSORT[key],on=s.k===k;return 'data-k="'+k+'" data-s="'+key+'"'+(on?' class="on"':'')+'>'+lab+(on?(s.d>0?'▴':'▾'):'');}
 function bonDesk(rows,key){
   if(!rows.length)return S.bonErr&&!S.bon?na():'<div class="empty">Cargando…</div>';
-  rows=bonOrd(rows,key);
-  return '<table><thead><tr><th '+bonHd(key,'t','Especie')+'</th><th '+bonHd(key,'p','Precio')+'</th><th '+bonHd(key,'y','TIR')+'</th><th '+bonHd(key,'days','Días')+'</th><th '+bonHd(key,'dm','Dur.')+'</th><th '+bonHd(key,'pc','Var.')+'</th></tr></thead><tbody>'+rows.map(function(r){
-    return '<tr><td>'+r.t+(r.stale?' *':'')+'</td><td>'+nf(2).format(r.p)+'</td><td>'+nf(1).format(r.y)+' %</td><td>'+(r.bullet?r.days:'–')+'</td><td>'+nf(2).format(r.dm)+'</td><td>'+pill(r.pc)+'</td></tr>';}).join('')+'</tbody></table>';
+  rows=bonOrd(rows,key);var pf=key==='bf';
+  var th=pf?'<th '+bonHd(key,'t','Especie')+'</th><th '+bonHd(key,'p','Precio')+'</th><th '+bonHd(key,'dv','Días')+'</th><th '+bonHd(key,'y','TIR')+'</th><th title="Bullet: interés simple sobre días/365. Con cupones: TEA convertida a TNA con capitalización cada 30 días" '+bonHd(key,'tna','TNA')+'</th><th '+bonHd(key,'pc','Var.')+'</th>'
+    :'<th '+bonHd(key,'t','Especie')+'</th><th '+bonHd(key,'p','Precio')+'</th><th '+bonHd(key,'y','TIR')+'</th><th '+bonHd(key,'dm','Dur.')+'</th><th '+bonHd(key,'pc','Var.')+'</th>';
+  return '<table><thead><tr>'+th+'</tr></thead><tbody>'+rows.map(function(r){
+    return '<tr><td>'+r.t+(r.stale?' *':'')+'</td><td>'+nf(2).format(r.p)+'</td>'+(pf?'<td>'+r.days+'</td><td>'+nf(1).format(r.y)+' %</td><td>'+(isFinite(r.tna)?nf(1).format(r.tna)+' %':'–')+'</td>':'<td>'+nf(1).format(r.y)+' %</td><td>'+nf(2).format(r.dm)+'</td>')+'<td>'+pill(r.pc)+'</td></tr>';}).join('')+'</tbody></table>';
 }
 function renderBonos(){
   var fb=$('#bf'),fh=$('#bh');
   if(fb)fb.innerHTML=bonDesk(bonRows('pesos'),'bf');
-  if(fh)fh.innerHTML=bonDesk(bonRows('usd').concat(bonRows('bop')),'bh');
+  if(fh)fh.innerHTML=bonDesk(bonRows('usd'),'bh');
   var seg=document.querySelectorAll('#bseg button');[].forEach.call(seg,function(b){b.classList.toggle('on',b.getAttribute('data-g')===BONG);});
   var rows=bonRows(BONG),T=BTIT[BONG]||BTIT.pesos;
   if($('#bt'))$('#bt').firstChild.nodeValue=T[0]+' ';
@@ -1747,6 +1756,9 @@ function renderBrecha(){
   loadBrHist();renderBrHist();renderBrCalc();
 }
 /* cinta del Merval (solo escritorio): acciones líderes en pesos, de data912; se actualiza sin reiniciar el desplazamiento */
+var TKS=[0.5,0.75,1,1.5,2,3],tki=2;try{var _k=parseInt(localStorage.getItem('tablero-tkv'),10);if(_k>=0&&_k<TKS.length)tki=_k;}catch(e){}
+function tkRate(){var tt=$('#tkt'),x=$('#tkx');if(x)x.textContent=String(TKS[tki]).replace('.',',')+'×';if(tt&&tt.getAnimations)tt.getAnimations().forEach(function(a){a.playbackRate=TKS[tki];});}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#tkm,#tkp');if(!b)return;tki=Math.max(0,Math.min(TKS.length-1,tki+(b.id==='tkm'?-1:1)));try{localStorage.setItem('tablero-tkv',tki);}catch(x){}tkRate();});tkRate();
 var MERVAL=['GGAL','YPFD','PAMP','BMA','BBAR','SUPV','TGSU2','CEPU','EDN','LOMA','TXAR','ALUA','CRES','TECO2','TGNO4','TRAN','VALO','BYMA','COME','IRSA','METR','MIRG','CVH'],tkSig='';
 function tkChg(v){return '<span class="tkc '+(v>0.004?'u':v<-0.004?'d':'n')+'">'+(v>0.004?'▲ ':v<-0.004?'▼ ':'')+sgn(v,2)+' %</span>';}
 function renderTkr(){
@@ -1759,7 +1771,7 @@ function renderTkr(){
   function item(x){return '<span class="ti" data-s="'+esc(x.symbol)+'"><b>'+esc(x.symbol)+'</b><span class="tkp">'+nf(x.c%1?2:0).format(x.c)+'</span>'+tkChg(x.pct_change)+'</span>';}
   if(sig!==tkSig){
     var one=rows.map(item).join('');tt.innerHTML=one+one;tkSig=sig;tt.style.animation='none';
-    requestAnimationFrame(function(){var w=tt.scrollWidth/2;tt.style.setProperty('--tkd',Math.max(30,w/55).toFixed(0)+'s');tt.style.animation='';});
+    requestAnimationFrame(function(){var w=tt.scrollWidth/2;tt.style.setProperty('--tkd',Math.max(30,w/55).toFixed(0)+'s');tt.style.animation='';tkRate();});
   }else rows.forEach(function(x){
     var ns=tt.querySelectorAll('.ti[data-s="'+x.symbol+'"]');
     for(var i=0;i<ns.length;i++){ns[i].querySelector('.tkp').textContent=nf(x.c%1?2:0).format(x.c);var c=ns[i].querySelector('.tkc'),t=document.createElement('span');t.innerHTML=tkChg(x.pct_change);c.className=t.firstChild.className;c.textContent=t.firstChild.textContent;}
