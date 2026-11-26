@@ -441,6 +441,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 html.w .r3{grid-template-columns:1.15fr 1fr 1fr .85fr}
 html.w .r2{grid-template-columns:1.05fr 1.15fr .85fr 1fr .85fr}
 html.z .app{min-height:var(--ih,100vh)}
+.rpd .hsp svg{display:block;width:100%;height:34px;margin-top:6px}.rpd .rph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rpd .rpb{font-size:25px;font-weight:700;line-height:1.1}.rpd .hmu{color:var(--mut);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card.nw{display:none}html.w .card.nw{display:flex}
 @media (max-width:900px){
 #banks td{padding-top:8px;padding-bottom:8px}
@@ -461,6 +462,7 @@ html.z .app{min-height:var(--ih,100vh)}
 
   <div class="r1">
     <section class="card full mobonly hmst" data-tab="home"><div id="hm-st"></div></section>
+    <section class="card full mobonly hm rpd" data-tab="home"><h2>Riesgo país <i>pb</i></h2><div id="hm-rp"></div></section>
     <section class="card full mobonly hm" data-tab="home" data-go="dolar"><h2>Dólar mayorista <i class="go">›</i></h2><div id="hm-may"></div></section>
     <section class="card half hl mobonly hm" data-tab="home" data-go="tasas"><h2>Caución <i class="go">›</i></h2><div id="hm-cau"></div></section>
     <section class="card half hr mobonly hm" data-tab="home" data-go="tasas"><h2>TAMAR <i class="go">›</i></h2><div id="hm-tam"></div></section>
@@ -474,7 +476,7 @@ html.z .app{min-height:var(--ih,100vh)}
     <section data-src="cau" class="card half hl" data-tab="tasas"><h2>Caución <i id="h-cau">TNA</i></h2><div class="stat" id="c-cau"></div></section>
     <section data-src="pf" class="card half hr" data-tab="tasas"><h2>Plazo fijo <i>Web · Meridian · sin relación</i></h2><div class="stat" id="c-pfw"></div></section>
     <section data-src="lic" data-bs="-1" class="card lic" data-tab="lic"><h2>Licitación tesoro <span class="lst" id="s-lic"></span><i id="h-lic"></i></h2><div class="stat" id="c-lic"></div></section>
-    <section class="card nw" data-tab="dolar" id="nw2"></section>
+    <section class="card deskonly rpd" data-tab="dolar" id="nw2"><h2>Riesgo país <i id="h-rp">pb</i></h2><div id="c-rp"></div></section>
     <section class="card mobonly" data-tab="lic"><h2>Última licitación</h2><div id="c-licn"></div></section>
     <section class="card mobonly" data-tab="lic"><h2>Licitaciones anteriores <i>últimos 90 días</i></h2><div id="c-lich"></div></section>
   </div>
@@ -553,8 +555,8 @@ html.z .app{min-height:var(--ih,100vh)}
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.4';
-var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
+var VER='2026-11-25.5';
+var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, RP_EVERY=10*60*1000, RP_U='https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais', API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
 var nfs={};
@@ -569,7 +571,7 @@ function pill(v,suf,d){return '<span class="pill '+(v>0.00001?'u':v<-0.00001?'d'
 var SERIES=[{id:11,name:'BAIBAR'},{id:150,name:'Pases 1 d'},{id:13,name:'Adelantos'},{id:14,name:'Personales'},{id:7,name:'BADLAR'},{id:44,name:'TAMAR'},{id:12,name:'Plazo fijo'}]; /* siempre TNA; debajo del nombre va la fecha del último dato */
 function fdate(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
 var MAYORISTA_ID=5;
-var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
+var S={bcra:{},fx:{mep:null,ccl:null},hist:{mep:[],ccl:[],mae:[]},mae:null,cau:null,intra:null,intraT:0,intraC:null,intraCT:0,stocks:{up:[],down:[]},fci:null,fciErr:null,fciT:0,rpT:0,bon:null,bonErr:null,bonT:0,t:{bcra:0,pf:0}};
 
 /* ---------- red ---------- */
 function getJSON(url){
@@ -977,6 +979,24 @@ function pickFCI(u,p,n){
   });
   rows.sort(function(a,b){return b.pat-a.pat;});
   return rows.slice(0,n);
+}
+function loadRP(){
+  return getJSON(RP_U).then(function(r){
+    if(!Array.isArray(r)||r.length<2)throw new Error('formato');
+    var p=r.slice(-400).filter(function(x){return x&&x.fecha&&x.valor>0;}).map(function(x){return {d:x.fecha,v:+x.valor};});
+    if(p.length<2)throw new Error('sin datos');
+    S.bcra[-2]=p;S.rpT=Date.now();
+  },function(e){S.rpT=Date.now();throw e;});
+}
+function renderRP(){
+  var p=S.bcra[-2],h;
+  if(!p||p.length<2)h='<div class="mut">Sin datos</div>';
+  else{
+    var l=p[p.length-1],pv=p[p.length-2],d=l.v-pv.v,c=d>0?'d':d<0?'u':'n'; /* riesgo país: subir es malo → rojo */
+    var sp=spark(p.slice(-30),9999).replace('#1fb26a','@').replace('#e5484d','#1fb26a').replace('@','#e5484d');
+    h='<div class="rph"><div class="rpb">'+nf(0).format(l.v)+'</div><span class="pill '+c+'">'+(d>0?'+':'')+nf(0).format(d)+' pb</span></div><div class="hsp" data-bs="-2">'+sp+'</div><div class="hmu">'+fdate(l.d)+' · últimos 30 días</div>';
+  }
+  var a=$('#c-rp'),b=$('#hm-rp');if(a)a.innerHTML=h;if(b)b.innerHTML=h.replace(' data-bs="-2"','');
 }
 function loadFCI(){
   return Promise.all([getJSON(FCI_U),getJSON(FCI_P)]).then(function(r){
@@ -1674,7 +1694,7 @@ function renderBrecha(){
 }
 function renderAll(){
   renderMay();fxCard('#c-mep',S.fx.mep,'mep');fxCard('#c-ccl',S.fx.ccl,'ccl');renderCau();renderPFW();
-  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderBrecha();
+  renderRates();renderPF();renderFCI();renderBonos();renderBanks();renderLic();renderHome();renderRP();renderBrecha();
   stockList($('#up'),S.stocks.up);stockList($('#down'),S.stocks.down);
 }
 
@@ -2040,12 +2060,13 @@ function syncMode(){
 var busy=false,busyT=0,hiddenStale=false,hiddenAt=0,next=0;
 function refresh(force,skipFast){
   if(busy)return;busy=true;busyT=Date.now();$('#rf').classList.add('spin');
-  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.bonT=0;S.licT=S.licT?1:0;}
+  if(force===true){S.t.bcra=0;S.t.pf=0;S.fciT=0;S.rpT=0;S.bonT=0;S.licT=S.licT?1:0;}
   var now=Date.now(),jobs=[loadFX().catch(function(){}),loadStocks().catch(function(){}),loadBanks().catch(function(){})];
   if(!skipFast)jobs.push(loadMAE().catch(function(){}),loadCAU().catch(function(){}));
   if(!S.t.bcra||now-S.t.bcra>=SLOW)jobs.push(loadBCRA().catch(function(){}));
   if(!S.t.pf||now-S.t.pf>=SLOW)jobs.push(loadPF().catch(function(){}));
   if(!S.fciT||now-S.fciT>=FCI_EVERY)jobs.push(loadFCI().catch(function(){}));
+  if(!S.rpT||now-S.rpT>=RP_EVERY)jobs.push(loadRP().catch(function(){}));
   if(!S.bonT||now-S.bonT>=BON_EVERY)jobs.push(loadBON().catch(function(){}));
   if(S.licT&&now-S.licT>=LIC_EVERY)jobs.push(loadLIC().catch(function(){}));
   Promise.all(jobs).then(function(){
@@ -2054,7 +2075,7 @@ function refresh(force,skipFast){
   });
 }
 /* ---------- ventana emergente: histórico de 90 días de una serie BCRA ---------- */
-var POPN={7:'BADLAR bancos privados',150:'Pases entre terceros a 1 día',11:'BAIBAR',13:'Adelantos en cuenta',14:'Préstamos personales',44:'TAMAR',12:'Plazo fijo',5:'Dólar mayorista · Com. A 3500'};
+var POPN={'-2':'Riesgo país',7:'BADLAR bancos privados',150:'Pases entre terceros a 1 día',11:'BAIBAR',13:'Adelantos en cuenta',14:'Préstamos personales',44:'TAMAR',12:'Plazo fijo',5:'Dólar mayorista · Com. A 3500'};
 var POP_DAYS=90,popEl=null,popT=0,popId=null,popAnchor=null;
 function popData(id){
   var p=S.bcra[id];if(!p||!p.length)return null;
@@ -2064,21 +2085,21 @@ function popData(id){
 function popBuild(id){
   if(id===-1)return popBuildLic();
   var pts=popData(id);if(!pts)return false;
-  var pct=id!==MAYORISTA_ID,W=400,H=150,vs=pts.map(function(x){return x.v;}),mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs);
+  var rp=id===-2,pct=id!==MAYORISTA_ID&&!rp,dg=rp?0:2,W=400,H=150,vs=pts.map(function(x){return x.v;}),mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs);
   var pad=(mx-mn)*0.12||Math.abs(mx)*0.01||1,lo=mn-pad,hi=mx+pad,t0=dayNum(pts[0].d),t1=dayNum(pts[pts.length-1].d)||t0+1;
   var X=function(d){return t1>t0?(dayNum(d)-t0)/(t1-t0)*W:W/2;},Y=function(v){return H-(v-lo)/(hi-lo)*H;};
   var xy=pts.map(function(x){return [X(x.d),Y(x.v)];}),line=xy.map(function(q,i){return (i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1);}).join('');
-  var area=line+'L'+W+' '+H+'L0 '+H+'Z',suf=pct?' %':'';
+  var area=line+'L'+W+' '+H+'L0 '+H+'Z',suf=pct?' %':(rp?' pb':'');
   popEl.innerHTML='<div class="ph"><b>'+esc(POPN[id]||'')+(pct?' · TNA':'')+'</b><span class="pv"></span></div><div class="pd"></div>'+
     '<div class="pc"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fb1e0" stop-opacity=".35"/><stop offset="1" stop-color="#6fb1e0" stop-opacity="0"/></linearGradient></defs>'+
     [0,.5,1].map(function(f){return '<line class="gl" x1="0" x2="'+W+'" y1="'+(f*H)+'" y2="'+(f*H)+'"/>';}).join('')+
     '<path d="'+area+'" fill="url(#pg)"/><path class="ln" d="'+line+'"/><line class="cr" y1="0" y2="'+H+'" x1="0" x2="0" style="display:none"/></svg><i class="dot" style="display:none"></i>'+
-    '<span class="yl" style="top:-7px">'+nf(2).format(hi)+'</span><span class="yl" style="bottom:-7px">'+nf(2).format(lo)+'</span></div>'+
+    '<span class="yl" style="top:-7px">'+nf(dg).format(hi)+'</span><span class="yl" style="bottom:-7px">'+nf(dg).format(lo)+'</span></div>'+
     '<div class="xl"><span>'+fdate(pts[0].d)+'</span><span>'+fdate(pts[pts.length-1].d)+'</span></div>'+
-    '<div class="pm"><span>Máx. <b>'+nf(2).format(mx)+suf+'</b></span><span>Mín. <b>'+nf(2).format(mn)+suf+'</b></span><span>Últimos '+POP_DAYS+' días</span></div>';
+    '<div class="pm"><span>Máx. <b>'+nf(dg).format(mx)+suf+'</b></span><span>Mín. <b>'+nf(dg).format(mn)+suf+'</b></span><span>Últimos '+POP_DAYS+' días</span></div>';
   var pc=popEl.querySelector('.pc'),cr=popEl.querySelector('.cr'),dot=popEl.querySelector('.dot'),pv=popEl.querySelector('.pv'),pd=popEl.querySelector('.pd');
   function show(i,live){
-    var q=xy[i],x=pts[i];pv.textContent=nf(2).format(x.v)+suf;pd.textContent=fdate(x.d);
+    var q=xy[i],x=pts[i];pv.textContent=nf(dg).format(x.v)+suf;pd.textContent=fdate(x.d);
     if(live){cr.style.display='';cr.setAttribute('x1',q[0]);cr.setAttribute('x2',q[0]);dot.style.display='';dot.style.left=(q[0]/W*100)+'%';dot.style.top=(q[1]/H*100)+'%';}
     else{cr.style.display='none';dot.style.display='none';}
   }
