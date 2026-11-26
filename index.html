@@ -138,6 +138,7 @@ tr.old td{color:var(--mut)!important;opacity:.75;font-style:italic}tr.old td:fir
 .mayo .ml{display:flex;flex-direction:column;gap:5px;min-width:0}
 .mayo .mr{width:44%;max-width:210px;min-width:104px;text-align:right}
 .mayo svg{display:block;width:100%;height:54px}
+@container (max-width:250px){.mayo .cap span:not(.st){display:none}}
 .mayo .cap{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px;color:var(--mut);font-size:12.5px;white-space:nowrap}
 .mayo.wait .big,.mayo.wait .mr svg{opacity:.45}.wtl{display:inline-block;padding:3px 9px;border-radius:7px;background:rgba(138,148,166,.16);color:var(--mut);font-weight:700;font-size:15px}.wdim{opacity:.45}
 #c-may,#c-cau{container-type:inline-size}
@@ -199,6 +200,15 @@ section[data-src=lic] .ctl em{display:none}
 .lR{flex:1;min-width:0}
 .lic table td{font-size:12.5px;padding:2px 4px;white-space:nowrap}.lic table th{font-size:10px;padding:0 4px 1px}
 .lic table td.mu{color:var(--mut);font-weight:400;font-size:11.5px}
+.ldh{display:flex;align-items:center;gap:8px;margin-bottom:4px}.ldw{font-weight:700;font-size:13px;color:var(--lnxt)}
+.lic-d .lbig{font-size:38px;font-weight:700;line-height:1.05;white-space:nowrap}
+.ldl{font-size:14px;color:var(--mut);margin-top:3px}.ldl b{color:var(--ink)}
+.ldk{margin-top:auto;align-self:flex-start;background:none;border:0;padding:6px 0 0;color:var(--acc);font:600 13px system-ui;cursor:pointer;text-align:left}.ldk:hover{text-decoration:underline}
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:70;padding:12px}
+.ovc{background:var(--card);border:1px solid var(--line);border-radius:14px;width:540px;max-width:100%;max-height:100%;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.ovh{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 10px;border-bottom:1px solid var(--line)}.ovh b{font-size:16px}.ovh small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.ovx{background:none;border:0;color:var(--mut);font-size:26px;line-height:1;cursor:pointer;padding:0 4px}.ovx:hover{color:var(--ink)}
+.ovb{padding:2px 18px 14px;overflow:auto}.ovb .lx-ic:first-child{border-top:0}
 .lnx{display:flex;align-items:center;gap:9px;border:1px dashed var(--bd2);border-radius:8px;padding:3px 10px;background:var(--sunk);font-size:13px;margin-top:4px;white-space:nowrap}
 .lnx .lst{font-size:10.5px}
 .lic-m{display:none}.mobonly{display:none}
@@ -227,7 +237,7 @@ details.lh summary b{font-weight:700}details.lh summary .m{color:var(--mut);font
 details.lh summary:after{content:'›';color:var(--dim);transition:transform .15s}details.lh[open] summary:after{transform:rotate(90deg)}
 details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6px 3px}
 .pop table td{font-size:13px;padding:5px 4px}.pop table th{font-size:10px}
-@media (min-width:901px){.mobonly{display:none!important}#pfm{display:none!important}}
+@media (min-width:901px){.mobonly{display:none!important}#pfm{display:none!important}#s-lic,#h-lic{display:none!important}}
 @media (min-width:901px){#banks td{padding:7px 6px}}
 .tl{display:inline-flex;gap:4px;margin-left:10px;vertical-align:middle;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px 7px}
 .tl i{width:10px;height:10px;border-radius:50%;background:var(--gl);display:block;margin:0}
@@ -246,20 +256,17 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 .sbmd{position:absolute;top:0;width:2px;height:12px;margin-left:-1px;background:var(--mdl);z-index:1}.sbl{position:relative}.sbmed{position:absolute;transform:translateX(-50%);white-space:nowrap}
 .sbt .e0{transform:none}.sbt .e0:before{margin-left:0}.sbt .e1{transform:translateX(-100%)}.sbt .e1:before{margin-right:0}
 
-@media (min-width:901px) and (max-width:1879px){.r1{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}.card.lic{grid-column:span 2;min-height:190px}}
-@media (min-width:1880px){
-  .r1{grid-template-columns:minmax(0,366px) repeat(4,minmax(0,1fr)) 480px}
-  .r1 .card.lic{height:0;min-height:100%;padding:11px 14px}
-  .r1 .card:not(.lic):not(.full) h2{flex-wrap:wrap;row-gap:1px}
-  .r1 .card:not(.lic):not(.full) h2 i{order:3;flex:0 0 100%;margin:0;font-size:11px}
-  .r1 .card:not(.lic):not(.full) .mm{gap:16px}
-  .r1 .card:not(.lic):not(.full) .mm b{font-size:17px}
-  .r1 .card:not(.lic):not(.full) .pill{font-size:13.5px}
-  .r1 .card:not(.lic):not(.full){padding:9px 14px}
-  .r1 .card:not(.lic):not(.full) h2{margin-bottom:3px}
-  .r1 .card:not(.lic):not(.full) .big{font-size:38px;line-height:1}
-  .r1 .card:not(.lic):not(.full) .mm{margin-top:4px}
-}
+@media (min-width:901px) and (max-width:1879px){html:not(.w) .r1{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}html:not(.w) .card.lic{grid-column:span 2;min-height:190px}}
+html.w .r1{grid-template-columns:repeat(7,minmax(0,1fr))}
+html.w .r1 .card h2{flex-wrap:wrap;row-gap:1px}
+html.w .r1 .card h2 i{order:3;flex:0 0 100%;margin:0;font-size:11px}
+html.w .r1 .card .mm{gap:16px}
+html.w .r1 .card .mm b{font-size:17px}
+html.w .r1 .card .pill{font-size:13.5px}
+html.w .r1 .card{padding:9px 14px}
+html.w .r1 .card h2{margin-bottom:3px}
+html.w .r1 .card .big{font-size:38px;line-height:1}
+html.w .r1 .card .mm{margin-top:4px}
 @media (max-width:900px){
   .lic-d{display:none}.lic-m{display:block}.mobonly{display:flex}
   #h-lic{display:none}
@@ -269,9 +276,9 @@ details.lh table{margin-bottom:8px}details.lh table td{font-size:13px;padding:6p
 /* tabs (móvil) */
 .tabs{display:none}
 @media (max-width:1399px){
-  .r1{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
-  .r2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr));flex:none}
-  .r3{grid-template-columns:repeat(auto-fit,minmax(380px,1fr));flex:none}
+  html:not(.w) .r1{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  html:not(.w) .r2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr));flex:none}
+  html:not(.w) .r3{grid-template-columns:repeat(auto-fit,minmax(380px,1fr));flex:none}
 }
 @keyframes inR{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
 @keyframes inL{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
@@ -431,7 +438,10 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 .card.tsr h2{flex-wrap:wrap;row-gap:6px}
 #tsr{display:flex;gap:0;background:var(--sunk);padding:2px;border-radius:9px;overflow:visible}
 .bdr .bv.u{color:var(--up)}.bdr .bv.d{color:var(--dn)}.bg3 b.u{color:var(--up)}.bg3 b.d{color:var(--dn)}
-@media (min-width:1880px){.r3{grid-template-columns:1.15fr 1fr 1fr .85fr}}
+html.w .r3{grid-template-columns:1.15fr 1fr 1fr .85fr}
+html.w .r2{grid-template-columns:1.05fr 1.15fr .85fr 1fr .85fr}
+html.z .app{min-height:var(--ih,100vh)}
+.card.nw{display:none}html.w .card.nw{display:flex}
 @media (max-width:900px){
 #banks td{padding-top:8px;padding-bottom:8px}
 .semb{margin-top:-2px}
@@ -464,6 +474,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section data-src="cau" class="card half hl" data-tab="tasas"><h2>Caución <i id="h-cau">TNA</i></h2><div class="stat" id="c-cau"></div></section>
     <section data-src="pf" class="card half hr" data-tab="tasas"><h2>Plazo fijo <i>Web · Meridian · sin relación</i></h2><div class="stat" id="c-pfw"></div></section>
     <section data-src="lic" data-bs="-1" class="card lic" data-tab="lic"><h2>Licitación tesoro <span class="lst" id="s-lic"></span><i id="h-lic"></i></h2><div class="stat" id="c-lic"></div></section>
+    <section class="card nw" data-tab="dolar" id="nw2"></section>
     <section class="card mobonly" data-tab="lic"><h2>Última licitación</h2><div id="c-licn"></div></section>
     <section class="card mobonly" data-tab="lic"><h2>Licitaciones anteriores <i>últimos 90 días</i></h2><div id="c-lich"></div></section>
   </div>
@@ -475,6 +486,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
     <section class="card pzh mobonly" data-tab="pizarras" id="pzh" hidden></section>
     <section data-src="banks" class="card" data-tab="pizarras"><h2><span class="tt">Dólar por entidad<span class="tl" id="semd"></span></span></h2><div id="semb" class="semb"></div><div id="banks"></div><div class="tape" id="tapeb"></div></section>
     <section class="card pzm mobonly" data-tab="pizarras"><h2>Mejores</h2><div id="pzr"></div></section>
+    <section class="card nw" data-tab="pizarras" id="nw1"></section>
   </div>
 
   <div class="r3">
@@ -541,7 +553,7 @@ details.lh .lx-ic:first-of-type{border-top:1px solid var(--line)}details.lh{padd
 <script>
 (function(){
 'use strict';
-var VER='2026-11-25.2';
+var VER='2026-11-25.4';
 var REFRESH=30*1000, SLOW=5*60*1000, FCI_EVERY=15*60*1000,BON_EVERY=5*60*1000,LIC_EVERY=5*60*1000, API='https://data912.com';
 var $=function(s,r){return (r||document).querySelector(s);};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -1793,6 +1805,11 @@ function licPick(){
   var prev=G.filter(function(g){return g.items.length&&now>=g.liqE&&g!==last;}).reverse();
   return {cur:cur,last:last,fut:fut,prev:prev,now:now};
 }
+function licPickD(now){ /* escritorio: la licitación sigue en la tarjeta hasta las 15:30 (hora Argentina) del día de la licitación; después pasa a la siguiente */
+  var G=LIC.groups||[],i;
+  for(i=0;i<G.length;i++){if(Date.parse(G[i].day+'T15:30:00-03:00')>now)return G[i];}
+  return null;
+}
 function diffDays(a,b){return Math.round((Date.UTC(+b.slice(0,4),+b.slice(5,7)-1,+b.slice(8,10))-Date.UTC(+a.slice(0,4),+a.slice(5,7)-1,+a.slice(8,10)))/86400000);}
 function lxCol(i,n){var a=[156,203,240],b=[47,111,179],t=n>1?i/(n-1):0;return 'rgb('+a.map(function(v,k){return Math.round(v+(b[k]-v)*t);}).join(',')+')';}
 function lxN(items){return items.filter(function(i){return i.mon==='ARS'&&i.amt>0;}).length;}
@@ -1846,6 +1863,24 @@ function licTg(i){return i.cond==='N'?'<i class="lx-tg n">NUEVA</i>':i.cond==='R
 function licDMY(d){return d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(2,4):'';}
 function licPl(i){return i.plazo!=null&&i.plazo>=0?nf(0).format(i.plazo)+(i.plazo===1?' día':' días'):'';}
 function licHasRes(L){return L.ars>0||L.usd>0;}
+function licDesk(now,today){
+  var D=licPickD(now);LIC.D=D;
+  if(!D)return '<div class="lic-d"><div class="empty">Sin próxima licitación informada</div></div>';
+  var s=licState(D,now),dd=diffDays(today,D.day),when=dd<=0?'hoy':dd===1?'mañana':'en '+dd+' días';
+  return '<div class="lic-d"><div class="ldh"><span class="lst '+s[1]+'">'+s[0].toUpperCase()+'</span><span class="ldw">'+when+'</span></div><div class="lbig">'+dmy(D.day)+'</div><div class="ldl">Liquida <b>'+dmy(D.liq)+'</b></div>'+
+    (D.items.length?'<button type="button" class="ldk" id="lic-det">Ver detalle de instrumentos ›</button>':'<div class="ldk" style="cursor:default;color:var(--mut);font-weight:400">Instrumentos a confirmar</div>')+'</div>';
+}
+function licDlg(open){
+  var o=document.getElementById('licdlg');
+  if(o){o.parentNode.removeChild(o);}
+  if(!open||!LIC.D)return;
+  var D=LIC.D;o=document.createElement('div');o.id='licdlg';o.className='ovl';o.setAttribute('role','dialog');
+  o.innerHTML='<div class="ovc"><div class="ovh"><div><b>Licitación '+dmy(D.day)+'</b><small>Liquida '+dmy(D.liq)+' · '+D.items.length+' instrumentos · plazo desde la liquidación</small></div><button type="button" class="ovx" aria-label="Cerrar">×</button></div><div class="ovb">'+licItemsP(D.items)+'</div></div>';
+  o.addEventListener('click',function(e){if(e.target===o||(e.target.closest&&e.target.closest('.ovx')))licDlg(false);});
+  document.body.appendChild(o);
+}
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#lic-det'))licDlg(true);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')licDlg(false);});
 function renderLic(){
   var box=$('#c-lic'),hd=$('#h-lic'),st=$('#s-lic'),nb=$('#c-licn'),hb=$('#c-lich');
   if(!box)return;
@@ -1862,8 +1897,7 @@ function renderLic(){
     st.textContent=s[0].toUpperCase();st.className='lst '+s[1];
     hd.textContent='liquida '+dmy(C.liq);
     var lx=L?'<span class="lst">Última</span><b>'+dmy(L.day)+'</b> '+(L.ars>0?'$ '+nf(2).format(L.ars/1e12)+' bi':L.usd>0?'USD '+nf(0).format(L.usd/1e6)+' M':'sin adjudicar'):'<span class="mut">Sin licitaciones liquidadas</span>';
-    box.innerHTML='<div class="lic-d"><div class="lbd"><div class="lL"><div class="lk">'+lab+' · '+dmy(C.day)+'</div><div class="lbig">'+b.big+'</div><div class="lun">'+b.unit+'</div><div class="lsec">'+b.sec+'</div></div><div class="lR">'+
-      (C.items.length?(has?licTable(C.items,4):'<table><thead><tr><th>Título</th><th>Vence</th><th>Plazo</th></tr></thead><tbody>'+licRowsP(C.items,4)+'</tbody></table>'):'<div class="mu" style="padding-top:6px">Títulos a confirmar</div>')+'</div></div><div class="lnx">'+lx+'</div></div>'+
+    box.innerHTML=licDesk(P.now,today)+
       '<div class="lic-m"><div class="lx-nx"><div><div class="d">'+C.day.slice(8,10)+'/'+C.day.slice(5,7)+'/'+C.day.slice(0,4)+(C.conv?' · conversión':'')+'</div><div class="mu">Liquida '+dmy(C.liq)+'</div></div>'+(when?'<span class="lst nx">'+when+'</span>':'')+'</div>'+
       (has?licMobileC(C,P.now):(C.items.length?licStepC(C,P.now)+licItemsP(C.items):'<div class="mu" style="margin-top:8px">Títulos a confirmar</div>'))+
       (P.fut.length?'<div class="lx-chips">'+P.fut.map(function(g){return '<span>'+dmy(g.day)+'</span>';}).join('')+'<em>cronograma</em></div>':'')+'</div>';
@@ -2055,13 +2089,13 @@ function popBuild(id){
   return true;
 }
 function popPlace(a){
-  var r=a.getBoundingClientRect();
+  var r=a.getBoundingClientRect(),z=parseFloat(document.documentElement.style.zoom)||1; /* con el escalado del escritorio, las medidas del DOM vienen en px reales de pantalla y left/top se escalan */
   if(window.innerWidth<=900)return;
-  var w=popEl.offsetWidth,h=popEl.offsetHeight,l=r.right+8;
+  var w=popEl.offsetWidth*z,h=popEl.offsetHeight*z,l=r.right+8;
   if(l+w>window.innerWidth-8)l=Math.max(8,r.left-w-8);
   if(l<8||l+w>window.innerWidth-8)l=Math.max(8,Math.min(window.innerWidth-w-8,r.left));
   var t=Math.max(8,Math.min(window.innerHeight-h-8,r.top+r.height/2-h/2));
-  popEl.style.left=l+'px';popEl.style.top=t+'px';
+  popEl.style.left=(l/z)+'px';popEl.style.top=(t/z)+'px';
 }
 function popShow(a){
   var id=+a.getAttribute('data-bs');clearTimeout(popT);
@@ -2076,6 +2110,7 @@ function popHide(){clearTimeout(popT);if(popEl)popEl.classList.remove('on');popI
   var touch=window.matchMedia&&matchMedia('(hover:none)').matches;
   document.addEventListener('mouseover',function(e){
     if(touch)return;var a=e.target.closest&&e.target.closest('[data-bs]');
+    if(a&&a.classList.contains('lic')&&window.innerWidth>900)a=null;
     if(a)popShow(a);else if(popEl.contains(e.target))clearTimeout(popT);
   });
   document.addEventListener('mouseout',function(e){
@@ -2168,6 +2203,21 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
   $('#o-ver').textContent=VER;
   $('#o-rf').addEventListener('click',function(){refresh(true);});
   $('#rf').addEventListener('click',function(){refresh(true);});
+/* escritorio: el tablero se diseña sobre un lienzo de DW px de ancho y se escala solo, para que la disposición no cambie con el zoom ni el tamaño de la ventana */
+(function(){
+  var DW=2030,MINW=1180,de=document.documentElement;
+  function fit(){
+    var z=1,iw,ih;
+    de.style.zoom='';de.classList.remove('z');
+    iw=de.clientWidth;ih=de.clientHeight;
+    if(iw>=MINW&&iw<DW)z=iw/DW;
+    if(iw>=MINW){de.classList.add('w');}else{de.classList.remove('w');}
+    if(z<1){de.style.zoom=String(z);de.classList.add('z');de.style.setProperty('--ih',(ih/z)+'px');}
+    else de.style.removeProperty('--ih');
+  }
+  fit();
+  var tm=null;window.addEventListener('resize',function(){clearTimeout(tm);tm=setTimeout(fit,60);});
+})();
   /* Compartir captura de la pestaña actual (sin librerías: se dibuja el DOM como imagen SVG) */
   (function(){
     var btn=$('#sh');if(!btn)return;
